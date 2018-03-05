@@ -6,6 +6,7 @@
 
 import React, { Component } from 'react';
 import {
+  NativeModules,
   Platform,
   StyleSheet,
   Text,
@@ -19,9 +20,19 @@ const instructions = Platform.select({
     'Shake or press menu button for dev menu',
 });
 
+const helloWorld = async function() {
+  try {
+    let helloWorldStr = await NativeModules.HelloWorld.helloWorld();
+    console.log(helloWorldStr);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 type Props = {};
 export default class App extends Component<Props> {
   render() {
+    helloWorld();
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
