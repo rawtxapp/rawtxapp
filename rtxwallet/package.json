@@ -7,8 +7,10 @@
     "test": "jest"
   },
   "dependencies": {
-    "react": "16.2.0",
-    "react-native": "0.53.3"
+    "flow-bin": "^0.68.0",
+    "react": "^16.3.0-alpha.3",
+    "react-native": "^0.54.3",
+    "react-native-button": "^2.3.0"
   },
   "devDependencies": {
     "babel-jest": "22.4.1",

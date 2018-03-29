@@ -10,3 +10,11 @@ go run !(*_test).go
 scp -P 2222 user@127.0.0.1:/home/user/go/src/github.com/lightningnetwork/lnd/rtx_export-android-16.aar ./android/app/libs/rtx_export.aar
 
 scp -P 2222 user@127.0.0.1:/home/user/go/src/github.com/lightningnetwork/lnd/rtx_*.go ./android/app/libs/rtx_export.aar
+
+adb logcat | grep 'RtxJava\|LndService\|zygote64\|ActivityManager\|ReactNative'
+
+
+
+react-native pointers:
+Networking module:
+src/main/java/com/facebook/react/modules/network/NetworkingModule.java

@@ -42,5 +42,15 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
+
+    Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+      @Override
+      public void uncaughtException(Thread thread, Throwable throwable) {
+        // TODO: handle crashes.
+        System.out.println("HEREEE");
+        System.out.println(thread.getName());
+        System.out.println(throwable.getMessage());
+      }
+    });
   }
 }
