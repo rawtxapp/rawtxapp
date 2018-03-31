@@ -37,7 +37,7 @@ public class LndService extends IntentService {
                 new Notification.Builder(this)
                         .setContentTitle("LND started")
                         .setContentText("Dismiss this notification to shutdown LND.")
-                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setSmallIcon(R.drawable.ic_action_name)
                         .setContentIntent(main)
                         .build();
 
