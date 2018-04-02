@@ -31,6 +31,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
@@ -158,9 +159,7 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
         }
     }
 
-    @ReactMethod
-    public void getLndCert(Callback callback) {
-        String fileName = getLndDir() + "tls.cert";
+    private String readFile(String fileName) {
         // This will reference one line at a time
         String line;
         StringBuilder stringBuilder = new StringBuilder();
@@ -182,15 +181,14 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
             bufferedReader.close();
         } catch (FileNotFoundException ex) {
             Log.e(TAG, "Unable to open file '" + fileName + "'");
-            callback.invoke("");
+            return "";
         } catch (IOException ex) {
             Log.e(TAG, "Error reading file '" + fileName + "'");
-            callback.invoke("");
+            return "";
         }
-        callback.invoke(stringBuilder.toString());
+        return stringBuilder.toString();
     }
 
-    @ReactMethod
     private void createTrustCertContextAndHttpClient() {
         try {
             sslContext = SSLContext.getDefault();
@@ -232,13 +230,6 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
             httpClient = new OkHttpClient.Builder().sslSocketFactory(context.getSocketFactory(), trustManager).build();
 
             HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
-
-            // Tell the URLConnection to use a SocketFactory from our SSLContext
-//            URL url = new URL("https://certs.cac.washington.edu/CAtest/");
-//            HttpsURLConnection urlConnection =
-//                    (HttpsURLConnection) url.openConnection();
-//            urlConnection.setSSLSocketFactory(context.getSocketFactory());
-//            InputStream in = urlConnection.getInputStream();
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
@@ -269,6 +260,36 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
             Log.e(TAG, e.getMessage());
             promise.reject(e);
         }
+    }
+
+    @ReactMethod
+    public void readFile(String filename, Promise promise) {
+        promise.resolve(readFile(filename));
+    }
+
+    @ReactMethod
+    public void writeFile(String filename, String content, Promise promise) {
+        try {
+            new File(filename).mkdirs();
+            PrintWriter out = new PrintWriter(filename);
+            out.println(content);
+            out.close();
+            promise.resolve("success");
+        }catch (Exception e){
+            Log.e(TAG, "Couldn't write "+filename);
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getFilesDir(Promise promise) {
+        promise.resolve(getReactApplicationContext().getFilesDir().getPath());
+    }
+
+    @ReactMethod
+    public void fileExists(String filename, Promise promise) {
+        File f = new File(filename);
+        promise.resolve(f.exists() && !f.isDirectory());
     }
 
     /*

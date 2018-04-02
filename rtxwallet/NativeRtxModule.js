@@ -23,14 +23,30 @@ const stopWatchingLogContent = function(callback) {
   DeviceEventEmitter.removeListener('LND_LOGS_MODIFIED', callback);
 };
 
-const getLndCert = function(callback) {
-  Rtx.getLndCert(callback);
-  LndApi.getInfo();
-  //Rtx.testGetInfo();
-};
-
 const fetch = async function(request) {
   return await Rtx.fetch(request);
+};
+
+const readWalletConfig = async function() {
+  return await Rtx.readWalletConfig();
+};
+
+const readFile = async function(filename) {
+  return await Rtx.readFile(filename);
+};
+
+const writeFile = async function(filename, content) {
+  return await Rtx.writeFile(filename, content);
+};
+
+const fileExists = async function(filename) {
+  return await Rtx.fileExists(filename);
+};
+
+// Directory where we can read and write app specific files, where lnd will
+// be created.
+const getAppDir = async function() {
+  return await Rtx.getFilesDir();
 };
 
 export {
@@ -39,6 +55,9 @@ export {
   stopLnd,
   startWatchingLogContent,
   stopWatchingLogContent,
-  getLndCert,
   fetch,
+  readFile,
+  writeFile,
+  fileExists,
+  getAppDir
 };

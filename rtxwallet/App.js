@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 
 import ScreenLog from './ScreenLog.js';
+import ScreenIntroCreateUnlockWallet from './ScreenIntroCreateUnlockWallet.js';
 import { LogProvider } from './ContextLog.js';
 import { LndProvider } from './ContextLnd.js';
 
@@ -25,7 +26,7 @@ export default class App extends Component<Props> {
       <View style={styles.container}>
         <LndProvider>
           <LogProvider>
-            <ScreenLog />
+            <ScreenIntroCreateUnlockWallet />
           </LogProvider>
         </LndProvider>
       </View>
