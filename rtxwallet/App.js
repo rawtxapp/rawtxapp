@@ -14,19 +14,31 @@ import {
   View,
 } from 'react-native';
 
+import { SwitchNavigator } from 'react-navigation';
+
 import ScreenLog from './ScreenLog.js';
+import ScreenWallet from './ScreenWallet.js';
 import ScreenIntroCreateUnlockWallet from './ScreenIntroCreateUnlockWallet.js';
+import ScreenGenSeed from './ScreenGenSeed.js';
 import { LogProvider } from './ContextLog.js';
 import { LndProvider } from './ContextLnd.js';
 
-type Props = {};
+const RootSwitch = SwitchNavigator(
+  {
+    WalletCreate: { screen: ScreenIntroCreateUnlockWallet },
+    GenSeed: { screen: ScreenGenSeed },
+    Wallet: {screen: ScreenWallet}
+  },
+  { initialRouteName: 'WalletCreate' },
+);
+
 export default class App extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
         <LndProvider>
           <LogProvider>
-            <ScreenIntroCreateUnlockWallet />
+            <RootSwitch />
           </LogProvider>
         </LndProvider>
       </View>

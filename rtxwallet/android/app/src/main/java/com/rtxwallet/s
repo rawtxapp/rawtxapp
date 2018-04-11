@@ -1,0 +1,9 @@
+curl -v -k -X GET  -H "accept: application/json" -d '{aezeed_passphrase:"d"}' https://localhost:8080/v1/genseed
+
+curl -v -k -X POST  -H "accept: application/json" -d '{"wallet_password":"1234567","cipher_seed_mnemonic":["about","guilt","wine","dry","tattoo","ozone","gun","pulse","letter","finish","radio","still","plastic","slot","enact","promote","eye","tired","report","danger","address","hamster","glad","fiscal"],"enciphered_seed":"AGz37iHd5T0Z/WyAiuLDauphmBJdYVE8VtubsDbRWKK8"}' https://localhost:8080/v1/initwallet
+
+
+curl -v -k -X POST  -H "accept: application/json" -d '{"wallet_password":"1234567890","cipher_seed_mnemonic":"AGz37iHd5T0Z/WyAiuLDauphmBJdYVE8VtubsDbRWKK8"}' https://localhost:8080/v1/initwallet
+
+
+curl -v -k -X POST  -H "accept: application/json" -d '{"wallet_password":"MTIzNDU2Nzg="}' https://localhost:8080/v1/unlockwallet

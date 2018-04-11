@@ -14,18 +14,18 @@ class LogProvider extends Component {
   }
 
   componentDidMount() {
-    const updateLogState = log => {
-      this.setState({ logText: log });
-    };
-    getLogContent(updateLogState);
-    this.updateLogStateFromContent_ = () => {
-      getLogContent(updateLogState);
-    };
-    startWatchingLogContent(this.updateLogStateFromContent_);
+    //const updateLogState = log => {
+      //this.setState({ logText: log });
+    //};
+    //getLogContent(updateLogState);
+    //this.updateLogStateFromContent_ = () => {
+      //getLogContent(updateLogState);
+    //};
+    //startWatchingLogContent(this.updateLogStateFromContent_);
   }
 
   componentWillUnmount() {
-    stopWatchingLogContent(this.updateLogStateFromContent_);
+    //stopWatchingLogContent(this.updateLogStateFromContent_);
   }
 
   render() {

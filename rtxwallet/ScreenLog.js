@@ -65,7 +65,7 @@ export default class ScreenLog extends Component<Props> {
       <View style={styles.container}>
         {text}
         <LndConsumer>
-          {({ startLnd, stopLnd, getLndInfo, genSeed }) => (
+          {({ startLnd, stopLnd, getInfo, genSeed }) => (
             <ScrollView style={styles.buttonContainer} horizontal={true}>
               <Button
                 containerStyle={styles.buttonStyle}
@@ -91,7 +91,7 @@ export default class ScreenLog extends Component<Props> {
               <Button
                 containerStyle={styles.buttonStyle}
                 style={{ fontSize: 20, color: 'black' }}
-                onPress={this.switchToGetJson(getLndInfo)}
+                onPress={this.switchToGetJson(getInfo)}
               >
                 Info
               </Button>

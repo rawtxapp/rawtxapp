@@ -145,6 +145,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.facebook.react:react-native:+'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
     // From node_modules
     compile(name: 'rtx_export', ext: 'aar')
 }

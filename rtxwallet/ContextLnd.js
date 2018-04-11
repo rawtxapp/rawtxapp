@@ -12,10 +12,13 @@ import {
   fileExists,
   readFile,
   writeFile,
+  isLndProcessRunning,
+  encodeBase64,
 } from './NativeRtxModule.js';
 import LndApi from './RestLnd.js';
 
 const WALLET_CONF_FILE = 'wallet.conf';
+const DEFAULT_NEUTRINO_CONNECT = 'faucet.lightning.community';
 
 const walletConfFilename = async function() {
   const appDir = await getAppDir();
@@ -52,6 +55,13 @@ const addWallet = async function(newWallet) {
     mode,
     neutrinoConnect,
   }))(newWallet);
+
+  // the wallets have folders appDir/wallets/<X>/ structure, the X can't be
+  // based on user input because of utf-8 and different input possible,
+  // it needs to be generated uniquely, easiest way to do is an int,
+  // go through list of all wallets find the max int and increase by 1.
+  let walletIx = 0;
+
   // Validate first
   const currentConfig = await readWalletConfig();
   currentConfig.wallets = currentConfig.wallets || [];
@@ -60,13 +70,87 @@ const addWallet = async function(newWallet) {
     if (newWallet.name == wallet.name) {
       throw new Error('Wallet with this name already exists!');
     }
+    if (wallet.ix && wallet.ix > walletIx) {
+      walletIx = wallet.ix;
+    }
   }
 
-  const { name, coin, network, mode, neutrinoConnect } = newWallet;
+  newWallet.ix = walletIx + 1;
 
   currentConfig.wallets.push(newWallet);
-  return await writeWalletConfig(currentConfig);
+  await writeWalletConfig(currentConfig);
+  return newWallet;
 };
+
+const walletDir = async function(wallet) {
+  return (await getAppDir()) + '/wallets/' + (wallet.ix || 0) + '/';
+};
+
+const writeLndConf = async function(wallet) {
+  const walletDirectory = await walletDir(wallet);
+  const network = wallet.network || 'testnet';
+  const neutrino = wallet.mode == 'neutrino' ? 'bitcoin.node=neutrino' : '';
+  const neutrinoConnect = wallet.neutrinoConnect || DEFAULT_NEUTRINO_CONNECT;
+  const conf = `[Application Options]
+debuglevel=info
+debughtlc=true
+maxpendingchannels=10
+no-macaroons=true
+
+[Bitcoin]
+bitcoin.active=1
+bitcoin.${network}=1
+${neutrino}
+
+[Neutrino]
+neutrino.addpeer=${neutrinoConnect}`;
+  console.log('Writing lnd.conf for wallet:');
+  console.log(wallet);
+  console.log('The lnd.conf');
+  console.log(conf);
+  return await writeFile(walletDirectory + '/lnd.conf', conf);
+};
+
+const startLndFromWallet = async function(wallet) {
+  if (!wallet || !wallet.ix) {
+    throw new Error("Can't start lnd without a wallet!");
+    return;
+  }
+  await writeLndConf(wallet);
+  return await startLnd(await walletDir(wallet));
+};
+
+const stopLndFromWallet = async function(wallet) {
+  return await stopLnd(await walletDir(wallet));
+};
+
+const getRunningWallet = async function() {
+  const isRunning = await isLndProcessRunning();
+  if (!isRunning) {
+    return;
+  }
+
+  const filesDir = await getAppDir();
+  const lastRunning = await readFile(filesDir + '/lastrunninglnddir.txt');
+  if (lastRunning == '') {
+    return;
+  }
+  const walletIx = parseInt(
+    lastRunning
+      .split('/')
+      .filter(String)
+      .splice(-1)[0],
+  );
+  const walletConf = await readWalletConfig();
+  for (let i = 0; i < walletConf.wallets.length; i++) {
+    const wallet = walletConf.wallets[i];
+    if (parseInt(wallet.ix) == walletIx) {
+      return wallet;
+    }
+  }
+};
+
+const initWallet = async function(wallet, cipher, password) {};
 
 class LndProvider extends Component {
   constructor(props) {
@@ -83,19 +167,27 @@ class LndProvider extends Component {
   render() {
     const walletConf = this.state.walletConf;
     const addWalletUpdateState = async newWallet => {
-      await addWallet(newWallet);
+      newWallet = await addWallet(newWallet);
       const newConf = await readWalletConfig();
+      await writeLndConf(newWallet);
       this.setState({ walletConf: newConf });
+      return newWallet;
     };
     return (
       <LndContext.Provider
         value={{
-          startLnd,
           stopLnd,
-          getLndInfo: LndApi.getInfo,
+          getInfo: LndApi.getInfo,
           genSeed: LndApi.genSeed,
+          lndApi: LndApi,
           addWallet: addWalletUpdateState,
           wallets: this.state.walletConf.wallets,
+          startLndFromWallet,
+          isLndProcessRunning,
+          getRunningWallet,
+          walletDir,
+          encodeBase64,
+          stopLndFromWallet,
         }}
       >
         {this.props.children}

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.FileObserver;
 import android.os.Process;
+import android.util.Base64;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -22,25 +23,21 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayDeque;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 import javax.net.ssl.HttpsURLConnection;
@@ -48,9 +45,12 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * Java class for interacting with LND binary that's included.
@@ -62,7 +62,7 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
     private static final String TAG = "RtxJava";
     private static final int MAX_LINES_LOG_WINDOW = 200;
 
-    private final LogWatcher logWatcher;
+//    private LogWatcher logWatcher;
 
     private SSLContext sslContext;
     private OkHttpClient httpClient;
@@ -70,10 +70,9 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
     public RtxModule(ReactApplicationContext reactContext) {
         super(reactContext); //required by React Native
         reactContext.addLifecycleEventListener(this);
-//        initRtx();
-        logWatcher = new LogWatcher(getLogFile());
+//        logWatcher = new LogWatcher(getLogFile());
 
-        createTrustCertContextAndHttpClient();
+//        createTrustCertContextAndHttpClient();
     }
 
     @Override
@@ -81,82 +80,103 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
         return "RtxModule";
     }
 
-    private void initRtx() {
-//        String lndDir = getLndDir();
-//        new File(lndDir).mkdirs();
-//        String lndConfig = lndDir + "lnd.conf";
-//        writeLndConfigFile(lndConfig);
-//
-//        String err = Rtx_export.InitLnd(lndDir);
-//        if (!err.isEmpty()) {
-//            Log.e(TAG, "Initializing LND failed: " + err);
-//        }
-    }
+    @ReactMethod
+    public void startLnd(String lndDir, final Promise promise) {
+        AsyncTask<String, Void, Void> task = new AsyncTask<String, Void, Void>() {
+            @Override
+            protected Void doInBackground(String... strings) {
+                String lndDir = strings[0];
+                Log.i(TAG, "Starting LND service.");
+                Intent intent = new Intent(getCurrentActivity().getApplicationContext(), LndService.class);
+                intent.putExtra("lndDir", lndDir);
+                getCurrentActivity().startService(intent);
 
-    /**
-     * Will create an lnd.conf in LND's home dir. It won't modify it if it already exists.
-     */
-    private void writeLndConfigFile(String configFile) {
-        if (new File(configFile).exists()) {
-            Log.i(TAG, "Skipped writing lnd.conf, it already exists");
-            return;
-        }
-        List<String> lines = Arrays.asList(
-                "[Application Options]",
-                "debuglevel=info",
-                "debughtlc=true",
-                "maxpendingchannels=10",
-                "no-macaroons=true",
-                "",
-                "[Bitcoin]",
-                "bitcoin.active=1",
-                "bitcoin.testnet=1",
-                "bitcoin.node=neutrino",
-                "",
-                "[Neutrino]",
-                "neutrino.connect=faucet.lightning.community");
-        try {
-            Log.i(TAG, "Writing lnd.conf");
-            BufferedWriter writer = new BufferedWriter(new FileWriter(configFile, true));
-            for (String line : lines) {
-                writer.append(line);
-                writer.append("\n");
+                // Wait until tls.cert file exists.
+                Log.i(TAG, "Waiting for tls.cert file to exists!");
+                // TODO: add check to make sure we don't wait >20seconds for service to start.
+                while(!new File(lndDir+"tls.cert").exists()) {
+                    try {
+                        Thread.sleep(200);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        promise.reject(e);
+                    }
+                }
+                Log.i(TAG, "Found tls.cert!");
+
+                try{
+                    // This is a hack to wait until RPC servers are up, better way is to
+                    // modify the LND binary to return channels when it's done setting up RPC endpoints.
+                    Thread.sleep(1500);
+                    createTrustCertContextAndHttpClient();
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(TAG, e.getMessage());
+                }
+                Log.i(TAG, "Resolving startLnd promise!");
+                promise.resolve("success");
+
+                return null;
             }
-            Log.i(TAG, "Finished writing lnd.conf");
-
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.i(TAG, "Couldn't write lnd.conf");
-            Log.i(TAG, e.getLocalizedMessage());
-        }
+        }.execute(lndDir);
     }
 
-    @ReactMethod
-    public void startLnd() {
-        Log.i(TAG, "Starting LND service.");
-        Intent intent = new Intent(getCurrentActivity().getApplicationContext(), LndService.class);
-        getCurrentActivity().startService(intent);
-    }
-
-    @ReactMethod
-    public void stopLnd() {
-        Log.i(TAG, "Stopping LND service.");
-        Intent intent = new Intent(getCurrentActivity().getApplicationContext(), LndService.class);
-        getCurrentActivity().stopService(intent);
-//        try {
-//            Thread.sleep(10000);
-//        } catch (Exception e) {
-//
-//        }
+    // -1 return means no process with the name found.
+    private int getLndProcessPid () {
         ActivityManager am = (ActivityManager) getCurrentActivity()
                 .getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningAppProcessInfo p : am.getRunningAppProcesses()) {
             if (p.processName.equals("com.rtxwallet:rtxLndProcess")) {
-                Log.i(TAG, "Killing pid: " + String.valueOf(p.pid));
-                Process.killProcess(p.pid);
+                Log.i(TAG, "rtxLndProcess pid: " + String.valueOf(p.pid));
+                return p.pid;
             }
         }
+        return -1;
+    }
+
+    @ReactMethod
+    public void stopLnd(String lndDir, final Promise promise) {
+        AsyncTask<String, Void, Void> task = new AsyncTask<String, Void, Void>() {
+            @Override
+            protected Void doInBackground(String... strings) {
+                String lndDir = strings[0];
+
+                Log.i(TAG, "Stopping LND service.");
+                Intent intent = new Intent(getCurrentActivity().getApplicationContext(), LndService.class);
+                getCurrentActivity().stopService(intent);
+
+                long currentMillis = System.currentTimeMillis();
+                boolean foundShutdown = true;
+                Log.i(TAG, "Waiting for shutdown file to exists!");
+                while(!new File(lndDir+"lndshutdown").exists()) {
+                    if (System.currentTimeMillis() - currentMillis > 15000) {
+                        // don't wait more than 15seconds for file to appear.
+                        Log.i(TAG,"Couldn't find shutdown file within 15 seconds, killing process!");
+                        foundShutdown = false;
+                        break;
+                    }
+                    try {
+                        Thread.sleep(200);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        promise.reject(e);
+                    }
+                }
+                if(foundShutdown){
+                    Log.i(TAG, "Found shutdown file!");
+                }
+
+                Process.killProcess(getLndProcessPid());
+                promise.resolve("success");
+
+                return null;
+            }
+        }.execute(lndDir);
+    }
+
+    @ReactMethod
+    public void isLndProcessRunning(Promise promise) {
+        promise.resolve(getLndProcessPid() != -1);
     }
 
     private String readFile(String fileName) {
@@ -189,65 +209,103 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
         return stringBuilder.toString();
     }
 
-    private void createTrustCertContextAndHttpClient() {
-        try {
-            sslContext = SSLContext.getDefault();
-            httpClient = new OkHttpClient.Builder().build();
+    private String walletsDir(){
+        return getReactApplicationContext().getFilesDir().getPath()+"/wallets";
+    }
 
-            // Load CAs from an InputStream
-            // (could be from a resource or ByteArrayInputStream or ...)
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            // From https://www.washington.edu/itconnect/security/ca/load-der.crt
-            InputStream caInput = new BufferedInputStream(new FileInputStream(getLndDir() + "tls.cert"));
-            Certificate ca;
-            try {
-                ca = cf.generateCertificate(caInput);
-                System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
-            } finally {
-                caInput.close();
+    private void createTrustCertContextAndHttpClient() throws Exception{
+        Log.i(TAG, "Updating trust certs and http client!");
+        sslContext = SSLContext.getDefault();
+        httpClient = new OkHttpClient.Builder().build();
+
+        // Load CAs from an InputStream
+        // Map over all wallets and trust all their certificates.
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        File walletsDir = new File(walletsDir());
+        Map<String, Certificate> certificates = new HashMap<>();
+        for(File walletDir : walletsDir.listFiles()) {
+            if(walletDir.isDirectory()) {
+                File certFile = new File(walletDir.getPath()+"/tls.cert");
+                if(certFile.exists()) {
+                    Log.i(TAG, "Adding tls cert for wallet "+walletDir.getName());
+                    InputStream caInput = new BufferedInputStream(new FileInputStream(certFile));
+                    Certificate ca;
+                    try {
+                        ca = cf.generateCertificate(caInput);
+                        System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
+                        certificates.put("wallet"+walletDir.getName(), ca);
+                    } finally {
+                        caInput.close();
+                    }
+                }
             }
-
-            // Create a KeyStore containing our trusted CAs
-            String keyStoreType = KeyStore.getDefaultType();
-            KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-            keyStore.load(null, null);
-            keyStore.setCertificateEntry("ca", ca);
-
-            // Create a TrustManager that trusts the CAs in our KeyStore
-            String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
-            tmf.init(keyStore);
-            Log.i(TAG, "trust manager length " + String.valueOf(tmf.getTrustManagers().length));
-
-            if (tmf.getTrustManagers().length != 1 || !(tmf.getTrustManagers()[0] instanceof X509TrustManager)) {
-                Log.e(TAG, "Unexpected default trust managers, there should be just 1 of type X509.");
-            }
-            X509TrustManager trustManager = (X509TrustManager) tmf.getTrustManagers()[0];
-            // Create an SSLContext that uses our TrustManager
-            SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, tmf.getTrustManagers(), null);
-            sslContext = context;
-            httpClient = new OkHttpClient.Builder().sslSocketFactory(context.getSocketFactory(), trustManager).build();
-
-            HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, e.getMessage());
         }
+
+        // Create a KeyStore containing our trusted CAs
+        String keyStoreType = KeyStore.getDefaultType();
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+        keyStore.load(null, null);
+        for(Map.Entry<String, Certificate> entry : certificates.entrySet()) {
+            keyStore.setCertificateEntry(entry.getKey(), entry.getValue());
+        }
+
+        // Create a TrustManager that trusts the CAs in our KeyStore
+        String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+        tmf.init(keyStore);
+
+        if (tmf.getTrustManagers().length != 1 || !(tmf.getTrustManagers()[0] instanceof X509TrustManager)) {
+            Log.e(TAG, "Unexpected default trust managers, there should be just 1 of type X509.");
+        }
+        X509TrustManager trustManager = (X509TrustManager) tmf.getTrustManagers()[0];
+        // Create an SSLContext that uses our TrustManager
+        SSLContext context = SSLContext.getInstance("TLS");
+        context.init(null, tmf.getTrustManagers(), null);
+        sslContext = context;
+        // TODO: disable logging in prod
+        HttpLoggingInterceptor l = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger(){
+            @Override public void log(String message) {
+                Log.i(TAG, message);
+            }
+        });
+        l.setLevel(HttpLoggingInterceptor.Level.BODY);
+        httpClient = new OkHttpClient.Builder()
+                .sslSocketFactory(context.getSocketFactory(), trustManager)
+//                .addInterceptor(l)
+                .build();
+
+        HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
     }
 
     @ReactMethod
     public void fetch(ReadableMap jsRequest, Promise promise) {
         if (httpClient == null || sslContext == null) {
-            Log.e(TAG, "Can't fetch, httpclient or sslcontext not set!");
-            return;
+            Log.i(TAG, "fetch: httpclient or sslcontext not set!");
+
+            try {
+                createTrustCertContextAndHttpClient();
+            }catch (Exception e){
+                e.printStackTrace();
+                Log.e(TAG, e.getMessage());
+                promise.reject(new Throwable("Couldn't set httpclient or sslcontext!"));
+                return;
+            }
         }
         if (!jsRequest.hasKey("url")) {
             Log.e(TAG, "Fetch request doesn't have a url!");
         }
-        Request request = new Request.Builder()
-                .url(jsRequest.getString("url"))
-                .build();
+        Request.Builder requestBuilder = new Request.Builder()
+                .url(jsRequest.getString("url"));
+        if(jsRequest.hasKey("method") &&
+                jsRequest.getString("method").toLowerCase().equals("post")) {
+            if (jsRequest.hasKey("jsonBody")) {
+                Log.i(TAG, jsRequest.getString("jsonBody"));
+                requestBuilder.post(
+                        RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
+                                jsRequest.getString("jsonBody")));
+            }
+        }
+        Request request = requestBuilder.build();
         try {
             Response response = httpClient.newCall(request).execute();
             
@@ -262,6 +320,14 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
         }
     }
 
+    // Some POST methods on GRPC rest are "bytes" fields and they are converted from base64 strings.
+    // For example InitWallet's password field.
+    // https://github.com/grpc-ecosystem/grpc-gateway/blob/463c5eda4ce58dd590b94bd2ac931db6790a1d2c/runtime/convert.go
+    @ReactMethod
+    public void encodeBase64(String toConvert, Promise promise){
+        promise.resolve(Base64.encodeToString(toConvert.getBytes(), Base64.NO_WRAP));
+    }
+
     @ReactMethod
     public void readFile(String filename, Promise promise) {
         promise.resolve(readFile(filename));
@@ -270,7 +336,7 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
     @ReactMethod
     public void writeFile(String filename, String content, Promise promise) {
         try {
-            new File(filename).mkdirs();
+            new File(filename).getParentFile().mkdirs();
             PrintWriter out = new PrintWriter(filename);
             out.println(content);
             out.close();
@@ -292,42 +358,10 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
         promise.resolve(f.exists() && !f.isDirectory());
     }
 
-    /*
-    TODO: use this method to build a way of debugging rest api connection problems.
-    For example, if the rest calls in JS fail over and over, call this method from JS and
-    show to the user the stack trace.
-     */
-    @ReactMethod
-    public void testGetInfo() {
-//        trustCert();
-        try {
-            URL url = new URL("https://localhost:8080/v1/getinfo");
-            HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-
-
-            int status = con.getResponseCode();
-            Log.i(TAG, String.valueOf(status));
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine;
-            StringBuilder content = new StringBuilder();
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine);
-            }
-            in.close();
-            Log.i(TAG, content.toString());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, e.getMessage());
-        }
-
-    }
-
     @ReactMethod
     public void getLogContent(Callback callback) {
         // The name of the file to open.
-        String fileName = getLogFile();
+        String fileName =  "" ; //getLogFile();
 
         // This will reference one line at a time
         String line;
@@ -370,28 +404,28 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
         callback.invoke(stringBuilder.toString());
     }
 
-    private String getLndDir() {
-        String filesDir = getReactApplicationContext().getFilesDir().getPath();
-        if (filesDir.charAt(filesDir.length() - 1) != '/') {
-            filesDir = filesDir + '/';
-        }
-        return filesDir + "lnd/";
-    }
+//    private String getLndDir() {
+//        String filesDir = getReactApplicationContext().getFilesDir().getPath();
+//        if (filesDir.charAt(filesDir.length() - 1) != '/') {
+//            filesDir = filesDir + '/';
+//        }
+//        return filesDir + "lnd/";
+//    }
 
-    private String getLogFile() {
-        return getLndDir() + "logs/bitcoin/testnet/lnd.log";
-    }
+//    private String getLogFile() {
+//        return getLndDir() + "logs/bitcoin/testnet/lnd.log";
+//    }
 
     @Override
     public void onHostResume() {
         Log.i(TAG, "onHostResume");
-        logWatcher.startWatching();
+//        logWatcher.startWatching();
     }
 
     @Override
     public void onHostPause() {
         Log.i(TAG, "onHostPause");
-        logWatcher.stopWatching();
+//        logWatcher.stopWatching();
     }
 
     @Override

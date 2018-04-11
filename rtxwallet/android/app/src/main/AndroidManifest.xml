@@ -27,6 +27,7 @@
         </intent-filter>
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+      <!-- Don't change process name, it's used in RtxModule to check process is running. -->
       <service android:name=".LndService" android:process=":rtxLndProcess" />
     </application>
 

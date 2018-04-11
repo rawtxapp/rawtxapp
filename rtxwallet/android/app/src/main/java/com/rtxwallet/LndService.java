@@ -9,12 +9,8 @@ import android.util.Log;
 
 import com.github.lightningnetwork.Rtx_export;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.io.PrintWriter;
 
 /**
  * Created by user on 3/20/18.
@@ -24,6 +20,8 @@ public class LndService extends IntentService {
     private static final String TAG = "LndService";
 
     private static int FOREGROUND_ID = 4332;
+
+    private String shutdownFile;
 
     public LndService() {
         super("LndService");
@@ -42,74 +40,56 @@ public class LndService extends IntentService {
                         .build();
 
         startForeground(FOREGROUND_ID, notification);
-        initRtx();
+        String lndDir = intent.getStringExtra("lndDir");
+        String initError = initRtx(lndDir);
+        if (!initError.isEmpty()) {
+            stopSelf();
+            return;
+        }
+
+        // Write to filesDir the last lnd that was started, will be used to recontruct the wallet
+        // in memory in case the app is removed and the service is still running in the background.
+        File lastRunning = new File(getApplicationContext().getFilesDir().getPath()+"/lastrunninglnddir.txt");
+        try {
+            PrintWriter out = new PrintWriter(lastRunning);
+            out.println(lndDir);
+            out.close();
+        }catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "Couldn't write lastrunningdir! "+e.getMessage());
+            stopSelf();
+            return;
+        }
+
         Log.i(TAG, "Starting LND");
         String error = Rtx_export.StartLnd();
-        Log.i(TAG, error);
+        Log.e(TAG, error);
         stopForeground(true);
+        writeShutdownFile();
+        stopSelf();
     }
 
-    private void initRtx() {
-        String lndDir = getLndDir();
-        new File(lndDir).mkdirs();
-        String lndConfig = lndDir + "lnd.conf";
-        writeLndConfigFile(lndConfig);
+    private String initRtx(String lndDir) {
+        // Clear shutdown file if it already exists.
+        shutdownFile = lndDir + "lndshutdown";
+        new File(shutdownFile).delete();
 
         String err = Rtx_export.InitLnd(lndDir);
         if (!err.isEmpty()) {
             Log.e(TAG, "Initializing LND failed: "+err);
+            return err;
         }
+        return "";
     }
 
-    /**
-     * Will create an lnd.conf in LND's home dir. It won't modify it if it already exists.
-     */
-    private void writeLndConfigFile(String configFile) {
-        if (new File(configFile).exists()) {
-            Log.i(TAG, "Skipped writing lnd.conf, it already exists");
-            return;
-        }
-        List<String> lines = Arrays.asList(
-                "[Application Options]",
-                "debuglevel=info",
-                "debughtlc=true",
-                "maxpendingchannels=10",
-                "no-macaroons=true",
-                "",
-                "[Bitcoin]",
-                "bitcoin.active=1",
-                "bitcoin.testnet=1",
-                "bitcoin.node=neutrino",
-                "",
-                "[Neutrino]",
-                "neutrino.connect=faucet.lightning.community");
+    private void writeShutdownFile() {
+        Log.i(TAG, "Writing shutdown file!");
         try {
-            Log.i(TAG, "Writing lnd.conf");
-            BufferedWriter writer = new BufferedWriter(new FileWriter(configFile, true));
-            for (String line : lines) {
-                writer.append(line);
-                writer.append("\n");
-            }
-            Log.i(TAG, "Finished writing lnd.conf");
-
-            writer.close();
-        }catch (IOException e) {
+            new File(shutdownFile).createNewFile();
+        }catch (Exception e){
             e.printStackTrace();
-            Log.i(TAG, "Couldn't write lnd.conf");
-            Log.i(TAG, e.getLocalizedMessage());
+            Log.e(TAG, "Couldn't create shutdown file: "+e.getMessage());
         }
-    }
-
-    private String getLndDir() {
-        String filesDir = getFilesDir().getPath();
-        if (filesDir.charAt(filesDir.length()-1) != '/') {
-            filesDir = filesDir + '/';
-        }
-        return filesDir + "lnd/";
-    }
-
-    private String getLogFile() {
-        return getLndDir()+"logs/bitcoin/testnet/lnd.log";
     }
 
     @Override
@@ -119,5 +99,7 @@ public class LndService extends IntentService {
         Log.i(TAG, "Result of stopping: "+String.valueOf(result));
         stopForeground(true);
         super.onDestroy();
+
+        writeShutdownFile();
     }
 }

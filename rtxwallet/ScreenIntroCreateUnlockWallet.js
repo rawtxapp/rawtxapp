@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import {
+  ActivityIndicator,
   Image,
   LayoutAnimation,
   StyleSheet,
@@ -21,6 +22,7 @@ import RadioForm, {
 } from 'react-native-simple-radio-button';
 
 import LndConsumer from './ContextLnd.js';
+import { withLnd } from './withLnd.js';
 
 if (Platform.OS === 'android') {
   UIManager.setLayoutAnimationEnabledExperimental &&
@@ -35,12 +37,19 @@ class ExpandableButton extends Component {
     };
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (!this.state.expanded && nextProps.expanded) {
+      LayoutAnimation.easeInEaseOut();
+      this.setState({ expanded: true });
+    }
+  }
+
   render() {
     return (
       <View style={[buttonStyles.container, this.props.style]}>
         <TouchableWithoutFeedback
           onPress={() => {
-            LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+            LayoutAnimation.easeInEaseOut();
             this.setState({ expanded: !this.state.expanded });
           }}
         >
@@ -58,19 +67,30 @@ class UnlockWallet extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      creating: undefined,
+      unlocking: undefined,
+      working: false,
+      error: '',
     };
   }
+
+  componentWillReceiveProps(nextProps) {
+    if (!this.state.unlocking && nextProps.unlockingWallet) {
+      this.setState({ unlocking: nextProps.unlockingWallet });
+    }
+  }
+
   render() {
     const { wallets } = this.props;
     let content;
-    if (wallets && wallets.length <= 0) {
-      let content = (
-        <Text style={unlockWalletStyles.noWalletText}>
-          You haven't created any wallets yet.
-        </Text>
+    if (wallets == undefined || (wallets && wallets.length <= 0)) {
+      content = (
+        <View>
+          <Text style={unlockWalletStyles.noWalletText}>
+            You haven't created any wallets yet.
+          </Text>
+        </View>
       );
-    } else if (!this.state.creating && wallets && wallets.length > 0) {
+    } else if (!this.state.unlocking && wallets && wallets.length > 0) {
       content = (
         <View>
           <Text style={unlockWalletStyles.noWalletText}>
@@ -79,22 +99,37 @@ class UnlockWallet extends Component {
 
           {this.props.wallets.map((w, i) => {
             return (
-              <View key={i}>
+              <View key={i} style={unlockWalletStyles.buttonActivityContainer}>
                 <Button
+                  containerStyle={unlockWalletStyles.buttonContainer}
                   style={unlockWalletStyles.button}
-                  onPress={() => {
-                    LayoutAnimation.spring();
-                    this.setState({ creating: w });
+                  disabled={this.state.working}
+                  styleDisabled={unlockWalletStyles.disabledStyle}
+                  onPress={async () => {
+                    LayoutAnimation.easeInEaseOut();
+                    this.setState(
+                      { animatingIx: i, working: true },
+                      async () => {
+                        const navigating = await this.props.unlockWallet(w);
+                        if (navigating) {
+                          return;
+                        }
+                        this.setState({ unlocking: w, working: false });
+                      },
+                    );
                   }}
                 >
                   {w.name}
                 </Button>
+                {this.state.animatingIx == i && (
+                  <ActivityIndicator color={LOGO_COLOR} size="small" />
+                )}
               </View>
             );
           })}
         </View>
       );
-    } else if (this.state.creating) {
+    } else if (this.state.unlocking) {
       content = (
         <View>
           <TextInput
@@ -107,10 +142,19 @@ class UnlockWallet extends Component {
           />
           <View style={unlockWalletStyles.actionContainer}>
             <Button
-              style={[unlockWalletStyles.button, unlockWalletStyles.cancelButton]}
-              onPress={() => {
-                LayoutAnimation.spring();
-                this.setState({ creating: undefined });
+              style={[
+                unlockWalletStyles.button,
+                unlockWalletStyles.cancelButton,
+              ]}
+              onPress={async () => {
+                LayoutAnimation.easeInEaseOut();
+                await this.props.stopLndFromWallet(this.state.unlocking);
+                this.setState({
+                  unlocking: undefined,
+                  animatingIx: undefined,
+                  password: '',
+                  error: '',
+                });
               }}
             >
               Cancel
@@ -118,8 +162,20 @@ class UnlockWallet extends Component {
 
             <Button
               style={unlockWalletStyles.button}
-              onPress={() => {
-                // TODO:
+              onPress={async () => {
+                if (!this.state.password || this.state.password == '') {
+                  this.setState({ error: 'Empty password!' });
+                  return;
+                }
+                const unlockResult = await this.props.unlockwallet(
+                  this.state.password,
+                );
+                if (unlockResult.error) {
+                  this.setState({ error: unlockResult.error });
+                  return;
+                }
+                console.log(unlockResult);
+                this.props.navigate('Wallet');
               }}
             >
               Unlock
@@ -129,8 +185,18 @@ class UnlockWallet extends Component {
       );
     }
     return (
-      <ExpandableButton text="Unlock existing wallet">
-        <View style={unlockWalletStyles.contentContainer}>{content}</View>
+      <ExpandableButton
+        text="Unlock existing wallet"
+        expanded={this.state.unlocking}
+      >
+        <View style={unlockWalletStyles.contentContainer}>
+          {content}
+          <View>
+            <Text style={createWalletStyles.warningText}>
+              {this.state.error}
+            </Text>
+          </View>
+        </View>
       </ExpandableButton>
     );
   }
@@ -151,7 +217,7 @@ class CreateWallet extends Component {
   }
   render() {
     const addWallet = async () => {
-      this.setState({ creating: true }, async () => {
+      this.setState({ creating: true, error: '' }, async () => {
         try {
           await this.props.addWallet(this.state);
         } catch (error) {
@@ -258,9 +324,14 @@ class CreateWallet extends Component {
               />
             </View>
           )}
-          <Button style={createWalletStyles.buttonText} onPress={addWallet}>
+          <Button
+            style={createWalletStyles.buttonText}
+            onPress={addWallet}
+            disabled={this.state.creating}
+          >
             Create wallet
           </Button>
+          {this.state.creating && <ActivityIndicator />}
           {this.state.error != '' && (
             <Text style={createWalletStyles.warningText}>
               {this.state.error}
@@ -272,7 +343,60 @@ class CreateWallet extends Component {
   }
 }
 
-export default class ScreenIntroCreateUnlockWallet extends Component {
+class ScreenIntroCreateUnlockWallet extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { unlockingWallet: undefined };
+  }
+
+  componentDidMount() {
+    this.checkStateAndNavigate();
+  }
+
+  // will return true if navigating.
+  checkStateAndNavigate = async () => {
+    console.log('Checking state and navigating');
+    const lndRunning = await this.props.isLndProcessRunning();
+    if (!lndRunning) {
+      // nothing to do
+      return;
+    }
+
+    const runningWallet = await this.props.getRunningWallet();
+
+    // check if we are at genseed stage
+    try {
+      console.log('Looking for GenSeed');
+      const seed = await this.props.genSeed();
+      if (seed.cipher_seed_mnemonic) {
+        console.log('Found GenSeed, navigating to it');
+        this.props.navigation.navigate('GenSeed', { seedResponse: seed });
+        return true;
+      } else if (seed.error == 'wallet already exists') {
+        console.log('Wallet already created, asking for password');
+        this.setState({ unlockingWallet: runningWallet });
+        return false;
+      }
+    } catch (err) {
+      console.log('past the walletunlocker stage ?');
+      console.log(err);
+    }
+
+    try {
+      console.log('Looking for getinfo');
+      const getinfo = await this.props.lndApi.getInfo();
+      if (getinfo.identity_pubkey) {
+        console.log('Found GetInfo, navigating to Wallet');
+        this.props.navigation.navigate('Wallet');
+        return true;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+
+    console.error("Couldn't determine wallet state!");
+  };
+
   render() {
     return (
       <ScrollView style={styles.container}>
@@ -302,12 +426,26 @@ export default class ScreenIntroCreateUnlockWallet extends Component {
           {({ addWallet, wallets }) => (
             <View style={styles.actionContainer}>
               <View style={styles.buttonContainer}>
-                <UnlockWallet wallets={wallets} />
+                <UnlockWallet
+                  wallets={wallets}
+                  unlockingWallet={this.state.unlockingWallet}
+                  navigate={this.props.navigation.navigate}
+                  unlockwallet={this.props.lndApi.unlockwallet}
+                  stopLndFromWallet={this.props.stopLndFromWallet}
+                  unlockWallet={async w => {
+                    await this.props.startLndFromWallet(w);
+                    return await this.checkStateAndNavigate();
+                  }}
+                />
               </View>
               <View style={styles.buttonContainer}>
                 <CreateWallet
-                  addWallet={async function(newWallet) {
-                    await addWallet(newWallet);
+                  addWallet={async newWallet => {
+                    newWallet = await addWallet(newWallet);
+                    await this.props.startLndFromWallet(newWallet);
+                    this.props.navigation.navigate('GenSeed', {
+                      wallet: newWallet,
+                    });
                   }}
                 />
               </View>
@@ -318,6 +456,8 @@ export default class ScreenIntroCreateUnlockWallet extends Component {
     );
   }
 }
+
+export default withLnd(ScreenIntroCreateUnlockWallet);
 
 const styles = StyleSheet.create({
   container: {
@@ -374,17 +514,34 @@ const unlockWalletStyles = StyleSheet.create({
     padding: 20,
     paddingTop: 0,
   },
+  buttonContainer: {
+    flex: 5,
+  },
+  buttonActivityContainer: {
+    flexDirection: 'row',
+    flex: 1,
+  },
   button: {
     margin: 5,
     color: LOGO_COLOR,
+    borderWidth: 2,
+    borderColor: LOGO_COLOR,
+    margin: 10,
+    padding: 10,
+    borderRadius: 10,
+    flex: 1,
   },
   actionContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
   },
   cancelButton: {
-    color: 'red'
-  }
+    color: 'red',
+  },
+  disabledStyle: {
+    borderColor: 'gray',
+    color: 'gray',
+  },
 });
 
 const createWalletStyles = StyleSheet.create({
