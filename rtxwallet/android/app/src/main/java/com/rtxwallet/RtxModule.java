@@ -45,6 +45,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import okhttp3.CacheControl;
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -65,14 +67,12 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
 //    private LogWatcher logWatcher;
 
     private SSLContext sslContext;
-    private OkHttpClient httpClient;
+    private X509TrustManager trustManager;
 
     public RtxModule(ReactApplicationContext reactContext) {
         super(reactContext); //required by React Native
         reactContext.addLifecycleEventListener(this);
 //        logWatcher = new LogWatcher(getLogFile());
-
-//        createTrustCertContextAndHttpClient();
     }
 
     @Override
@@ -108,7 +108,7 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
                     // This is a hack to wait until RPC servers are up, better way is to
                     // modify the LND binary to return channels when it's done setting up RPC endpoints.
                     Thread.sleep(1500);
-                    createTrustCertContextAndHttpClient();
+                    createTrustCertContext();
                 }catch (Exception e){
                     e.printStackTrace();
                     Log.e(TAG, e.getMessage());
@@ -216,7 +216,7 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
     private void createTrustCertContextAndHttpClient() throws Exception{
         Log.i(TAG, "Updating trust certs and http client!");
         sslContext = SSLContext.getDefault();
-        httpClient = new OkHttpClient.Builder().build();
+//        httpClient = new OkHttpClient.Builder().build();
 
         // Load CAs from an InputStream
         // Map over all wallets and trust all their certificates.
@@ -269,21 +269,89 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
             }
         });
         l.setLevel(HttpLoggingInterceptor.Level.BODY);
-        httpClient = new OkHttpClient.Builder()
+        OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .sslSocketFactory(context.getSocketFactory(), trustManager)
+                .addInterceptor(new RemoveCachingInterceptor())
 //                .addInterceptor(l)
-                .build();
+                .cache(null);
+//        httpClient = builder.build();
 
         HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
     }
 
+    private void createTrustCertContext() throws Exception{
+        Log.i(TAG, "Updating trust certs and http client!");
+
+        // Load CAs from an InputStream
+        // Map over all wallets and trust all their certificates.
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        File walletsDir = new File(walletsDir());
+        Map<String, Certificate> certificates = new HashMap<>();
+        for(File walletDir : walletsDir.listFiles()) {
+            if(walletDir.isDirectory()) {
+                File certFile = new File(walletDir.getPath()+"/tls.cert");
+                if(certFile.exists()) {
+                    Log.i(TAG, "Adding tls cert for wallet "+walletDir.getName());
+                    InputStream caInput = new BufferedInputStream(new FileInputStream(certFile));
+                    Certificate ca;
+                    try {
+                        ca = cf.generateCertificate(caInput);
+                        System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
+                        certificates.put("wallet"+walletDir.getName(), ca);
+                    } finally {
+                        caInput.close();
+                    }
+                }
+            }
+        }
+
+        // Create a KeyStore containing our trusted CAs
+        String keyStoreType = KeyStore.getDefaultType();
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+        keyStore.load(null, null);
+        for(Map.Entry<String, Certificate> entry : certificates.entrySet()) {
+            keyStore.setCertificateEntry(entry.getKey(), entry.getValue());
+        }
+
+        // Create a TrustManager that trusts the CAs in our KeyStore
+        String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+        tmf.init(keyStore);
+
+        if (tmf.getTrustManagers().length != 1 || !(tmf.getTrustManagers()[0] instanceof X509TrustManager)) {
+            Log.e(TAG, "Unexpected default trust managers, there should be just 1 of type X509.");
+        }
+        trustManager = (X509TrustManager) tmf.getTrustManagers()[0];
+        // Create an SSLContext that uses our TrustManager
+        SSLContext context = SSLContext.getInstance("TLS");
+        context.init(null, tmf.getTrustManagers(), null);
+        sslContext = context;
+    }
+
+    private OkHttpClient createHttpClient(SSLContext context, X509TrustManager trustManager) {
+        // TODO: disable logging in prod
+        HttpLoggingInterceptor l = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger(){
+            @Override public void log(String message) {
+                Log.i(TAG, message);
+            }
+        });
+        l.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                .sslSocketFactory(context.getSocketFactory(), trustManager)
+                .addInterceptor(new RemoveCachingInterceptor())
+//                .addInterceptor(l)
+                .cache(null);
+        return builder.build();
+    }
+
+
     @ReactMethod
     public void fetch(ReadableMap jsRequest, Promise promise) {
-        if (httpClient == null || sslContext == null) {
+        if (sslContext == null) {
             Log.i(TAG, "fetch: httpclient or sslcontext not set!");
 
             try {
-                createTrustCertContextAndHttpClient();
+                createTrustCertContext();
             }catch (Exception e){
                 e.printStackTrace();
                 Log.e(TAG, e.getMessage());
@@ -294,8 +362,13 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
         if (!jsRequest.hasKey("url")) {
             Log.e(TAG, "Fetch request doesn't have a url!");
         }
+        // TODO: unfortunately, there were bugs that came up when reusing the httpClient
+        // it looked like caching problems, but debug doesn't show caching issues,
+        // so not clear. try reusing this eventually.
+        OkHttpClient httpClient = createHttpClient(sslContext, trustManager);
         Request.Builder requestBuilder = new Request.Builder()
-                .url(jsRequest.getString("url"));
+                .url(jsRequest.getString("url"))
+                .cacheControl(new CacheControl.Builder().noCache().noStore().build());
         if(jsRequest.hasKey("method") &&
                 jsRequest.getString("method").toLowerCase().equals("post")) {
             if (jsRequest.hasKey("jsonBody")) {
@@ -312,6 +385,7 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
             WritableMap jsResponse = Arguments.createMap();
             jsResponse.putString("bodyString", response.body().string());
             promise.resolve(jsResponse);
+            response.close();
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, "Couldn't run fetch!");
@@ -426,6 +500,18 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
     public void onHostPause() {
         Log.i(TAG, "onHostPause");
 //        logWatcher.stopWatching();
+    }
+
+    final class RemoveCachingInterceptor implements Interceptor {
+        @Override public Response intercept(Chain chain) throws IOException {
+            Response response = chain.proceed(chain.request());
+            if (response.code() == 404) {
+                response = response.newBuilder()
+                        .removeHeader("Cache-Control")
+                        .addHeader("Cache-Control", "no-store").build();
+            }
+            return response;
+        }
     }
 
     @Override

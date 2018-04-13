@@ -47,7 +47,7 @@ public class MainApplication extends Application implements ReactApplication {
       @Override
       public void uncaughtException(Thread thread, Throwable throwable) {
         // TODO: handle crashes.
-        System.out.println("HEREEE");
+        System.out.println("CRASHED");
         System.out.println(thread.getName());
         System.out.println(throwable.getMessage());
       }

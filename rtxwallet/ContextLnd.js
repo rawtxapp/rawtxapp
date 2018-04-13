@@ -18,7 +18,7 @@ import {
 import LndApi from './RestLnd.js';
 
 const WALLET_CONF_FILE = 'wallet.conf';
-const DEFAULT_NEUTRINO_CONNECT = 'faucet.lightning.community';
+const DEFAULT_NEUTRINO_CONNECT = 'faucet.lightning.community,rbtcdt.rawtx.com';
 
 const walletConfFilename = async function() {
   const appDir = await getAppDir();
@@ -90,7 +90,14 @@ const writeLndConf = async function(wallet) {
   const walletDirectory = await walletDir(wallet);
   const network = wallet.network || 'testnet';
   const neutrino = wallet.mode == 'neutrino' ? 'bitcoin.node=neutrino' : '';
-  const neutrinoConnect = wallet.neutrinoConnect || DEFAULT_NEUTRINO_CONNECT;
+  const neutrinoConnect = (wallet.neutrinoConnect || DEFAULT_NEUTRINO_CONNECT)
+    .split(',')
+    .filter(String);
+  let peers = "";
+  for (let i = 0; i < neutrinoConnect.length; i++) {
+    let peer = neutrinoConnect[i];
+    peers += (peers.length == 0 ? '' : '\n') + 'neutrino.addpeer=' + peer;
+  }
   const conf = `[Application Options]
 debuglevel=info
 debughtlc=true
@@ -103,7 +110,7 @@ bitcoin.${network}=1
 ${neutrino}
 
 [Neutrino]
-neutrino.addpeer=${neutrinoConnect}`;
+${peers}`;
   console.log('Writing lnd.conf for wallet:');
   console.log(wallet);
   console.log('The lnd.conf');

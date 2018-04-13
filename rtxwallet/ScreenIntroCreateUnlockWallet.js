@@ -9,7 +9,6 @@ import {
   Text,
   TouchableWithoutFeedback,
   View,
-  UIManager,
   TextInput,
   Platform,
 } from 'react-native';
@@ -23,11 +22,6 @@ import RadioForm, {
 
 import LndConsumer from './ContextLnd.js';
 import { withLnd } from './withLnd.js';
-
-if (Platform.OS === 'android') {
-  UIManager.setLayoutAnimationEnabledExperimental &&
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 
 class ExpandableButton extends Component {
   constructor(props) {
@@ -146,6 +140,8 @@ class UnlockWallet extends Component {
                 unlockWalletStyles.button,
                 unlockWalletStyles.cancelButton,
               ]}
+              disabled={this.state.working}
+              styleDisabled={unlockWalletStyles.disabledStyle}
               onPress={async () => {
                 LayoutAnimation.easeInEaseOut();
                 await this.props.stopLndFromWallet(this.state.unlocking);
@@ -154,6 +150,7 @@ class UnlockWallet extends Component {
                   animatingIx: undefined,
                   password: '',
                   error: '',
+                  working: false,
                 });
               }}
             >
@@ -162,25 +159,35 @@ class UnlockWallet extends Component {
 
             <Button
               style={unlockWalletStyles.button}
+              disabled={this.state.working}
+              styleDisabled={unlockWalletStyles.disabledStyle}
               onPress={async () => {
                 if (!this.state.password || this.state.password == '') {
                   this.setState({ error: 'Empty password!' });
                   return;
                 }
-                const unlockResult = await this.props.unlockwallet(
-                  this.state.password,
-                );
-                if (unlockResult.error) {
-                  this.setState({ error: unlockResult.error });
-                  return;
-                }
-                console.log(unlockResult);
-                this.props.navigate('Wallet');
+                this.setState({ working: true, error: '' }, async () => {
+                  const unlockResult = await this.props.unlockwallet(
+                    this.state.password,
+                  );
+                  this.setState({ working: false });
+                  if (unlockResult.error) {
+                    this.setState({ error: unlockResult.error });
+                    return;
+                  }
+                  console.log(unlockResult);
+                  this.props.navigate('Wallet');
+                });
               }}
             >
               Unlock
             </Button>
           </View>
+          {this.state.working && (
+            <View>
+              <ActivityIndicator color={LOGO_COLOR} size="small" />
+            </View>
+          )}
         </View>
       );
     }

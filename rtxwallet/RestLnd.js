@@ -8,6 +8,7 @@
  * ssl support.
  */
 import { fetch, encodeBase64 } from './NativeRtxModule.js';
+import { timeout } from './Utils.js';
 
 class LndApi {
   constructor(host = 'localhost', port = '8080', pathPrefix = '/v1') {
@@ -30,6 +31,7 @@ class LndApi {
 
   genericGetJson = async urlIn => {
     try {
+      this.log('urlIn: '+urlIn)
       const url = this.url(urlIn);
       const response = await fetch({ url });
       this.log(response);
@@ -78,9 +80,28 @@ class LndApi {
 
   unlockwallet = async password => {
     this.log('unlocking wallet');
-    return await this.genericPostJson('unlockwallet', {
+    const result = await this.genericPostJson('unlockwallet', {
       wallet_password: await encodeBase64(password),
     });
+    if (result.error == 'grpc: the client connection is closing') {
+      // wait until getinfo works or at most 20 seconds
+      for (let i = 0; i < 20; i++) {
+        try {
+          this.log('trying to getinfo');
+          await this.getInfo();
+          return {};
+        } catch (err) {
+          this.log('failed getinfo');
+          await timeout(1000);
+        }
+      }
+      return {
+        error:
+          "It looks like we weren't able to open the wallet, if you see a notification on the top, try closing and reopening the app!",
+      };
+    } else {
+      return result;
+    }
   };
 }
 

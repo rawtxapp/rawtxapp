@@ -12,6 +12,7 @@ import {
   StyleSheet,
   Text,
   View,
+  UIManager,
 } from 'react-native';
 
 import { SwitchNavigator } from 'react-navigation';
@@ -22,6 +23,11 @@ import ScreenIntroCreateUnlockWallet from './ScreenIntroCreateUnlockWallet.js';
 import ScreenGenSeed from './ScreenGenSeed.js';
 import { LogProvider } from './ContextLog.js';
 import { LndProvider } from './ContextLnd.js';
+
+if (Platform.OS === 'android') {
+  UIManager.setLayoutAnimationEnabledExperimental &&
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 const RootSwitch = SwitchNavigator(
   {
