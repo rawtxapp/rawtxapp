@@ -23,13 +23,16 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
@@ -45,12 +48,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
-import okhttp3.CacheControl;
 import okhttp3.Interceptor;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -149,9 +148,9 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
                 boolean foundShutdown = true;
                 Log.i(TAG, "Waiting for shutdown file to exists!");
                 while(!new File(lndDir+"lndshutdown").exists()) {
-                    if (System.currentTimeMillis() - currentMillis > 15000) {
-                        // don't wait more than 15seconds for file to appear.
-                        Log.i(TAG,"Couldn't find shutdown file within 15 seconds, killing process!");
+                    if (System.currentTimeMillis() - currentMillis > 10000) {
+                        // It usually should be killed within a few seconds.
+                        Log.i(TAG,"Couldn't find shutdown file within 10 seconds, killing process!");
                         foundShutdown = false;
                         break;
                     }
@@ -276,7 +275,7 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
                 .cache(null);
 //        httpClient = builder.build();
 
-        HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
+//        HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
     }
 
     private void createTrustCertContext() throws Exception{
@@ -362,35 +361,65 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
         if (!jsRequest.hasKey("url")) {
             Log.e(TAG, "Fetch request doesn't have a url!");
         }
-        // TODO: unfortunately, there were bugs that came up when reusing the httpClient
-        // it looked like caching problems, but debug doesn't show caching issues,
-        // so not clear. try reusing this eventually.
-        OkHttpClient httpClient = createHttpClient(sslContext, trustManager);
-        Request.Builder requestBuilder = new Request.Builder()
-                .url(jsRequest.getString("url"))
-                .cacheControl(new CacheControl.Builder().noCache().noStore().build());
-        if(jsRequest.hasKey("method") &&
-                jsRequest.getString("method").toLowerCase().equals("post")) {
-            if (jsRequest.hasKey("jsonBody")) {
-                Log.i(TAG, jsRequest.getString("jsonBody"));
-                requestBuilder.post(
-                        RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
-                                jsRequest.getString("jsonBody")));
-            }
-        }
-        Request request = requestBuilder.build();
+
+        HttpsURLConnection connection = null;
         try {
-            Response response = httpClient.newCall(request).execute();
-            
+            URL url = new URL(jsRequest.getString("url"));
+            connection = (HttpsURLConnection) url.openConnection();
+            connection.setSSLSocketFactory(sslContext.getSocketFactory());
+            connection.setUseCaches(false);
+            if(jsRequest.hasKey("method") &&
+                    jsRequest.getString("method").toLowerCase().equals("post")) {
+                if (jsRequest.hasKey("jsonBody")) {
+                    String body =jsRequest.getString("jsonBody");
+                    connection.setRequestMethod("POST");
+                    connection.setRequestProperty("Content-Type",
+                            "application/x-www-form-urlencoded");
+                    connection.setRequestProperty("Content-Length",
+                            Integer.toString(body.getBytes().length));
+
+                    connection.setDoOutput(true);
+
+                    //Send request
+                    DataOutputStream wr = new DataOutputStream (
+                            connection.getOutputStream());
+                    wr.writeBytes(body);
+                    wr.close();
+                }
+            } else {
+                connection.setRequestMethod("GET");
+            }
+
+            int status = connection.getResponseCode();
+            InputStream is;
+            if (status == 200) {
+                //Get Response
+                is = connection.getInputStream();
+            } else {
+                is = connection.getErrorStream();
+            }
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+            StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
+            String line;
+            while ((line = rd.readLine()) != null) {
+                if(response.length() != 0){
+                    response.append("\r");
+                }
+                response.append(line);
+            }
+            rd.close();
+
             WritableMap jsResponse = Arguments.createMap();
-            jsResponse.putString("bodyString", response.body().string());
+            jsResponse.putString("bodyString", response.toString());
             promise.resolve(jsResponse);
-            response.close();
-        } catch (Exception e) {
+        }catch (Exception e){
             e.printStackTrace();
-            Log.e(TAG, "Couldn't run fetch!");
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, e.toString());
             promise.reject(e);
+        }finally {
+            if (connection != null ){
+                connection.disconnect();
+            }
         }
     }
 

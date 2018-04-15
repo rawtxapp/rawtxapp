@@ -31,7 +31,7 @@ class LndApi {
 
   genericGetJson = async urlIn => {
     try {
-      this.log('urlIn: '+urlIn)
+      this.log('urlIn: ' + urlIn);
       const url = this.url(urlIn);
       const response = await fetch({ url });
       this.log(response);
@@ -84,8 +84,8 @@ class LndApi {
       wallet_password: await encodeBase64(password),
     });
     if (result.error == 'grpc: the client connection is closing') {
-      // wait until getinfo works or at most 20 seconds
-      for (let i = 0; i < 20; i++) {
+      // wait until getinfo works or at most 30 seconds
+      for (let i = 0; i < 30; i++) {
         try {
           this.log('trying to getinfo');
           await this.getInfo();
@@ -102,6 +102,17 @@ class LndApi {
     } else {
       return result;
     }
+  };
+
+  // response could be {}
+  balanceBlockchain = async () => {
+    this.log('getting blockchain balance');
+    return await this.genericGetJson('balance/blockchain');
+  };
+
+  newaddress = async () => {
+    this.log('generating new address');
+    return await this.genericGetJson('newaddress');
   };
 }
 

@@ -93,13 +93,13 @@ const writeLndConf = async function(wallet) {
   const neutrinoConnect = (wallet.neutrinoConnect || DEFAULT_NEUTRINO_CONNECT)
     .split(',')
     .filter(String);
-  let peers = "";
+  let peers = '';
   for (let i = 0; i < neutrinoConnect.length; i++) {
     let peer = neutrinoConnect[i];
     peers += (peers.length == 0 ? '' : '\n') + 'neutrino.addpeer=' + peer;
   }
   const conf = `[Application Options]
-debuglevel=info
+debuglevel=debug
 debughtlc=true
 maxpendingchannels=10
 no-macaroons=true
@@ -162,7 +162,7 @@ const initWallet = async function(wallet, cipher, password) {};
 class LndProvider extends Component {
   constructor(props) {
     super(props);
-    this.state = { walletConf: {} };
+    this.state = { walletConf: {}, displayUnit: 'satoshi' };
   }
 
   componentDidMount() {
@@ -170,6 +170,16 @@ class LndProvider extends Component {
   }
 
   componentWillUnmount() {}
+
+  // Returns string representation with the unit
+  // (ex displaySatoshi(2) = "2 sat")
+  displaySatoshi = satoshi => {
+    if (!satoshi) return;
+    if (this.state.displayUnit == 'satoshi') {
+      return satoshi + " sat";
+    }
+    //TODO: otherwise convert
+  };
 
   render() {
     const walletConf = this.state.walletConf;
@@ -195,6 +205,7 @@ class LndProvider extends Component {
           walletDir,
           encodeBase64,
           stopLndFromWallet,
+          displaySatoshi: this.displaySatoshi,
         }}
       >
         {this.props.children}

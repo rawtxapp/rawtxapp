@@ -504,6 +504,7 @@ const buttonStyles = StyleSheet.create({
     margin: 10,
     width: '80%',
     alignSelf: 'center',
+    elevation: 1,
   },
   actionText: {
     fontSize: 16,
