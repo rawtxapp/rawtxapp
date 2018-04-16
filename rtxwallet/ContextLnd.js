@@ -103,6 +103,8 @@ debuglevel=debug
 debughtlc=true
 maxpendingchannels=10
 no-macaroons=true
+maxlogfiles=3
+maxlogfilesize=10
 
 [Bitcoin]
 bitcoin.active=1

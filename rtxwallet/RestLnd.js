@@ -110,9 +110,35 @@ class LndApi {
     return await this.genericGetJson('balance/blockchain');
   };
 
+  balanceChannels = async () => {
+    this.log('getting channels balance');
+    return await this.genericGetJson('balance/channels');
+  };
+
   newaddress = async () => {
     this.log('generating new address');
     return await this.genericGetJson('newaddress');
+  };
+
+  peers = async () => {
+    this.log('getting peers');
+    return await this.genericGetJson('peers');
+  };
+
+  addPeers = async (pubkey, host, perm = true) => {
+    this.log('adding peer: ', pubkey, host, perm);
+    return await this.genericPostJson('peers', {
+      addr: {
+        pubkey,
+        host,
+      },
+      perm,
+    });
+  };
+
+  openChannel = async channelRequest => {
+    this.log('opening channel to: ', channelRequest.node_pubkey_string);
+    return await this.genericPostJson('channels', channelRequest);
   };
 }
 

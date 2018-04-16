@@ -13,8 +13,11 @@ import TimerMixin from 'react-timer-mixin';
 import ReactMixin from 'react-mixin';
 import { LOGO_COLOR } from './Colors.js';
 import { timeout } from './Utils.js';
+import Modal from 'react-native-modal';
 
 import Button from 'react-native-button';
+import shared from './SharedStyles.js';
+import ScreenSelectPeer from './ScreenSelectPeer.js';
 
 class SyncingBlock extends Component {
   render() {
@@ -34,21 +37,59 @@ class SyncingBlock extends Component {
     }
     return (
       <View style={shared.container}>
-        <Text style={statusStyle}>{status}</Text>
+        <Text style={[shared.accountHeader, statusStyle]}>{status}</Text>
       </View>
     );
   }
 }
 
 class CheckingAccount extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
+  componentDidMount() {
+    this.watchBalance();
+    const watchingBalance = setInterval(this.watchBalance, 2000);
+    this.setState({ watchingBalance });
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.state.watchingBalance);
+  }
+
+  watchBalance = async () => {
+    try {
+      const balance = await this.props.lndApi.balanceChannels();
+      this.setState({ balance });
+    } catch (err) {
+      this.setState({ balance: {} });
+    }
+  };
   render() {
     return (
       <View style={shared.container}>
         <Text style={shared.accountHeader}>Checking account</Text>
+        <Text style={shared.baseText}>
+          Balance:{' '}
+          {this.props.displaySatoshi(
+            (this.state.balance && this.state.balance.balance) || '0',
+          )}
+        </Text>
+        <Text style={shared.baseText}>
+          Pending open balance:{' '}
+          {this.props.displaySatoshi(
+            (this.state.balance && this.state.balance.pending_open_balance) ||
+              '0',
+          )}
+        </Text>
       </View>
     );
   }
 }
+
+const CheckingAccountWithLnd = withLnd(CheckingAccount);
 
 class SavingsAccount extends Component {
   constructor(props) {
@@ -57,6 +98,8 @@ class SavingsAccount extends Component {
       balance: {},
       generatedAddress: '',
       showingGeneratedAddress: false,
+      showingSelectPeers: false,
+      showingTransferToChecking: false,
     };
   }
   componentDidMount() {
@@ -100,6 +143,8 @@ class SavingsAccount extends Component {
               '0',
           )}
         </Text>
+
+        <View style={[shared.separator, shared.cancelPadding]} />
         <Button
           style={[shared.inCardButton]}
           onPress={async () => {
@@ -130,6 +175,56 @@ class SavingsAccount extends Component {
             </Button>
           </View>
         )}
+
+        <View style={[shared.separator, shared.cancelPadding]} />
+        <Button
+          style={[shared.inCardButton]}
+          onPress={async () => {
+            this.setState({
+              showingTransferToChecking: true,
+            });
+          }}
+        >
+          Transfer funds to checking account
+        </Button>
+        {this.state.showingTransferToChecking && (
+          <View>
+            <Button
+              onPress={() => this.setState({ showingSelectPeers: true })}
+              style={shared.inCardButton}
+            >
+              Select peer
+            </Button>
+            <Text>
+              Selected peer: {this.state.transferCheckingPeer && this.state.transferCheckingPeer.pub_key}
+            </Text>
+            <Button
+              onPress={async () => {
+                const res = await this.props.lndApi.openChannel({
+                  node_pubkey_string: this.state.transferCheckingPeer.pub_key,
+                  local_funding_amount: '2000000',
+                });
+                console.log('here: ', res);
+              }}
+            >
+              Create channel
+            </Button>
+          </View>
+        )}
+        <Modal
+          isVisible={this.state.showingSelectPeers}
+          onBackdropPress={() => this.setState({ showingSelectPeers: false })}
+        >
+          <ScreenSelectPeer
+            onCancel={() => this.setState({ showingSelectPeers: false })}
+            selectPeer={p =>
+              this.setState({
+                transferCheckingPeer: p,
+                showingSelectPeers: false,
+              })
+            }
+          />
+        </Modal>
       </View>
     );
   }
@@ -149,7 +244,23 @@ class ScreenWallet extends Component {
 
     const watchingGetInfo = setInterval(this.watchGetInfo, 1500);
     this.setState({ watchingGetInfo });
+
+    this.connectRawtxPeer();
   }
+
+  // TODO: move to a better place
+  connectRawtxPeer = async () => {
+    await this.props.lndApi.addPeers(
+      '02e998b1009ae8833c3dd8ff00e3c2bd436a0d524c678c43057445a398d838d524',
+      '35.188.28.37:9735',
+      true,
+    );
+    await this.props.lndApi.addPeers(
+     '039cc950286a8fa99218283d1adc2456e0d5e81be558da77dd6e85ba9a1fff5ad3',
+      '34.200.252.146:9735',
+      true,
+    );
+  };
 
   componentWillUnmount() {
     clearInterval(this.state.watchingGetInfo);
@@ -219,7 +330,7 @@ class ScreenWallet extends Component {
       content = (
         <View>
           <SyncingBlock getinfo={this.state.getinfo} />
-          <CheckingAccount />
+          <CheckingAccountWithLnd />
           <SavingsAccountWithLnd />
           {footer}
         </View>
@@ -266,50 +377,8 @@ const styles = StyleSheet.create({
 const syncingStyles = StyleSheet.create({
   syncedText: {
     color: 'green',
-    fontSize: 14,
   },
   unsynced: {
     color: 'orange',
-    fontSize: 14,
-  },
-});
-
-const shared = StyleSheet.create({
-  container: {
-    borderRadius: 10,
-    backgroundColor: 'white',
-    padding: 10,
-    margin: 10,
-    marginLeft: 20,
-    marginRight: 20,
-    elevation: 1,
-  },
-  inCardButton: {
-    padding: 10,
-    margin: 10,
-    color: LOGO_COLOR,
-  },
-  accountHeader: {
-    fontSize: 16,
-    color: LOGO_COLOR,
-    fontWeight: 'bold',
-  },
-  textInput: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    margin: 10,
-    flex: 1,
-    padding: 10,
-  },
-  selectableText: {
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: LOGO_COLOR,
-    margin: 10,
-    padding: 10,
-    fontSize: 14,
-  },
-  baseText: {
-    fontSize: 14,
   },
 });
