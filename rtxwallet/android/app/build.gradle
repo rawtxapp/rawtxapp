@@ -98,13 +98,12 @@ repositories {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
 
     defaultConfig {
         applicationId "com.rtxwallet"
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         ndk {
@@ -150,12 +149,12 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.facebook.react:react-native:+'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    api 'com.android.support:appcompat-v7:27.0.2'
+    api 'com.facebook.react:react-native:+'
+    api 'com.squareup.okhttp3:logging-interceptor:3.6.0'
     // From node_modules
-    compile(name: 'rtx_export', ext: 'aar')
+    api(name: 'rtx_export', ext: 'aar')
 }
 
 // Run this once to be able to run the application with BUCK

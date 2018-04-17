@@ -2,9 +2,16 @@ package com.rtxwallet;
 
 import android.app.IntentService;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.github.lightningnetwork.Rtx_export;
@@ -23,6 +30,8 @@ public class LndService extends IntentService {
 
     private String shutdownFile;
 
+    private String notification_channel_id = "lnd_service_notification_channel";
+
     public LndService() {
         super("LndService");
     }
@@ -31,8 +40,11 @@ public class LndService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         Intent mainActivity = new Intent(this, MainActivity.class);
         PendingIntent main = PendingIntent.getActivity(this, 0, mainActivity, 0);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel();
+        }
         Notification notification =
-                new Notification.Builder(this)
+                new NotificationCompat.Builder(this, notification_channel_id)
                         .setContentTitle("LND started")
                         .setContentText("Dismiss this notification to shutdown LND.")
                         .setSmallIcon(R.drawable.ic_action_name)
@@ -67,6 +79,16 @@ public class LndService extends IntentService {
         stopForeground(true);
         writeShutdownFile();
         stopSelf();
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private void createNotificationChannel() {
+        NotificationChannel channel = new NotificationChannel(notification_channel_id,
+                "LndService",
+                NotificationManager.IMPORTANCE_DEFAULT);
+        channel.setLightColor(Color.BLUE);
+        ((NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE))
+                .createNotificationChannel(channel);
     }
 
     private String initRtx(String lndDir) {
