@@ -346,81 +346,88 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
 
     @ReactMethod
     public void fetch(ReadableMap jsRequest, Promise promise) {
-        if (sslContext == null) {
-            Log.i(TAG, "fetch: httpclient or sslcontext not set!");
+        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                if (sslContext == null) {
+                    Log.i(TAG, "fetch: httpclient or sslcontext not set!");
 
-            try {
-                createTrustCertContext();
-            }catch (Exception e){
-                e.printStackTrace();
-                Log.e(TAG, e.getMessage());
-                promise.reject(new Throwable("Couldn't set httpclient or sslcontext!"));
-                return;
-            }
-        }
-        if (!jsRequest.hasKey("url")) {
-            Log.e(TAG, "Fetch request doesn't have a url!");
-        }
-
-        HttpsURLConnection connection = null;
-        try {
-            URL url = new URL(jsRequest.getString("url"));
-            connection = (HttpsURLConnection) url.openConnection();
-            connection.setSSLSocketFactory(sslContext.getSocketFactory());
-            connection.setUseCaches(false);
-            if(jsRequest.hasKey("method") &&
-                    jsRequest.getString("method").toLowerCase().equals("post")) {
-                if (jsRequest.hasKey("jsonBody")) {
-                    String body =jsRequest.getString("jsonBody");
-                    connection.setRequestMethod("POST");
-                    connection.setRequestProperty("Content-Type",
-                            "application/x-www-form-urlencoded");
-                    connection.setRequestProperty("Content-Length",
-                            Integer.toString(body.getBytes().length));
-
-                    connection.setDoOutput(true);
-
-                    //Send request
-                    DataOutputStream wr = new DataOutputStream (
-                            connection.getOutputStream());
-                    wr.writeBytes(body);
-                    wr.close();
+                    try {
+                        createTrustCertContext();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        Log.e(TAG, e.getMessage());
+                        promise.reject(new Throwable("Couldn't set httpclient or sslcontext!"));
+                        return null;
+                    }
                 }
-            } else {
-                connection.setRequestMethod("GET");
-            }
-
-            int status = connection.getResponseCode();
-            InputStream is;
-            if (status == 200) {
-                //Get Response
-                is = connection.getInputStream();
-            } else {
-                is = connection.getErrorStream();
-            }
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-            StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
-            String line;
-            while ((line = rd.readLine()) != null) {
-                if(response.length() != 0){
-                    response.append("\r");
+                if (!jsRequest.hasKey("url")) {
+                    Log.e(TAG, "Fetch request doesn't have a url!");
                 }
-                response.append(line);
-            }
-            rd.close();
 
-            WritableMap jsResponse = Arguments.createMap();
-            jsResponse.putString("bodyString", response.toString());
-            promise.resolve(jsResponse);
-        }catch (Exception e){
-            e.printStackTrace();
-            Log.e(TAG, e.toString());
-            promise.reject(e);
-        }finally {
-            if (connection != null ){
-                connection.disconnect();
+                HttpsURLConnection connection = null;
+                try {
+                    URL url = new URL(jsRequest.getString("url"));
+                    connection = (HttpsURLConnection) url.openConnection();
+                    connection.setSSLSocketFactory(sslContext.getSocketFactory());
+                    connection.setUseCaches(false);
+                    if(jsRequest.hasKey("method") &&
+                            jsRequest.getString("method").toLowerCase().equals("post")) {
+                        if (jsRequest.hasKey("jsonBody")) {
+                            String body =jsRequest.getString("jsonBody");
+                            connection.setRequestMethod("POST");
+                            connection.setRequestProperty("Content-Type",
+                                    "application/x-www-form-urlencoded");
+                            connection.setRequestProperty("Content-Length",
+                                    Integer.toString(body.getBytes().length));
+
+                            connection.setDoOutput(true);
+
+                            //Send request
+                            DataOutputStream wr = new DataOutputStream (
+                                    connection.getOutputStream());
+                            wr.writeBytes(body);
+                            wr.close();
+                        }
+                    } else {
+                        connection.setRequestMethod("GET");
+                    }
+
+                    int status = connection.getResponseCode();
+                    InputStream is;
+                    if (status == 200) {
+                        //Get Response
+                        is = connection.getInputStream();
+                    } else {
+                        is = connection.getErrorStream();
+                    }
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+                    StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
+                    String line;
+                    while ((line = rd.readLine()) != null) {
+                        if(response.length() != 0){
+                            response.append("\r");
+                        }
+                        response.append(line);
+                    }
+                    rd.close();
+
+                    WritableMap jsResponse = Arguments.createMap();
+                    jsResponse.putString("bodyString", response.toString());
+                    promise.resolve(jsResponse);
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(TAG, e.toString());
+                    promise.reject(e);
+                }finally {
+                    if (connection != null ){
+                        connection.disconnect();
+                    }
+                }
+                return null;
             }
-        }
+        }.execute();
+
     }
 
     // Some POST methods on GRPC rest are "bytes" fields and they are converted from base64 strings.

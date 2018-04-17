@@ -143,6 +143,28 @@ class LndApi {
     this.log('opening channel to: ', channelRequest.node_pubkey_string);
     return await this.genericPostJson('channels', channelRequest);
   };
+
+  removeLightning_ = payreq => {
+    const l = 'lightning:';
+    if (payreq.startsWith(l)) {
+      return payreq.substring(l.length);
+    }
+    return payreq;
+  };
+
+  decodepayreq = async payreq => {
+    // TODO: make sure this doesn't open a loophole or security vulnerability
+    // since payreq is coming from a potential attacker.
+    this.log('decoding payreq: ', payreq);
+    return await this.genericGetJson('payreq/' + this.removeLightning_(payreq));
+  };
+
+  sendpaymentPayreq = async payreq => {
+    this.log('paying payreq: ', payreq);
+    return await this.genericPostJson('channels/transactions', {
+      payment_request: this.removeLightning_(payreq),
+    });
+  };
 }
 
 export default new LndApi();

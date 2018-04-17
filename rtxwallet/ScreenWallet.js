@@ -14,10 +14,13 @@ import ReactMixin from 'react-mixin';
 import { LOGO_COLOR } from './Colors.js';
 import { timeout } from './Utils.js';
 import Modal from 'react-native-modal';
+import ScreenQRCodeScan from './ScreenQRCodeScan.js';
 
 import Button from 'react-native-button';
 import shared from './SharedStyles.js';
 import ScreenSelectPeer from './ScreenSelectPeer.js';
+
+import ComponentPayInvoiceButtonInCard from './ComponentPayInvoiceButtonInCard.js';
 
 class SyncingBlock extends Component {
   render() {
@@ -84,6 +87,8 @@ class CheckingAccount extends Component {
               '0',
           )}
         </Text>
+        <View style={shared.separator} />
+        <ComponentPayInvoiceButtonInCard />
       </View>
     );
   }
@@ -144,7 +149,7 @@ class SavingsAccount extends Component {
           )}
         </Text>
 
-        <View style={[shared.separator, shared.cancelPadding]} />
+        <View style={shared.separator} />
         <Button
           style={[shared.inCardButton]}
           onPress={async () => {
@@ -176,7 +181,7 @@ class SavingsAccount extends Component {
           </View>
         )}
 
-        <View style={[shared.separator, shared.cancelPadding]} />
+        <View style={shared.separator} />
         <Button
           style={[shared.inCardButton]}
           onPress={async () => {
@@ -196,7 +201,9 @@ class SavingsAccount extends Component {
               Select peer
             </Button>
             <Text>
-              Selected peer: {this.state.transferCheckingPeer && this.state.transferCheckingPeer.pub_key}
+              Selected peer:{' '}
+              {this.state.transferCheckingPeer &&
+                this.state.transferCheckingPeer.pub_key}
             </Text>
             <Button
               onPress={async () => {
@@ -256,7 +263,7 @@ class ScreenWallet extends Component {
       true,
     );
     await this.props.lndApi.addPeers(
-     '039cc950286a8fa99218283d1adc2456e0d5e81be558da77dd6e85ba9a1fff5ad3',
+      '039cc950286a8fa99218283d1adc2456e0d5e81be558da77dd6e85ba9a1fff5ad3',
       '34.200.252.146:9735',
       true,
     );

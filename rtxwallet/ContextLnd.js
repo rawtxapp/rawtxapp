@@ -99,7 +99,7 @@ const writeLndConf = async function(wallet) {
     peers += (peers.length == 0 ? '' : '\n') + 'neutrino.addpeer=' + peer;
   }
   const conf = `[Application Options]
-debuglevel=debug
+debuglevel=info
 debughtlc=true
 maxpendingchannels=10
 no-macaroons=true
@@ -112,7 +112,12 @@ bitcoin.${network}=1
 ${neutrino}
 
 [Neutrino]
-${peers}`;
+${peers}
+
+[autopilot]
+autopilot.active=1
+autopilot.maxchannels=5
+autopilot.allocation=0.6`;
   console.log('Writing lnd.conf for wallet:');
   console.log(wallet);
   console.log('The lnd.conf');

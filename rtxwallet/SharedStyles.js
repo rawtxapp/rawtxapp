@@ -9,15 +9,21 @@ const shared = StyleSheet.create({
     margin: 10,
     marginLeft: 20,
     marginRight: 20,
-    elevation: 1,
+  },
+  flexOne: {
+    flex: 1,
+  },
+  flexZero: {
+    flex: 0,
   },
   noPadding: {
     padding: 0,
   },
   inCardButton: {
-    padding: 5,
-    margin: 5,
+    padding: 4,
+    margin: 4,
     color: LOGO_COLOR,
+    fontSize: 16,
   },
   accountHeader: {
     fontSize: 16,
@@ -42,6 +48,10 @@ const shared = StyleSheet.create({
   baseText: {
     fontSize: 14,
   },
+  errorText: {
+    fontSize: 12,
+    color: 'red',
+  },
   separator: {
     borderBottomWidth: 1,
     borderColor: '#BDBDBD',
@@ -49,12 +59,14 @@ const shared = StyleSheet.create({
     marginLeft: -10,
     marginRight: -10,
   },
-  cancelPadding: {
-    marginLeft: -10,
-    marginRight: -10,
-  },
   cancelButton: {
     color: 'red',
+  },
+  boldText: {
+    fontWeight: 'bold',
+  },
+  greenButton: {
+    color: 'green',
   },
 });
 
