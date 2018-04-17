@@ -149,6 +149,7 @@ android {
 }
 
 dependencies {
+    api project(':react-native-camera')
     api fileTree(include: ['*.jar'], dir: 'libs')
     api 'com.android.support:appcompat-v7:27.0.2'
     api 'com.facebook.react:react-native:+'
