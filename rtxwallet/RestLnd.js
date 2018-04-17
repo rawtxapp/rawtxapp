@@ -83,7 +83,7 @@ class LndApi {
     const result = await this.genericPostJson('unlockwallet', {
       wallet_password: await encodeBase64(password),
     });
-    if (result.error == 'grpc: the client connection is closing') {
+    if (result.error != 'invalid passphrase for master public key') {
       // wait until getinfo works or at most 30 seconds
       for (let i = 0; i < 30; i++) {
         try {
@@ -97,7 +97,10 @@ class LndApi {
       }
       return {
         error:
-          "It looks like we weren't able to open the wallet, if you see a notification on the top, try closing and reopening the app!",
+          "It looks like we weren't able to open the wallet (" +
+          result.error +
+          '), if you see a notification on the top, try closing and' +
+          ' reopening the app!',
       };
     } else {
       return result;
