@@ -154,8 +154,7 @@ dependencies {
     api 'com.android.support:appcompat-v7:27.0.2'
     api 'com.facebook.react:react-native:+'
     api 'com.squareup.okhttp3:logging-interceptor:3.6.0'
-    // From node_modules
-    api(name: 'rtx_export', ext: 'aar')
+    api project(':rtx_export-android-16')
 }
 
 // Run this once to be able to run the application with BUCK

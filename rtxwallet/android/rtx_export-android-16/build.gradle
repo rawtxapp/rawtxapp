@@ -1,0 +1,2 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file('rtx_export-android-16.aar'))
