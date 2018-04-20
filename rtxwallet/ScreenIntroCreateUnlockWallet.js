@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
 import {
   ActivityIndicator,
@@ -10,24 +10,24 @@ import {
   TouchableWithoutFeedback,
   View,
   TextInput,
-  Platform,
-} from 'react-native';
-import { LOGO_COLOR } from './Colors.js';
-import Button from 'react-native-button';
+  Platform
+} from "react-native";
+import { LOGO_COLOR } from "./Colors.js";
+import Button from "react-native-button";
 import RadioForm, {
   RadioButton,
   RadioButtonInput,
-  RadioButtonLabel,
-} from 'react-native-simple-radio-button';
+  RadioButtonLabel
+} from "react-native-simple-radio-button";
 
-import LndConsumer from './ContextLnd.js';
-import { withLnd } from './withLnd.js';
+import LndConsumer from "./ContextLnd.js";
+import { withLnd } from "./withLnd.js";
 
 class ExpandableButton extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      expanded: false,
+      expanded: false
     };
   }
 
@@ -63,7 +63,7 @@ class UnlockWallet extends Component {
     this.state = {
       unlocking: undefined,
       working: false,
-      error: '',
+      error: ""
     };
   }
 
@@ -109,7 +109,7 @@ class UnlockWallet extends Component {
                           return;
                         }
                         this.setState({ unlocking: w, working: false });
-                      },
+                      }
                     );
                   }}
                 >
@@ -138,7 +138,7 @@ class UnlockWallet extends Component {
             <Button
               style={[
                 unlockWalletStyles.button,
-                unlockWalletStyles.cancelButton,
+                unlockWalletStyles.cancelButton
               ]}
               disabled={this.state.working}
               styleDisabled={unlockWalletStyles.disabledStyle}
@@ -148,9 +148,9 @@ class UnlockWallet extends Component {
                 this.setState({
                   unlocking: undefined,
                   animatingIx: undefined,
-                  password: '',
-                  error: '',
-                  working: false,
+                  password: "",
+                  error: "",
+                  working: false
                 });
               }}
             >
@@ -162,13 +162,13 @@ class UnlockWallet extends Component {
               disabled={this.state.working}
               styleDisabled={unlockWalletStyles.disabledStyle}
               onPress={async () => {
-                if (!this.state.password || this.state.password == '') {
-                  this.setState({ error: 'Empty password!' });
+                if (!this.state.password || this.state.password == "") {
+                  this.setState({ error: "Empty password!" });
                   return;
                 }
-                this.setState({ working: true, error: '' }, async () => {
+                this.setState({ working: true, error: "" }, async () => {
                   const unlockResult = await this.props.unlockwallet(
-                    this.state.password,
+                    this.state.password
                   );
                   this.setState({ working: false });
                   if (unlockResult.error) {
@@ -176,7 +176,7 @@ class UnlockWallet extends Component {
                     return;
                   }
                   console.log(unlockResult);
-                  this.props.navigate('Wallet');
+                  this.props.navigate("Wallet");
                 });
               }}
             >
@@ -213,18 +213,18 @@ class CreateWallet extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: 'default',
-      coin: 'bitcoin',
-      network: 'testnet',
-      mode: 'neutrino',
-      neutrinoConnect: 'faucet.lightning.community',
+      name: "default",
+      coin: "bitcoin",
+      network: "testnet",
+      mode: "neutrino",
+      neutrinoConnect: "faucet.lightning.community",
       creating: false,
-      error: '',
+      error: ""
     };
   }
   render() {
     const addWallet = async () => {
-      this.setState({ creating: true, error: '' }, async () => {
+      this.setState({ creating: true, error: "" }, async () => {
         try {
           await this.props.addWallet(this.state);
         } catch (error) {
@@ -249,7 +249,7 @@ class CreateWallet extends Component {
           <View>
             <Text style={createWalletStyles.subtitle}>Cryptocurrency</Text>
             <RadioForm
-              radio_props={[{ label: 'Bitcoin', value: 'bitcoin' }]}
+              radio_props={[{ label: "Bitcoin", value: "bitcoin" }]}
               initial={0}
               animation={false}
               formHorizontal={true}
@@ -260,25 +260,25 @@ class CreateWallet extends Component {
             <Text style={createWalletStyles.subtitle}>Network</Text>
             <RadioForm
               radio_props={[
-                { label: 'Testnet    ', value: 'testnet' },
-                { label: 'Mainnet', value: 'mainnet' },
+                { label: "Testnet    ", value: "testnet" },
+                { label: "Mainnet", value: "mainnet" }
               ]}
               initial={0}
               animation={false}
               formHorizontal={true}
               onPress={val => {
                 // TODO: this is super ugly, fix!
-                if (val == 'mainnet') {
+                if (val == "mainnet") {
                   this.refs.networkModeRadio.updateIsActiveIndex(0);
-                  this.setState({ mode: 'btcd' });
+                  this.setState({ mode: "btcd" });
                 } else {
                   this.refs.networkModeRadio.updateIsActiveIndex(0);
-                  this.setState({ mode: 'neutrino' });
+                  this.setState({ mode: "neutrino" });
                 }
                 this.setState({ network: val });
               }}
             />
-            {this.state.network == 'mainnet' && (
+            {this.state.network == "mainnet" && (
               <Text style={createWalletStyles.warningText}>
                 Warning: while this app works with mainnet, it's still in beta
                 phase. Assume that any money you use on mainnet could be lost
@@ -292,11 +292,11 @@ class CreateWallet extends Component {
               ref="networkModeRadio"
               animation={false}
               radio_props={
-                this.state.network == 'mainnet'
-                  ? [{ label: 'btcd-full', value: 'btcd' }]
+                this.state.network == "mainnet"
+                  ? [{ label: "btcd-full", value: "btcd" }]
                   : [
-                      { label: 'neutrino    ', value: 'neutrino' },
-                      { label: 'btcd-full', value: 'btcd' },
+                      { label: "neutrino    ", value: "neutrino" },
+                      { label: "btcd-full", value: "btcd" }
                     ]
               }
               initial={0}
@@ -305,20 +305,20 @@ class CreateWallet extends Component {
                 this.setState({ mode: val });
               }}
             />
-            {this.state.network == 'mainnet' &&
-              this.state.mode == 'neutrino' && (
+            {this.state.network == "mainnet" &&
+              this.state.mode == "neutrino" && (
                 <Text style={createWalletStyles.warningText}>
-                  Can't use neutrino with mainnet.{' '}
+                  Can't use neutrino with mainnet.{" "}
                 </Text>
               )}
-            {this.state.mode == 'btcd' && (
+            {this.state.mode == "btcd" && (
               <Text style={createWalletStyles.warningText}>
                 Full btcd mode will take longer to sync and take bigger disk
                 space.
               </Text>
             )}
           </View>
-          {this.state.mode == 'neutrino' && (
+          {this.state.mode == "neutrino" && (
             <View>
               <Text style={createWalletStyles.subtitle}>Neutrino server</Text>
               <TextInput
@@ -339,7 +339,7 @@ class CreateWallet extends Component {
             Create wallet
           </Button>
           {this.state.creating && <ActivityIndicator />}
-          {this.state.error != '' && (
+          {this.state.error != "" && (
             <Text style={createWalletStyles.warningText}>
               {this.state.error}
             </Text>
@@ -362,7 +362,7 @@ class ScreenIntroCreateUnlockWallet extends Component {
 
   // will return true if navigating.
   checkStateAndNavigate = async () => {
-    console.log('Checking state and navigating');
+    console.log("Checking state and navigating");
     const lndRunning = await this.props.isLndProcessRunning();
     if (!lndRunning) {
       // nothing to do
@@ -370,38 +370,42 @@ class ScreenIntroCreateUnlockWallet extends Component {
     }
 
     const runningWallet = await this.props.getRunningWallet();
+    if (!runningWallet) {
+      return;
+    }
 
     // check if we are at genseed stage
     try {
-      console.log('Looking for GenSeed');
+      console.log("Looking for GenSeed");
       const seed = await this.props.genSeed();
       if (seed.cipher_seed_mnemonic) {
-        console.log('Found GenSeed, navigating to it');
-        this.props.navigation.navigate('GenSeed', { seedResponse: seed });
+        console.log("Found GenSeed, navigating to it");
+        this.props.navigation.navigate("GenSeed", { seedResponse: seed });
         return true;
-      } else if (seed.error == 'wallet already exists') {
-        console.log('Wallet already created, asking for password');
+      } else if (seed.error == "wallet already exists") {
+        console.log("Wallet already created, asking for password");
         this.setState({ unlockingWallet: runningWallet });
         return false;
       }
     } catch (err) {
-      console.log('past the walletunlocker stage ?');
+      console.log("past the walletunlocker stage ?");
       console.log(err);
     }
 
     try {
-      console.log('Looking for getinfo');
+      console.log("Looking for getinfo");
       const getinfo = await this.props.lndApi.getInfo();
       if (getinfo.identity_pubkey) {
-        console.log('Found GetInfo, navigating to Wallet');
-        this.props.navigation.navigate('Wallet');
+        console.log("Found GetInfo, navigating to Wallet");
+        this.props.navigation.navigate("Wallet");
         return true;
       }
     } catch (err) {
       console.log(err);
     }
 
-    console.error("Couldn't determine wallet state!");
+    console.log("Couldn't determine wallet state, shutting down LND!");
+    await this.props.stopLndFromWallet(runningWallet);
   };
 
   render() {
@@ -410,12 +414,12 @@ class ScreenIntroCreateUnlockWallet extends Component {
         <View style={styles.logoContainer}>
           <View style={styles.simpleContainer}>
             <Image
-              source={require('./assets/intro-logo.png')}
+              source={require("./assets/intro-logo.png")}
               style={{
                 width: undefined,
                 height: 150,
                 flex: 1,
-                resizeMode: 'contain',
+                resizeMode: "contain"
               }}
             />
           </View>
@@ -450,8 +454,8 @@ class ScreenIntroCreateUnlockWallet extends Component {
                   addWallet={async newWallet => {
                     newWallet = await addWallet(newWallet);
                     await this.props.startLndFromWallet(newWallet);
-                    this.props.navigation.navigate('GenSeed', {
-                      wallet: newWallet,
+                    this.props.navigation.navigate("GenSeed", {
+                      wallet: newWallet
                     });
                   }}
                 />
@@ -469,65 +473,65 @@ export default withLnd(ScreenIntroCreateUnlockWallet);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: LOGO_COLOR,
+    backgroundColor: LOGO_COLOR
   },
   simpleContainer: {
-    flex: 1,
+    flex: 1
   },
   logoContainer: {
     flex: 3,
     padding: 50,
-    paddingTop: 20,
+    paddingTop: 20
   },
   actionContainer: {
-    flex: 8,
+    flex: 8
   },
   slogan: {
-    alignSelf: 'center',
-    color: 'white',
+    alignSelf: "center",
+    color: "white",
     flex: 1,
-    fontSize: 16,
+    fontSize: 16
   },
   nWallets: {
     fontSize: 22,
-    color: 'white',
+    color: "white"
   },
   buttonContainer: {
-    flex: 1,
-  },
+    flex: 1
+  }
 });
 
 const buttonStyles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
     margin: 10,
-    width: '80%',
-    alignSelf: 'center',
-    elevation: 1,
+    width: "80%",
+    alignSelf: "center",
+    elevation: 1
   },
   actionText: {
     fontSize: 16,
-    color: 'black',
-    padding: 20,
-  },
+    color: "black",
+    padding: 20
+  }
 });
 
 const unlockWalletStyles = StyleSheet.create({
   noWalletText: {
     fontSize: 16,
-    color: 'black',
+    color: "black"
   },
   contentContainer: {
     padding: 20,
-    paddingTop: 0,
+    paddingTop: 0
   },
   buttonContainer: {
-    flex: 5,
+    flex: 5
   },
   buttonActivityContainer: {
-    flexDirection: 'row',
-    flex: 1,
+    flexDirection: "row",
+    flex: 1
   },
   button: {
     margin: 5,
@@ -537,19 +541,19 @@ const unlockWalletStyles = StyleSheet.create({
     margin: 10,
     padding: 10,
     borderRadius: 10,
-    flex: 1,
+    flex: 1
   },
   actionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "flex-end"
   },
   cancelButton: {
-    color: 'red',
+    color: "red"
   },
   disabledStyle: {
-    borderColor: 'gray',
-    color: 'gray',
-  },
+    borderColor: "gray",
+    color: "gray"
+  }
 });
 
 const createWalletStyles = StyleSheet.create({
@@ -558,25 +562,25 @@ const createWalletStyles = StyleSheet.create({
     borderColor: LOGO_COLOR,
     borderWidth: 2,
     borderRadius: 10,
-    marginBottom: 10,
+    marginBottom: 10
   },
   container: {
     padding: 20,
-    paddingTop: 0,
+    paddingTop: 0
   },
   radioText: {
     fontSize: 16,
-    marginBottom: 10,
+    marginBottom: 10
   },
   subtitle: {
-    marginBottom: 5,
+    marginBottom: 5
   },
   warningText: {
     fontSize: 12,
-    color: 'red',
+    color: "red"
   },
   buttonText: {
     color: LOGO_COLOR,
-    padding: 10,
-  },
+    padding: 10
+  }
 });

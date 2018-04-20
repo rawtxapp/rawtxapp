@@ -1,8 +1,8 @@
-import React, { Component, createContext } from 'react';
+import React, { Component, createContext } from "react";
 
 const LndContext = createContext({
   startLnd: () => {},
-  stopLnd: () => {},
+  stopLnd: () => {}
 });
 
 import {
@@ -13,28 +13,28 @@ import {
   readFile,
   writeFile,
   isLndProcessRunning,
-  encodeBase64,
-} from './NativeRtxModule.js';
-import LndApi from './RestLnd.js';
+  encodeBase64
+} from "./NativeRtxModule.js";
+import LndApi from "./RestLnd.js";
 
-const WALLET_CONF_FILE = 'wallet.conf';
-const DEFAULT_NEUTRINO_CONNECT = 'faucet.lightning.community,rbtcdt.rawtx.com';
+const WALLET_CONF_FILE = "wallet.conf";
+const DEFAULT_NEUTRINO_CONNECT = "faucet.lightning.community,rbtcdt.rawtx.com";
 
 const walletConfFilename = async function() {
   const appDir = await getAppDir();
-  const walletDir = appDir + '/' + WALLET_CONF_FILE;
+  const walletDir = appDir + "/" + WALLET_CONF_FILE;
   return walletDir;
 };
 
 const readWalletConfig = async function() {
   const conf = await readFile(await walletConfFilename());
-  const json = JSON.parse(conf && conf != '' ? conf : '{}');
+  const json = JSON.parse(conf && conf != "" ? conf : "{}");
   json.wallets = json.wallets || [];
   for (let i = 0; i < json.wallets.length; i++) {
     const wallet = json.wallets[i];
     const walletExists = await fileExists(wallet.name);
     if (!walletExists) {
-      wallet['exists'] = false;
+      wallet["exists"] = false;
     }
   }
   return json;
@@ -43,7 +43,7 @@ const readWalletConfig = async function() {
 const writeWalletConfig = async function(contentJSON) {
   return await writeFile(
     await walletConfFilename(),
-    JSON.stringify(contentJSON, null, 2),
+    JSON.stringify(contentJSON, null, 2)
   );
 };
 
@@ -53,7 +53,7 @@ const addWallet = async function(newWallet) {
     coin,
     network,
     mode,
-    neutrinoConnect,
+    neutrinoConnect
   }))(newWallet);
 
   // the wallets have folders appDir/wallets/<X>/ structure, the X can't be
@@ -68,7 +68,7 @@ const addWallet = async function(newWallet) {
   for (let i = 0; i < currentConfig.wallets.length; i++) {
     const wallet = currentConfig.wallets[i];
     if (newWallet.name == wallet.name) {
-      throw new Error('Wallet with this name already exists!');
+      throw new Error("Wallet with this name already exists!");
     }
     if (wallet.ix && wallet.ix > walletIx) {
       walletIx = wallet.ix;
@@ -83,23 +83,23 @@ const addWallet = async function(newWallet) {
 };
 
 const walletDir = async function(wallet) {
-  return (await getAppDir()) + '/wallets/' + (wallet.ix || 0) + '/';
+  return (await getAppDir()) + "/wallets/" + (wallet.ix || 0) + "/";
 };
 
 const writeLndConf = async function(wallet) {
   const walletDirectory = await walletDir(wallet);
-  const network = wallet.network || 'testnet';
-  const neutrino = wallet.mode == 'neutrino' ? 'bitcoin.node=neutrino' : '';
+  const network = wallet.network || "testnet";
+  const neutrino = wallet.mode == "neutrino" ? "bitcoin.node=neutrino" : "";
   const neutrinoConnect = (wallet.neutrinoConnect || DEFAULT_NEUTRINO_CONNECT)
-    .split(',')
+    .split(",")
     .filter(String);
-  let peers = '';
+  let peers = "";
   for (let i = 0; i < neutrinoConnect.length; i++) {
     let peer = neutrinoConnect[i];
-    peers += (peers.length == 0 ? '' : '\n') + 'neutrino.addpeer=' + peer;
+    peers += (peers.length == 0 ? "" : "\n") + "neutrino.addpeer=" + peer;
   }
   const conf = `[Application Options]
-debuglevel=info
+debuglevel=trace
 debughtlc=true
 maxpendingchannels=10
 no-macaroons=true
@@ -112,17 +112,12 @@ bitcoin.${network}=1
 ${neutrino}
 
 [Neutrino]
-${peers}
-
-[autopilot]
-autopilot.active=1
-autopilot.maxchannels=5
-autopilot.allocation=0.6`;
-  console.log('Writing lnd.conf for wallet:');
+${peers}`;
+  console.log("Writing lnd.conf for wallet:");
   console.log(wallet);
-  console.log('The lnd.conf');
+  console.log("The lnd.conf");
   console.log(conf);
-  return await writeFile(walletDirectory + '/lnd.conf', conf);
+  return await writeFile(walletDirectory + "/lnd.conf", conf);
 };
 
 const startLndFromWallet = async function(wallet) {
@@ -145,15 +140,15 @@ const getRunningWallet = async function() {
   }
 
   const filesDir = await getAppDir();
-  const lastRunning = await readFile(filesDir + '/lastrunninglnddir.txt');
-  if (lastRunning == '') {
+  const lastRunning = await readFile(filesDir + "/lastrunninglnddir.txt");
+  if (lastRunning == "") {
     return;
   }
   const walletIx = parseInt(
     lastRunning
-      .split('/')
+      .split("/")
       .filter(String)
-      .splice(-1)[0],
+      .splice(-1)[0]
   );
   const walletConf = await readWalletConfig();
   for (let i = 0; i < walletConf.wallets.length; i++) {
@@ -169,7 +164,7 @@ const initWallet = async function(wallet, cipher, password) {};
 class LndProvider extends Component {
   constructor(props) {
     super(props);
-    this.state = { walletConf: {}, displayUnit: 'satoshi' };
+    this.state = { walletConf: {}, displayUnit: "satoshi" };
   }
 
   componentDidMount() {
@@ -182,7 +177,7 @@ class LndProvider extends Component {
   // (ex displaySatoshi(2) = "2 sat")
   displaySatoshi = satoshi => {
     if (!satoshi) return;
-    if (this.state.displayUnit == 'satoshi') {
+    if (this.state.displayUnit == "satoshi") {
       return satoshi + " sat";
     }
     //TODO: otherwise convert
@@ -212,7 +207,7 @@ class LndProvider extends Component {
           walletDir,
           encodeBase64,
           stopLndFromWallet,
-          displaySatoshi: this.displaySatoshi,
+          displaySatoshi: this.displaySatoshi
         }}
       >
         {this.props.children}

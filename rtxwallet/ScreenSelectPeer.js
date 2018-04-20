@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import { View, Text } from 'react-native';
-import withLnd from './withLnd.js';
-import Button from 'react-native-button';
-import shared from './SharedStyles.js';
+import React, { Component } from "react";
+import { View, Text } from "react-native";
+import withLnd from "./withLnd.js";
+import Button from "react-native-button";
+import shared from "./SharedStyles.js";
 
 class ScreenSelectPeer extends Component {
   constructor(props) {
@@ -22,7 +22,7 @@ class ScreenSelectPeer extends Component {
   };
 
   render() {
-    console.log('here: ', this.state.peers);
+    console.log("here: ", this.state.peers);
     return (
       <View style={shared.container}>
         {this.state.peers &&

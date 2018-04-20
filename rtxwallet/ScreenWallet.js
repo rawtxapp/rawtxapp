@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -6,36 +6,36 @@ import {
   StyleSheet,
   View,
   Text,
-  TextInput,
-} from 'react-native';
-import withLnd from './withLnd.js';
-import TimerMixin from 'react-timer-mixin';
-import ReactMixin from 'react-mixin';
-import { LOGO_COLOR } from './Colors.js';
-import { timeout } from './Utils.js';
-import Modal from 'react-native-modal';
-import ScreenQRCodeScan from './ScreenQRCodeScan.js';
+  TextInput
+} from "react-native";
+import withLnd from "./withLnd.js";
+import TimerMixin from "react-timer-mixin";
+import ReactMixin from "react-mixin";
+import { LOGO_COLOR } from "./Colors.js";
+import { timeout } from "./Utils.js";
+import Modal from "react-native-modal";
+import ScreenQRCodeScan from "./ScreenQRCodeScan.js";
 
-import Button from 'react-native-button';
-import shared from './SharedStyles.js';
-import ScreenSelectPeer from './ScreenSelectPeer.js';
+import Button from "react-native-button";
+import shared from "./SharedStyles.js";
+import ScreenSelectPeer from "./ScreenSelectPeer.js";
 
-import ComponentPayInvoiceButtonInCard from './ComponentPayInvoiceButtonInCard.js';
+import ComponentPayInvoiceButtonInCard from "./ComponentPayInvoiceButtonInCard.js";
 
 class SyncingBlock extends Component {
   render() {
     const { getinfo } = this.props;
     let status;
     let statusStyle;
-    if (getinfo && getinfo['synced_to_chain']) {
-      status = 'Synced to the chain!';
+    if (getinfo && getinfo["synced_to_chain"]) {
+      status = "Synced to the chain!";
       statusStyle = syncingStyles.syncedText;
     } else {
-      status = 'Syncing to the chain';
-      if (getinfo && getinfo['block_height']) {
-        status += ' (block height: ' + getinfo['block_height'] + ')';
+      status = "Syncing to the chain";
+      if (getinfo && getinfo["block_height"]) {
+        status += " (block height: " + getinfo["block_height"] + ")";
       }
-      status += '...';
+      status += "...";
       statusStyle = syncingStyles.unsynced;
     }
     return (
@@ -75,16 +75,16 @@ class CheckingAccount extends Component {
       <View style={shared.container}>
         <Text style={shared.accountHeader}>Checking account</Text>
         <Text style={shared.baseText}>
-          Balance:{' '}
+          Balance:{" "}
           {this.props.displaySatoshi(
-            (this.state.balance && this.state.balance.balance) || '0',
+            (this.state.balance && this.state.balance.balance) || "0"
           )}
         </Text>
         <Text style={shared.baseText}>
-          Pending open balance:{' '}
+          Pending open balance:{" "}
           {this.props.displaySatoshi(
             (this.state.balance && this.state.balance.pending_open_balance) ||
-              '0',
+              "0"
           )}
         </Text>
         <View style={shared.separator} />
@@ -101,10 +101,10 @@ class SavingsAccount extends Component {
     super(props);
     this.state = {
       balance: {},
-      generatedAddress: '',
+      generatedAddress: "",
       showingGeneratedAddress: false,
       showingSelectPeers: false,
-      showingTransferToChecking: false,
+      showingTransferToChecking: false
     };
   }
   componentDidMount() {
@@ -130,22 +130,22 @@ class SavingsAccount extends Component {
       <View style={shared.container}>
         <Text style={shared.accountHeader}>Savings account</Text>
         <Text style={shared.baseText}>
-          Total balance:{' '}
+          Total balance:{" "}
           {this.props.displaySatoshi(
-            (this.state.balance && this.state.balance.total_balance) || '0',
+            (this.state.balance && this.state.balance.total_balance) || "0"
           )}
         </Text>
         <Text style={shared.baseText}>
-          Confirmed balance:{' '}
+          Confirmed balance:{" "}
           {this.props.displaySatoshi(
-            (this.state.balance && this.state.balance.confirmed_balance) || '0',
+            (this.state.balance && this.state.balance.confirmed_balance) || "0"
           )}
         </Text>
         <Text style={shared.baseText}>
-          Unconfirmed balance:{' '}
+          Unconfirmed balance:{" "}
           {this.props.displaySatoshi(
             (this.state.balance && this.state.balance.unconfirmed_balance) ||
-              '0',
+              "0"
           )}
         </Text>
 
@@ -156,8 +156,8 @@ class SavingsAccount extends Component {
             try {
               const newaddress = await this.props.lndApi.newaddress();
               this.setState({
-                generatedAddress: newaddress['address'],
-                showingGeneratedAddress: true,
+                generatedAddress: newaddress["address"],
+                showingGeneratedAddress: true
               });
             } catch (err) {}
           }}
@@ -186,7 +186,7 @@ class SavingsAccount extends Component {
           style={[shared.inCardButton]}
           onPress={async () => {
             this.setState({
-              showingTransferToChecking: true,
+              showingTransferToChecking: true
             });
           }}
         >
@@ -201,7 +201,7 @@ class SavingsAccount extends Component {
               Select peer
             </Button>
             <Text>
-              Selected peer:{' '}
+              Selected peer:{" "}
               {this.state.transferCheckingPeer &&
                 this.state.transferCheckingPeer.pub_key}
             </Text>
@@ -209,9 +209,9 @@ class SavingsAccount extends Component {
               onPress={async () => {
                 const res = await this.props.lndApi.openChannel({
                   node_pubkey_string: this.state.transferCheckingPeer.pub_key,
-                  local_funding_amount: '2000000',
+                  local_funding_amount: "2000000"
                 });
-                console.log('here: ', res);
+                console.log("here: ", res);
               }}
             >
               Create channel
@@ -227,7 +227,7 @@ class SavingsAccount extends Component {
             selectPeer={p =>
               this.setState({
                 transferCheckingPeer: p,
-                showingSelectPeers: false,
+                showingSelectPeers: false
               })
             }
           />
@@ -258,14 +258,14 @@ class ScreenWallet extends Component {
   // TODO: move to a better place
   connectRawtxPeer = async () => {
     await this.props.lndApi.addPeers(
-      '02e998b1009ae8833c3dd8ff00e3c2bd436a0d524c678c43057445a398d838d524',
-      '35.188.28.37:9735',
-      true,
+      "02e998b1009ae8833c3dd8ff00e3c2bd436a0d524c678c43057445a398d838d524",
+      "35.188.28.37:9735",
+      true
     );
     await this.props.lndApi.addPeers(
-      '039cc950286a8fa99218283d1adc2456e0d5e81be558da77dd6e85ba9a1fff5ad3',
-      '34.200.252.146:9735',
-      true,
+      "039cc950286a8fa99218283d1adc2456e0d5e81be558da77dd6e85ba9a1fff5ad3",
+      "34.200.252.146:9735",
+      true
     );
   };
 
@@ -288,7 +288,7 @@ class ScreenWallet extends Component {
   watchGetInfo = async () => {
     try {
       const getinfo = await this.props.lndApi.getInfo();
-      getinfo['testIx'] = this.i++;
+      getinfo["testIx"] = this.i++;
       this.setState({ getinfo });
     } catch (err) {}
   };
@@ -303,7 +303,7 @@ class ScreenWallet extends Component {
           onPress={async () => {
             this.setState({ working: true }, async () => {
               await this.props.stopLndFromWallet(this.state.wallet);
-              this.props.navigation.navigate('WalletCreate');
+              this.props.navigation.navigate("WalletCreate");
             });
           }}
         >
@@ -326,7 +326,7 @@ class ScreenWallet extends Component {
           <Button
             onPress={async () => {
               await this.props.stopLndFromWallet(this.state.wallet);
-              this.props.navigation.navigate('WalletCreate');
+              this.props.navigation.navigate("WalletCreate");
             }}
           >
             Close wallet
@@ -348,10 +348,10 @@ class ScreenWallet extends Component {
       <ScrollView style={styles.container}>
         <View style={styles.logoContainer}>
           <Image
-            source={require('./assets/intro-logo.png')}
+            source={require("./assets/intro-logo.png")}
             style={{
               width: undefined,
-              height: 80,
+              height: 80
             }}
             resizeMode="contain"
           />
@@ -368,24 +368,24 @@ export default withLnd(ScreenWallet);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: LOGO_COLOR,
+    backgroundColor: LOGO_COLOR
   },
   logoContainer: {
-    flex: 1,
+    flex: 1
   },
   restContainer: {
-    flex: 8,
+    flex: 8
   },
   closeWalletButton: {
-    color: 'red',
-  },
+    color: "red"
+  }
 });
 
 const syncingStyles = StyleSheet.create({
   syncedText: {
-    color: 'green',
+    color: "green"
   },
   unsynced: {
-    color: 'orange',
-  },
+    color: "orange"
+  }
 });

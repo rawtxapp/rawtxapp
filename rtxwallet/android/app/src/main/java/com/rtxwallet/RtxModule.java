@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.FileObserver;
 import android.os.Process;
 import android.util.Base64;
@@ -88,7 +89,11 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
                 Log.i(TAG, "Starting LND service.");
                 Intent intent = new Intent(getCurrentActivity().getApplicationContext(), LndService.class);
                 intent.putExtra("lndDir", lndDir);
-                getCurrentActivity().startService(intent);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                    getCurrentActivity().startForegroundService(intent);
+                }else {
+                    getCurrentActivity().startService(intent);
+                }
 
                 // Wait until tls.cert file exists.
                 Log.i(TAG, "Waiting for tls.cert file to exists!");

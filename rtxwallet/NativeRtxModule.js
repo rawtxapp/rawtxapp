@@ -1,12 +1,12 @@
-import { DeviceEventEmitter, NativeModules } from 'react-native';
-import LndApi from './RestLnd.js';
+import { DeviceEventEmitter, NativeModules } from "react-native";
+import LndApi from "./RestLnd.js";
 
 const Rtx = NativeModules.RtxModule;
 
 const startLnd = async function(lndDir) {
   const running = await isLndProcessRunning();
   if (running) {
-    console.error('LND is already running, can only run 1 instance of LND!');
+    console.error("LND is already running, can only run 1 instance of LND!");
     return;
   }
   return await NativeModules.RtxModule.startLnd(lndDir);
@@ -21,11 +21,11 @@ const getLogContent = function(callback) {
 };
 
 const startWatchingLogContent = function(callback) {
-  DeviceEventEmitter.addListener('LND_LOGS_MODIFIED', callback);
+  DeviceEventEmitter.addListener("LND_LOGS_MODIFIED", callback);
 };
 
 const stopWatchingLogContent = function(callback) {
-  DeviceEventEmitter.removeListener('LND_LOGS_MODIFIED', callback);
+  DeviceEventEmitter.removeListener("LND_LOGS_MODIFIED", callback);
 };
 
 // if request contains:
@@ -78,5 +78,5 @@ export {
   fileExists,
   getAppDir,
   isLndProcessRunning,
-  encodeBase64,
+  encodeBase64
 };

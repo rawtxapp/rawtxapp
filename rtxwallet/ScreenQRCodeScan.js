@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import React, { Component } from "react";
+import { StyleSheet, View, Text } from "react-native";
 
-import shared from './SharedStyles.js';
-import QRCodeScanner from 'react-native-qrcode-scanner';
-import Button from 'react-native-button';
+import shared from "./SharedStyles.js";
+import QRCodeScanner from "react-native-qrcode-scanner";
+import Button from "react-native-button";
 
 export default class ScreenQRCodeScan extends Component {
   render() {
@@ -32,14 +32,14 @@ export default class ScreenQRCodeScan extends Component {
 
 const styles = StyleSheet.create({
   bottomStyle: {
-    height: '10%',
-    width: undefined,
+    height: "10%",
+    width: undefined
   },
   instructions: {
-    marginBottom: 20,
+    marginBottom: 20
   },
   cameraStyle: {
-    width: '100%',
-    height: '90%',
-  },
+    width: "100%",
+    height: "90%"
+  }
 });

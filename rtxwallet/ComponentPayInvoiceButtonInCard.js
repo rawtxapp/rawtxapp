@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { Component } from "react";
+import { StyleSheet, Text, View } from "react-native";
 
-import Button from 'react-native-button';
-import Modal from 'react-native-modal';
-import withLnd from './withLnd.js';
-import shared from './SharedStyles.js';
-import ScreenQRCodeScan from './ScreenQRCodeScan.js';
-import { BoldText } from './ComponentShared.js';
+import Button from "react-native-button";
+import Modal from "react-native-modal";
+import withLnd from "./withLnd.js";
+import shared from "./SharedStyles.js";
+import ScreenQRCodeScan from "./ScreenQRCodeScan.js";
+import { BoldText } from "./ComponentShared.js";
 
 class ComponentPayInvoiceButtonInCard extends Component {
   constructor(props) {
@@ -16,16 +16,16 @@ class ComponentPayInvoiceButtonInCard extends Component {
 
   decodePayreq = async payreqQR => {
     try {
-      console.log('hereb, ',payreqQR)
+      console.log("hereb, ", payreqQR);
       const payreq = await this.props.lndApi.decodepayreq(payreqQR);
-      console.log('herea, ',payreqQR)
+      console.log("herea, ", payreqQR);
       if (!payreq.error) {
         this.setState({ payreq, payreqQR });
       } else {
         this.setState({ error: payreq.error });
       }
     } catch (err) {
-      this.setState({ error: 'Problem decoding payment request: ' + err });
+      this.setState({ error: "Problem decoding payment request: " + err });
     }
   };
 
@@ -36,14 +36,14 @@ class ComponentPayInvoiceButtonInCard extends Component {
     return (
       <View>
         <Text>
-          {BoldText('Description:')} {payreq.description}
+          {BoldText("Description:")} {payreq.description}
         </Text>
         <Text>
-          {BoldText('Num satoshis:')}{' '}
+          {BoldText("Num satoshis:")}{" "}
           {this.props.displaySatoshi(payreq.num_satoshis)}
         </Text>
         <Text>
-          {BoldText('Timestamp:')} {time.toUTCString()}
+          {BoldText("Timestamp:")} {time.toUTCString()}
         </Text>
       </View>
     );
@@ -69,7 +69,7 @@ class ComponentPayInvoiceButtonInCard extends Component {
           style={[shared.inCardButton]}
           onPress={() =>
             this.setState({
-              scanningQR: true,
+              scanningQR: true
             })
           }
         >
@@ -90,8 +90,8 @@ class ComponentPayInvoiceButtonInCard extends Component {
         <ScreenQRCodeScan
           dismiss={() => this.setState({ scanningQR: false })}
           qrScanned={qr => {
-            console.log('here: ', qr);
-            this.setState({ scanningQR: false, payreq: undefined, error: '' });
+            console.log("here: ", qr);
+            this.setState({ scanningQR: false, payreq: undefined, error: "" });
             this.decodePayreq(qr);
           }}
         />
@@ -108,7 +108,7 @@ class ComponentPayInvoiceButtonInCard extends Component {
           onPress={async () => {
             try {
               const payment = await this.props.lndApi.sendpaymentPayreq(
-                this.state.payreqQR,
+                this.state.payreqQR
               );
               console.log(payment);
               this.setState({ payment });
@@ -132,7 +132,7 @@ class ComponentPayInvoiceButtonInCard extends Component {
           onPress={() =>
             this.setState({
               paying: !this.state.paying,
-              payreq: undefined,
+              payreq: undefined
             })
           }
         >

@@ -1,25 +1,25 @@
-import React, { Component, createContext } from 'react';
+import React, { Component, createContext } from "react";
 
-const LogContext = createContext({ logText: 'TestLog' });
+const LogContext = createContext({ logText: "TestLog" });
 import {
   getLogContent,
   startWatchingLogContent,
-  stopWatchingLogContent,
-} from './NativeRtxModule.js';
+  stopWatchingLogContent
+} from "./NativeRtxModule.js";
 
 class LogProvider extends Component {
   constructor(props) {
     super(props);
-    this.state = { logText: '' };
+    this.state = { logText: "" };
   }
 
   componentDidMount() {
     //const updateLogState = log => {
-      //this.setState({ logText: log });
+    //this.setState({ logText: log });
     //};
     //getLogContent(updateLogState);
     //this.updateLogStateFromContent_ = () => {
-      //getLogContent(updateLogState);
+    //getLogContent(updateLogState);
     //};
     //startWatchingLogContent(this.updateLogStateFromContent_);
   }

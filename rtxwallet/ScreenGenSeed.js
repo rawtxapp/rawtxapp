@@ -1,27 +1,27 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   LayoutAnimation,
   ScrollView,
   StyleSheet,
   TextInput,
   View,
-  Text,
-} from 'react-native';
+  Text
+} from "react-native";
 
-import Button from 'react-native-button';
-import { LOGO_COLOR } from './Colors.js';
-import LndConsumer from './ContextLnd.js';
-import { withLnd } from './withLnd.js';
+import Button from "react-native-button";
+import { LOGO_COLOR } from "./Colors.js";
+import LndConsumer from "./ContextLnd.js";
+import { withLnd } from "./withLnd.js";
 
 class ScreenGenSeed extends Component {
   constructor(props) {
     super(props);
     this.state = {
       cipher: [],
-      errorMessage: '',
-      confirmErrorMessage: '',
+      errorMessage: "",
+      confirmErrorMessage: "",
       confirming: false,
-      settingPassword: false,
+      settingPassword: false
     };
   }
 
@@ -55,7 +55,7 @@ class ScreenGenSeed extends Component {
       } else {
         this.setState({
           errorMessage:
-            'There was a problem getting the seed, is a wallet already open ?',
+            "There was a problem getting the seed, is a wallet already open ?"
         });
       }
     } catch (err) {
@@ -65,7 +65,7 @@ class ScreenGenSeed extends Component {
 
   render() {
     let content;
-    if (this.state.errorMessage && this.state.errorMessage != '') {
+    if (this.state.errorMessage && this.state.errorMessage != "") {
       content = <Text>{this.state.errorMessage}</Text>;
     } else if (this.state.settingPassword) {
       content = (
@@ -103,28 +103,28 @@ class ScreenGenSeed extends Component {
               style={[styles.buttonText, styles.confirm]}
               containerStyle={styles.buttonContainer}
               onPress={async () => {
-                if (!this.state.password || this.state.password == '') {
+                if (!this.state.password || this.state.password == "") {
                   this.setState({
-                    passwordErrorMessage: 'Please enter a password!',
+                    passwordErrorMessage: "Please enter a password!"
                   });
                   return;
                 }
                 if (this.state.password != this.state.passwordConfirm) {
                   this.setState({
-                    passwordErrorMessage: "Password confirmation doesn't match",
+                    passwordErrorMessage: "Password confirmation doesn't match"
                   });
                   return;
                 }
                 const response = await this.props.lndApi.initwallet(
                   this.state.cipher,
-                  this.state.password,
+                  this.state.password
                 );
                 if (response.error) {
                   this.setState({ passwordErrorMessage: response.error });
                   return;
                 }
                 // TODO: navigate
-                console.log('navigating to wallet screen!!');
+                console.log("navigating to wallet screen!!");
               }}
             >
               Confirm
@@ -137,9 +137,9 @@ class ScreenGenSeed extends Component {
               onPress={() => {
                 LayoutAnimation.easeInEaseOut();
                 this.setState({
-                  seed: '',
+                  seed: "",
                   confirming: true,
-                  settingPassword: false,
+                  settingPassword: false
                 });
               }}
             >
@@ -172,11 +172,11 @@ class ScreenGenSeed extends Component {
               style={[styles.buttonText, styles.confirm]}
               containerStyle={styles.buttonContainer}
               onPress={() => {
-                if (!this.state.seed || this.state.seed == '') {
+                if (!this.state.seed || this.state.seed == "") {
                   return;
                 }
                 LayoutAnimation.easeInEaseOut();
-                const enteredSeed = this.state.seed.split(' ').filter(String);
+                const enteredSeed = this.state.seed.split(" ").filter(String);
                 const equal =
                   enteredSeed.length == this.state.cipher.length &&
                   this.state.cipher.every((v, i) => v == enteredSeed[i]);
@@ -184,11 +184,11 @@ class ScreenGenSeed extends Component {
                   this.setState({
                     settingPassword: true,
                     confirming: false,
-                    confirmErrorMessage: '',
+                    confirmErrorMessage: ""
                   });
                 } else {
                   this.setState({
-                    confirmErrorMessage: "Doesn't match generated seed.",
+                    confirmErrorMessage: "Doesn't match generated seed."
                   });
                 }
               }}
@@ -202,7 +202,7 @@ class ScreenGenSeed extends Component {
               containerStyle={styles.buttonContainer}
               onPress={() => {
                 LayoutAnimation.easeInEaseOut();
-                this.setState({ seed: '', confirming: false });
+                this.setState({ seed: "", confirming: false });
               }}
             >
               Cancel
@@ -214,7 +214,7 @@ class ScreenGenSeed extends Component {
               containerStyle={styles.buttonContainer}
               onPress={() => {
                 LayoutAnimation.easeInEaseOut();
-                this.setState({ seed: this.state.cipher.join(' ') });
+                this.setState({ seed: this.state.cipher.join(" ") });
               }}
             >
               Copy from previous screen (only for testnet)
@@ -226,7 +226,7 @@ class ScreenGenSeed extends Component {
       content = (
         <View style={styles.container}>
           <Text style={styles.text}>The following is your seed:</Text>
-          <Text style={styles.text}>{this.state.cipher.join(' ')}</Text>
+          <Text style={styles.text}>{this.state.cipher.join(" ")}</Text>
           <Text style={styles.subinfo}>
             This seed is very important, please note it somewhere, it will be
             used to recover your funds in case something goes wrong.
@@ -263,7 +263,7 @@ class ScreenGenSeed extends Component {
                   const runningWallet = this.state.runningWallet;
                   const walletDir = await this.props.walletDir(runningWallet);
                   await this.props.stopLnd(walletDir);
-                  this.props.navigation.navigate('WalletCreate');
+                  this.props.navigation.navigate("WalletCreate");
                 }}
               >
                 Cancel wallet creation
@@ -284,49 +284,49 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: LOGO_COLOR,
     padding: 10,
-    justifyContent: 'center',
+    justifyContent: "center"
   },
   text: {
     fontSize: 18,
-    color: 'white',
-    margin: 10,
+    color: "white",
+    margin: 10
   },
   subinfo: {
     fontSize: 14,
-    color: 'white',
-    margin: 20,
+    color: "white",
+    margin: 20
   },
   buttonContainer: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
     margin: 10,
-    width: '80%',
-    alignSelf: 'center',
+    width: "80%",
+    alignSelf: "center"
   },
   buttonText: {
     fontSize: 16,
-    color: 'black',
-    padding: 20,
+    color: "black",
+    padding: 20
   },
   textInput: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
     margin: 10,
     flex: 1,
-    padding: 10,
+    padding: 10
   },
   textContainer: {
-    flexDirection: 'row',
-    marginTop: 10,
+    flexDirection: "row",
+    marginTop: 10
   },
   cancel: {
-    color: 'red',
+    color: "red"
   },
   confirm: {
-    color: LOGO_COLOR,
+    color: LOGO_COLOR
   },
   errorMessage: {
     fontSize: 12,
-    color: 'white',
-  },
+    color: "white"
+  }
 });

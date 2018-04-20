@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import { Text } from 'react-native';
+import React, { Component } from "react";
+import { Text } from "react-native";
 
-import shared from './SharedStyles.js';
+import shared from "./SharedStyles.js";
 
 const BoldText = text => <Text style={shared.boldText}>{text}</Text>;
 

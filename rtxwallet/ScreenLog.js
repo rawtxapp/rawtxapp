@@ -1,10 +1,10 @@
 /* @flow */
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import Button from 'react-native-button';
-import LogConsumer from './ContextLog.js';
-import LndConsumer from './ContextLnd.js';
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import Button from "react-native-button";
+import LogConsumer from "./ContextLog.js";
+import LndConsumer from "./ContextLnd.js";
 
 type Props = {};
 export default class ScreenLog extends Component<Props> {
@@ -12,8 +12,8 @@ export default class ScreenLog extends Component<Props> {
     super(props);
 
     this.state = {
-      showing: 'logs',
-      textContent: '',
+      showing: "logs",
+      textContent: ""
     };
   }
 
@@ -29,7 +29,7 @@ export default class ScreenLog extends Component<Props> {
 
   switchToGetJson(jsonGetterFn) {
     return () => {
-      this.setState({ textContent: '', showing: 'textContent' });
+      this.setState({ textContent: "", showing: "textContent" });
       jsonGetterFn()
         .then(json => JSON.stringify(json, null, 2))
         .then(jsonStr => this.setState({ textContent: jsonStr }));
@@ -38,7 +38,7 @@ export default class ScreenLog extends Component<Props> {
 
   switchToLogs() {
     return () => {
-      this.setState({ showing: 'logs' });
+      this.setState({ showing: "logs" });
     };
   }
 
@@ -49,11 +49,11 @@ export default class ScreenLog extends Component<Props> {
 
     let text;
     switch (this.state.showing) {
-      case 'showing':
+      case "showing":
         text = logs();
         break;
 
-      case 'textContent':
+      case "textContent":
         text = this.makeText(this.state.textContent);
         break;
 
@@ -69,35 +69,35 @@ export default class ScreenLog extends Component<Props> {
             <ScrollView style={styles.buttonContainer} horizontal={true}>
               <Button
                 containerStyle={styles.buttonStyle}
-                style={{ fontSize: 20, color: 'green' }}
+                style={{ fontSize: 20, color: "green" }}
                 onPress={startLnd}
               >
                 Start
               </Button>
               <Button
                 containerStyle={styles.buttonStyle}
-                style={{ fontSize: 20, color: 'red' }}
+                style={{ fontSize: 20, color: "red" }}
                 onPress={stopLnd}
               >
                 Stop
               </Button>
               <Button
                 containerStyle={styles.buttonStyle}
-                style={{ fontSize: 20, color: 'black' }}
+                style={{ fontSize: 20, color: "black" }}
                 onPress={this.switchToLogs()}
               >
                 Logs
               </Button>
               <Button
                 containerStyle={styles.buttonStyle}
-                style={{ fontSize: 20, color: 'black' }}
+                style={{ fontSize: 20, color: "black" }}
                 onPress={this.switchToGetJson(getInfo)}
               >
                 Info
               </Button>
               <Button
                 containerStyle={styles.buttonStyle}
-                style={{ fontSize: 20, color: 'black' }}
+                style={{ fontSize: 20, color: "black" }}
                 onPress={this.switchToGetJson(genSeed)}
               >
                 GenSeed
@@ -112,27 +112,27 @@ export default class ScreenLog extends Component<Props> {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1
   },
   textContainer: {
     flex: 9,
-    backgroundColor: 'black',
+    backgroundColor: "black"
   },
   text: {
-    color: 'white',
+    color: "white"
   },
   buttonContainer: {
     flex: 1,
-    backgroundColor: 'red',
-    flexDirection: 'row',
+    backgroundColor: "red",
+    flexDirection: "row"
   },
   buttonStyle: {
     padding: 10,
-    overflow: 'hidden',
+    overflow: "hidden",
     borderRadius: 4,
-    backgroundColor: 'white',
-    justifyContent: 'center',
+    backgroundColor: "white",
+    justifyContent: "center",
     flex: 1,
-    margin: 10,
-  },
+    margin: 10
+  }
 });

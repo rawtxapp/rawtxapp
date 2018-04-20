@@ -4,7 +4,7 @@
  * @flow
  */
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   Button,
   NativeModules,
@@ -12,19 +12,19 @@ import {
   StyleSheet,
   Text,
   View,
-  UIManager,
-} from 'react-native';
+  UIManager
+} from "react-native";
 
-import { SwitchNavigator } from 'react-navigation';
+import { SwitchNavigator } from "react-navigation";
 
-import ScreenLog from './ScreenLog.js';
-import ScreenWallet from './ScreenWallet.js';
-import ScreenIntroCreateUnlockWallet from './ScreenIntroCreateUnlockWallet.js';
-import ScreenGenSeed from './ScreenGenSeed.js';
-import { LogProvider } from './ContextLog.js';
-import { LndProvider } from './ContextLnd.js';
+import ScreenLog from "./ScreenLog.js";
+import ScreenWallet from "./ScreenWallet.js";
+import ScreenIntroCreateUnlockWallet from "./ScreenIntroCreateUnlockWallet.js";
+import ScreenGenSeed from "./ScreenGenSeed.js";
+import { LogProvider } from "./ContextLog.js";
+import { LndProvider } from "./ContextLnd.js";
 
-if (Platform.OS === 'android') {
+if (Platform.OS === "android") {
   UIManager.setLayoutAnimationEnabledExperimental &&
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
@@ -33,9 +33,9 @@ const RootSwitch = SwitchNavigator(
   {
     WalletCreate: { screen: ScreenIntroCreateUnlockWallet },
     GenSeed: { screen: ScreenGenSeed },
-    Wallet: {screen: ScreenWallet}
+    Wallet: { screen: ScreenWallet }
   },
-  { initialRouteName: 'WalletCreate' },
+  { initialRouteName: "WalletCreate" }
 );
 
 export default class App extends Component<Props> {
@@ -54,6 +54,6 @@ export default class App extends Component<Props> {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-  },
+    flex: 1
+  }
 });
