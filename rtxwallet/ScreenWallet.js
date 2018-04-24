@@ -18,9 +18,9 @@ import ScreenQRCodeScan from "./ScreenQRCodeScan.js";
 
 import Button from "react-native-button";
 import shared from "./SharedStyles.js";
-import ScreenSelectPeer from "./ScreenSelectPeer.js";
 
 import ComponentPayInvoiceButtonInCard from "./ComponentPayInvoiceButtonInCard.js";
+import ComponentTransferToChecking from "./ComponentTransferToChecking.js";
 
 class SyncingBlock extends Component {
   render() {
@@ -182,56 +182,7 @@ class SavingsAccount extends Component {
         )}
 
         <View style={shared.separator} />
-        <Button
-          style={[shared.inCardButton]}
-          onPress={async () => {
-            this.setState({
-              showingTransferToChecking: true
-            });
-          }}
-        >
-          Transfer funds to checking account
-        </Button>
-        {this.state.showingTransferToChecking && (
-          <View>
-            <Button
-              onPress={() => this.setState({ showingSelectPeers: true })}
-              style={shared.inCardButton}
-            >
-              Select peer
-            </Button>
-            <Text>
-              Selected peer:{" "}
-              {this.state.transferCheckingPeer &&
-                this.state.transferCheckingPeer.pub_key}
-            </Text>
-            <Button
-              onPress={async () => {
-                const res = await this.props.lndApi.openChannel({
-                  node_pubkey_string: this.state.transferCheckingPeer.pub_key,
-                  local_funding_amount: "2000000"
-                });
-                console.log("here: ", res);
-              }}
-            >
-              Create channel
-            </Button>
-          </View>
-        )}
-        <Modal
-          isVisible={this.state.showingSelectPeers}
-          onBackdropPress={() => this.setState({ showingSelectPeers: false })}
-        >
-          <ScreenSelectPeer
-            onCancel={() => this.setState({ showingSelectPeers: false })}
-            selectPeer={p =>
-              this.setState({
-                transferCheckingPeer: p,
-                showingSelectPeers: false
-              })
-            }
-          />
-        </Modal>
+        <ComponentTransferToChecking />
       </View>
     );
   }
@@ -254,20 +205,6 @@ class ScreenWallet extends Component {
 
     this.connectRawtxPeer();
   }
-
-  // TODO: move to a better place
-  connectRawtxPeer = async () => {
-    await this.props.lndApi.addPeers(
-      "02e998b1009ae8833c3dd8ff00e3c2bd436a0d524c678c43057445a398d838d524",
-      "35.188.28.37:9735",
-      true
-    );
-    await this.props.lndApi.addPeers(
-      "039cc950286a8fa99218283d1adc2456e0d5e81be558da77dd6e85ba9a1fff5ad3",
-      "34.200.252.146:9735",
-      true
-    );
-  };
 
   componentWillUnmount() {
     clearInterval(this.state.watchingGetInfo);

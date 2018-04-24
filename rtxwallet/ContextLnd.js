@@ -99,7 +99,7 @@ const writeLndConf = async function(wallet) {
     peers += (peers.length == 0 ? "" : "\n") + "neutrino.addpeer=" + peer;
   }
   const conf = `[Application Options]
-debuglevel=trace
+debuglevel=info
 debughtlc=true
 maxpendingchannels=10
 no-macaroons=true
@@ -183,6 +183,18 @@ class LndProvider extends Component {
     //TODO: otherwise convert
   };
 
+  getDisplayUnit = () => {
+    // TODO: add possibility to change it
+    return "satoshi";
+  };
+
+  displayUnitToSatoshi = amount_in_display_unit => {
+    if (this.getDisplayUnit() == "satoshi") {
+      return amount_in_display_unit;
+    }
+    //TODO: implement
+  };
+
   render() {
     const walletConf = this.state.walletConf;
     const addWalletUpdateState = async newWallet => {
@@ -201,6 +213,8 @@ class LndProvider extends Component {
           lndApi: LndApi,
           addWallet: addWalletUpdateState,
           wallets: this.state.walletConf.wallets,
+          getDisplayUnit: this.getDisplayUnit,
+          displayUnitToSatoshi: this.displayUnitToSatoshi,
           startLndFromWallet,
           isLndProcessRunning,
           getRunningWallet,

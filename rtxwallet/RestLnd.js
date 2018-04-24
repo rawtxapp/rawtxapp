@@ -34,7 +34,6 @@ class LndApi {
       this.log("urlIn: " + urlIn);
       const url = this.url(urlIn);
       const response = await fetch({ url });
-      this.log(response);
       const json = JSON.parse(response["bodyString"]);
       return json;
     } catch (error) {
@@ -141,6 +140,11 @@ class LndApi {
 
   openChannel = async channelRequest => {
     this.log("opening channel to: ", channelRequest.node_pubkey_string);
+    if (channelRequest.node_pubkey_string.includes("@")) {
+      channelRequest.node_pubkey_string = channelRequest.node_pubkey_string.split(
+        "@"
+      )[0];
+    }
     return await this.genericPostJson("channels", channelRequest);
   };
 

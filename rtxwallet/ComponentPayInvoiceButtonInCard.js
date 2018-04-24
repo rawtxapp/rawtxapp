@@ -88,6 +88,9 @@ class ComponentPayInvoiceButtonInCard extends Component {
         onBackdropPress={() => this.setState({ scanningQR: false })}
       >
         <ScreenQRCodeScan
+          instructions={
+            "Point the camera to a payment invoice QR code. Make sure the QR code fills the container above."
+          }
           dismiss={() => this.setState({ scanningQR: false })}
           qrScanned={qr => {
             console.log("here: ", qr);

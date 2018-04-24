@@ -13,17 +13,32 @@ const shared = StyleSheet.create({
   flexOne: {
     flex: 1
   },
+  flexTwo: {
+    flex: 2
+  },
+  flexThree: {
+    flex: 3
+  },
   flexZero: {
     flex: 0
   },
   noPadding: {
     padding: 0
   },
+  flexRow: {
+    flexDirection: "row"
+  },
   inCardButton: {
     padding: 4,
     margin: 4,
     color: LOGO_COLOR,
     fontSize: 16
+  },
+  centerPrimaryAxis: {
+    justifyContent: "center"
+  },
+  centerSecondaryAxis: {
+    alignItems: "center"
   },
   accountHeader: {
     fontSize: 16,
@@ -38,6 +53,14 @@ const shared = StyleSheet.create({
     padding: 10
   },
   selectableText: {
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: LOGO_COLOR,
+    margin: 10,
+    padding: 10,
+    fontSize: 14
+  },
+  textInput: {
     borderRadius: 10,
     borderWidth: 2,
     borderColor: LOGO_COLOR,

@@ -15,10 +15,7 @@ export default class ScreenQRCodeScan extends Component {
         topViewStyle={shared.flexZero}
         bottomContent={
           <View>
-            <Text style={styles.instructions}>
-              Point the camera to a payment invoice QR code. Make sure the QR
-              code fills the container above.
-            </Text>
+            <Text style={styles.instructions}>{this.props.instructions}</Text>
             <Button style={shared.cancelButton} onPress={this.props.dismiss}>
               Cancel
             </Button>
