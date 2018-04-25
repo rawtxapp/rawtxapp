@@ -10,6 +10,10 @@ const shared = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20
   },
+  containerStyleOnly: {
+    borderRadius: 10,
+    backgroundColor: "white"
+  },
   flexOne: {
     flex: 1
   },
