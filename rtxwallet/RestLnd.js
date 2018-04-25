@@ -169,6 +169,11 @@ class LndApi {
       payment_request: this.removeLightning_(payreq)
     });
   };
+
+  graph = async () => {
+    this.log("getting graph information");
+    return await this.genericGetJson("graph");
+  };
 }
 
 export default new LndApi();
