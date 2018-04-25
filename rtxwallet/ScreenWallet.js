@@ -21,6 +21,7 @@ import shared from "./SharedStyles.js";
 
 import ComponentPayInvoiceButtonInCard from "./ComponentPayInvoiceButtonInCard.js";
 import ComponentTransferToChecking from "./ComponentTransferToChecking.js";
+import ComponentWalletOperations from "./ComponentWalletOperations.js";
 
 class SyncingBlock extends Component {
   render() {
@@ -202,8 +203,6 @@ class ScreenWallet extends Component {
 
     const watchingGetInfo = setInterval(this.watchGetInfo, 1500);
     this.setState({ watchingGetInfo });
-
-    this.connectRawtxPeer();
   }
 
   componentWillUnmount() {
@@ -276,6 +275,7 @@ class ScreenWallet extends Component {
           <SyncingBlock getinfo={this.state.getinfo} />
           <CheckingAccountWithLnd />
           <SavingsAccountWithLnd />
+          <ComponentWalletOperations />
           {footer}
         </View>
       );
