@@ -26,7 +26,9 @@ class LndApi {
   };
 
   log = (...args) => {
-    console.log(this.TAG, ...args);
+    if (__DEV__) {
+      console.log(this.TAG, ...args);
+    }
   };
 
   genericGetJson = async urlIn => {
@@ -35,6 +37,7 @@ class LndApi {
       const url = this.url(urlIn);
       const response = await fetch({ url });
       const json = JSON.parse(response["bodyString"]);
+      this.log(json);
       return json;
     } catch (error) {
       this.log("for url: " + urlIn + error);
@@ -50,8 +53,8 @@ class LndApi {
         method: "post",
         jsonBody: JSON.stringify(jsonIn)
       });
-      this.log(response);
       const json = JSON.parse(response["bodyString"]);
+      this.log(json);
       return json;
     } catch (error) {
       console.error("for url: " + urlIn + error);

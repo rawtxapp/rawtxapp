@@ -17,8 +17,8 @@ export const isHex = function(str) {
 //       "alias": "string",
 //       "addresses": [
 //         {
-//           "network": "string",
-//           "addr": "string"
+//           "network": "string", = tcp
+//           "addr": "string" = ip:port
 //         }
 //       ],
 //       "color": "string"
@@ -49,9 +49,7 @@ export const isHex = function(str) {
 // }
 
 export const orderNodesByLastUpdate = function(graph) {
-  console.log("here");
   if (!graph || !graph.nodes) return;
-  console.log("before:", graph.nodes.map(n => n.last_update));
   graph.nodes.sort((a, b) => {
     if (b.last_update == undefined) {
       return -1;
@@ -60,7 +58,6 @@ export const orderNodesByLastUpdate = function(graph) {
     }
     return parseInt(b.last_update) - parseInt(a.last_update);
   });
-  console.log("after:", graph.nodes.map(n => n.last_update));
 };
 
 // This function adds an extra field to nodes object with

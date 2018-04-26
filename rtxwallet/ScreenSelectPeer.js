@@ -22,7 +22,6 @@ class ScreenSelectPeer extends Component {
   };
 
   render() {
-    console.log("here: ", this.state.peers);
     return (
       <View style={shared.container}>
         {this.state.peers &&
