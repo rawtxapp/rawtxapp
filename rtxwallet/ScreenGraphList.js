@@ -58,7 +58,7 @@ class ScreenGraphList extends Component {
           style={[shared.smallButton, shared.textAlignLeft]}
           onPress={async () => {
             try {
-              if (n.addresses.length == 0) {
+              if (!n.addresses || (n.addresses && n.addresses.length == 0)) {
                 this.setState({
                   [errorKey]: "This peer doesn't have any addresses."
                 });
