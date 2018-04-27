@@ -6,7 +6,6 @@ import shared from "./SharedStyles.js";
 import Button from "react-native-button";
 import withLnd from "./withLnd.js";
 import ScreenSelectPeer from "./ScreenSelectPeer.js";
-import ScreenQRCodeScan from "./ScreenQRCodeScan.js";
 
 class ComponentTransferToChecking extends Component {
   constructor(props) {
@@ -80,7 +79,22 @@ class ComponentTransferToChecking extends Component {
           Open channel to an existing peer
         </Button>
         <Button
-          onPress={() => this.setState({ scanningQR: true })}
+          onPress={async () => {
+            try {
+              const qr = await this.props.scanQrCode();
+              if (!qr) {
+                this.setState({ error: "didn't scan a qr code." });
+                return;
+              }
+              this.setState({
+                payreq: undefined,
+                error: "",
+                scannedPeerCode: qr
+              });
+            } catch (error) {
+              this.setState({ error });
+            }
+          }}
           style={shared.inCardButton}
         >
           Create new channel to a peer by QR code
@@ -122,28 +136,6 @@ class ComponentTransferToChecking extends Component {
     );
   };
 
-  _renderModalChannelPeerQR = () => {
-    return (
-      <Modal
-        isVisible={this.state.scanningQR}
-        onBackdropPress={() => this.setState({ scanningQR: false })}
-      >
-        <ScreenQRCodeScan
-          instructions={"Point the camera to the peer's QR code."}
-          dismiss={() => this.setState({ scanningQR: false })}
-          qrScanned={qr => {
-            this.setState({
-              scanningQR: false,
-              scannedPeerCode: qr,
-              selectedPeer: undefined,
-              error: ""
-            });
-          }}
-        />
-      </Modal>
-    );
-  };
-
   render() {
     return (
       <View>
@@ -159,7 +151,6 @@ class ComponentTransferToChecking extends Component {
         </Button>
         {this._renderTransferring()}
         {this._renderModalSelectPeer()}
-        {this._renderModalChannelPeerQR()}
       </View>
     );
   }

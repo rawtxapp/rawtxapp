@@ -5,7 +5,6 @@ import Button from "react-native-button";
 import Modal from "react-native-modal";
 import withLnd from "./withLnd.js";
 import shared from "./SharedStyles.js";
-import ScreenQRCodeScan from "./ScreenQRCodeScan.js";
 import { BoldText } from "./ComponentShared.js";
 
 class ComponentPayInvoiceButtonInCard extends Component {
@@ -73,7 +72,6 @@ class ComponentPayInvoiceButtonInCard extends Component {
                 return;
               }
               this.setState({
-                scanningQR: false,
                 payreq: undefined,
                 error: ""
               });
@@ -88,26 +86,6 @@ class ComponentPayInvoiceButtonInCard extends Component {
         {this._renderPayreq(this.state.payreq)}
         {this._renderError(this.state.error)}
       </View>
-    );
-  };
-
-  _renderModal = () => {
-    return (
-      <Modal
-        isVisible={this.state.scanningQR}
-        onBackdropPress={() => this.setState({ scanningQR: false })}
-      >
-        <ScreenQRCodeScan
-          instructions={
-            "Point the camera to a payment invoice QR code. Make sure the QR code fills the container above."
-          }
-          dismiss={() => this.setState({ scanningQR: false })}
-          qrScanned={qr => {
-            this.setState({ scanningQR: false, payreq: undefined, error: "" });
-            this.decodePayreq(qr);
-          }}
-        />
-      </Modal>
     );
   };
 
@@ -151,7 +129,6 @@ class ComponentPayInvoiceButtonInCard extends Component {
         </Button>
         {this._renderPaying()}
         {this._renderPaybutton()}
-        {this._renderModal()}
       </View>
     );
   }

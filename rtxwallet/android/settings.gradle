@@ -1,5 +1,4 @@
 rootProject.name = 'rtxwallet'
-include ':react-native-camera', ':rtx_export-android-16'
-project(':react-native-camera').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-camera/android')
+include ':rtx_export-android-16'
 
 include ':app'
