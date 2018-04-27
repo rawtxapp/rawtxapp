@@ -132,6 +132,17 @@ class ComponentPayInvoiceButtonInCard extends Component {
         </Button>
         {this._renderPaying()}
         {this._renderPaybutton()}
+        {this.state.paying && (
+          <Button
+            onPress={() => {
+              this._initState();
+              this.setState({ paying: false });
+            }}
+            style={[shared.inCardButton, shared.cancelButton]}
+          >
+            Cancel payment
+          </Button>
+        )}
       </View>
     );
   }
