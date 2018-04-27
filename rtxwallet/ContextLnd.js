@@ -13,7 +13,8 @@ import {
   readFile,
   writeFile,
   isLndProcessRunning,
-  encodeBase64
+  encodeBase64,
+  scanQrCode
 } from "./NativeRtxModule.js";
 import LndApi from "./RestLnd.js";
 
@@ -221,7 +222,8 @@ class LndProvider extends Component {
           walletDir,
           encodeBase64,
           stopLndFromWallet,
-          displaySatoshi: this.displaySatoshi
+          displaySatoshi: this.displaySatoshi,
+          scanQrCode
         }}
       >
         {this.props.children}

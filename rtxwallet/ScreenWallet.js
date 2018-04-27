@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import {
   ActivityIndicator,
   Image,
+  Modal,
   ScrollView,
   StyleSheet,
   View,
@@ -13,8 +14,6 @@ import TimerMixin from "react-timer-mixin";
 import ReactMixin from "react-mixin";
 import { LOGO_COLOR } from "./Colors.js";
 import { timeout } from "./Utils.js";
-import Modal from "react-native-modal";
-import ScreenQRCodeScan from "./ScreenQRCodeScan.js";
 
 import Button from "react-native-button";
 import shared from "./SharedStyles.js";

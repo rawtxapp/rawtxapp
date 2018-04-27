@@ -1,6 +1,7 @@
 package com.rtxwallet;
 
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +12,9 @@ import android.os.Process;
 import android.util.Base64;
 import android.util.Log;
 
+import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
@@ -21,6 +24,8 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -69,10 +74,29 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
     private SSLContext sslContext;
     private X509TrustManager trustManager;
 
+    private Promise qrScanPromise;
+
+    private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
+
+        @Override
+        public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent intent) {
+            IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+            if(scanResult != null){
+                qrScanPromise.resolve(scanResult.getContents());
+            }else {
+                qrScanPromise.reject(new Exception("Couldn't read qr code."));
+            }
+            qrScanPromise = null;
+        }
+    };
+
+
     public RtxModule(ReactApplicationContext reactContext) {
         super(reactContext); //required by React Native
         reactContext.addLifecycleEventListener(this);
 //        logWatcher = new LogWatcher(getLogFile());
+
+        reactContext.addActivityEventListener(mActivityEventListener);
     }
 
     @Override
@@ -176,6 +200,13 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
                 return null;
             }
         }.execute(lndDir);
+    }
+
+    @ReactMethod
+    public void scanQrCode(Promise promise) {
+        qrScanPromise = promise;
+        IntentIntegrator integrator = new IntentIntegrator(getCurrentActivity());
+        integrator.initiateScan();
     }
 
     @ReactMethod

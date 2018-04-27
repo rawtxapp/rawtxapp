@@ -66,6 +66,10 @@ const encodeBase64 = async function(str) {
   return await Rtx.encodeBase64(str);
 };
 
+const scanQrCode = async function() {
+  return await Rtx.scanQrCode();
+};
+
 export {
   getLogContent,
   startLnd,
@@ -78,5 +82,6 @@ export {
   fileExists,
   getAppDir,
   isLndProcessRunning,
-  encodeBase64
+  encodeBase64,
+  scanQrCode
 };

@@ -16,9 +16,7 @@ class ComponentPayInvoiceButtonInCard extends Component {
 
   decodePayreq = async payreqQR => {
     try {
-      console.log("hereb, ", payreqQR);
       const payreq = await this.props.lndApi.decodepayreq(payreqQR);
-      console.log("herea, ", payreqQR);
       if (!payreq.error) {
         this.setState({ payreq, payreqQR });
       } else {
@@ -67,11 +65,23 @@ class ComponentPayInvoiceButtonInCard extends Component {
       <View>
         <Button
           style={[shared.inCardButton]}
-          onPress={() =>
-            this.setState({
-              scanningQR: true
-            })
-          }
+          onPress={async () => {
+            try {
+              const qr = await this.props.scanQrCode();
+              if (!qr) {
+                this.setState({ error: "didn't scan a qr code." });
+                return;
+              }
+              this.setState({
+                scanningQR: false,
+                payreq: undefined,
+                error: ""
+              });
+              this.decodePayreq(qr);
+            } catch (error) {
+              this.setState({ error });
+            }
+          }}
         >
           By QR code
         </Button>
@@ -93,7 +103,6 @@ class ComponentPayInvoiceButtonInCard extends Component {
           }
           dismiss={() => this.setState({ scanningQR: false })}
           qrScanned={qr => {
-            console.log("here: ", qr);
             this.setState({ scanningQR: false, payreq: undefined, error: "" });
             this.decodePayreq(qr);
           }}
@@ -113,7 +122,6 @@ class ComponentPayInvoiceButtonInCard extends Component {
               const payment = await this.props.lndApi.sendpaymentPayreq(
                 this.state.payreqQR
               );
-              console.log(payment);
               this.setState({ payment });
             } catch (error) {
               this.setState({ error });

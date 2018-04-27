@@ -154,6 +154,10 @@ dependencies {
     api 'com.android.support:appcompat-v7:27.0.2'
     api 'com.facebook.react:react-native:+'
     api 'com.squareup.okhttp3:logging-interceptor:3.6.0'
+    api('com.journeyapps:zxing-android-embedded:3.6.0'){
+        transitive = false
+    }
+    api 'com.google.zxing:core:3.3.0'
     api project(':rtx_export-android-16')
 }
 
