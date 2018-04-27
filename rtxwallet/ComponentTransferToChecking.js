@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Text, TextInput } from "react-native";
+import { Modal, StyleSheet, View, Text, TextInput } from "react-native";
 
-import Modal from "react-native-modal";
 import shared from "./SharedStyles.js";
 import Button from "react-native-button";
 import withLnd from "./withLnd.js";
@@ -119,8 +118,9 @@ class ComponentTransferToChecking extends Component {
   _renderModalSelectPeer = () => {
     return (
       <Modal
-        isVisible={this.state.selectingPeer}
-        onBackdropPress={() => this.setState({ selectingPeer: false })}
+        visible={this.state.selectingPeer}
+        onRequestClose={() => this.setState({ selectingPeer: false })}
+        animationType="slide"
       >
         <ScreenSelectPeer
           onCancel={() => this.setState({ selectingPeer: false })}

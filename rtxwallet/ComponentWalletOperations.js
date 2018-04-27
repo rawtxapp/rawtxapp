@@ -1,15 +1,14 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Modal, StyleSheet, Text, View } from "react-native";
 import withLnd from "./withLnd";
 import shared from "./SharedStyles";
 import Button from "react-native-button";
-import Modal from "react-native-modal";
 import ScreenGraphList from "./ScreenGraphList";
 
 class ComponentWalletOperations extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { showingGraphNodes: false };
   }
 
   componentDidMount() {}
@@ -26,8 +25,9 @@ class ComponentWalletOperations extends Component {
         </Button>
 
         <Modal
-          isVisible={this.state.showingGraphNodes}
-          onBackdropPress={cancelOp}
+          visible={this.state.showingGraphNodes}
+          onRequestClose={cancelOp}
+          animationType="slide"
         >
           <ScreenGraphList onCancel={cancelOp} />
         </Modal>

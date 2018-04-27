@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import Button from "react-native-button";
-import Modal from "react-native-modal";
 import withLnd from "./withLnd.js";
 import shared from "./SharedStyles.js";
 import { BoldText } from "./ComponentShared.js";
