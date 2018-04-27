@@ -33,6 +33,9 @@ class ScreenGraphList extends Component {
   _renderGraphNode = n => {
     const lastUpdate = new Date();
     lastUpdate.setTime(parseInt(n.last_update) * 1000);
+
+    const errorKey = "error" + n.pub_key;
+    const successKey = "success" + n.pub_key;
     return (
       <View style={styles.nodeItem}>
         <Text>{n.alias}</Text>
@@ -51,6 +54,36 @@ class ScreenGraphList extends Component {
           <Text style={shared.boldText}>#in capacity:</Text>
           {n.in_capacity}
         </Text>
+        <Button
+          style={[shared.smallButton, shared.textAlignLeft]}
+          onPress={async () => {
+            try {
+              if (n.addresses.length == 0) {
+                this.setState({
+                  [errorKey]: "This peer doesn't have any addresses."
+                });
+                return;
+              }
+              const { addr } = n.addresses[0];
+              const res = await this.props.lndApi.addPeers(
+                n.pub_key,
+                addr,
+                true
+              );
+              if (res && !res.error) {
+                this.setState({ [successKey]: "Connected!" });
+              } else if (res.error) {
+                this.setState({ [errorKey]: res.error });
+              }
+            } catch (err) {
+              this.setState({ [errorKey]: err });
+            }
+          }}
+        >
+          Connect
+        </Button>
+        {this.state[errorKey] && <Text>{this.state[errorKey]}</Text>}
+        {this.state[successKey] && <Text>{this.state[successKey]}</Text>}
       </View>
     );
   };

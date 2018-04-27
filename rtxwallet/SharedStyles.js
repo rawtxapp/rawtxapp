@@ -38,6 +38,13 @@ const shared = StyleSheet.create({
     color: LOGO_COLOR,
     fontSize: 16
   },
+  smallButton: {
+    color: LOGO_COLOR,
+    fontSize: 14
+  },
+  textAlignLeft: {
+    textAlign: "left"
+  },
   centerPrimaryAxis: {
     justifyContent: "center"
   },
