@@ -12,6 +12,13 @@ class ComponentPayInvoiceButtonInCard extends Component {
     this.state = {};
   }
 
+  _initState = () => {
+    this.setState({
+      payreq: undefined,
+      error: ""
+    });
+  };
+
   decodePayreq = async payreqQR => {
     try {
       const payreq = await this.props.lndApi.decodepayreq(payreqQR);
@@ -70,10 +77,7 @@ class ComponentPayInvoiceButtonInCard extends Component {
                 this.setState({ error: "didn't scan a qr code." });
                 return;
               }
-              this.setState({
-                payreq: undefined,
-                error: ""
-              });
+              this._initState();
               this.decodePayreq(qr);
             } catch (error) {
               this.setState({ error });
@@ -117,12 +121,12 @@ class ComponentPayInvoiceButtonInCard extends Component {
       <View>
         <Button
           style={[shared.inCardButton]}
-          onPress={() =>
+          onPress={() => {
+            this._initState();
             this.setState({
-              paying: !this.state.paying,
-              payreq: undefined
-            })
-          }
+              paying: !this.state.paying
+            });
+          }}
         >
           Pay invoice
         </Button>
