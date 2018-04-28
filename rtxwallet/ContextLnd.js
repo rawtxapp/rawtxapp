@@ -17,6 +17,7 @@ import {
   scanQrCode
 } from "./NativeRtxModule.js";
 import LndApi from "./RestLnd.js";
+import WalletListener from "./WalletListener";
 
 const WALLET_CONF_FILE = "wallet.conf";
 const DEFAULT_NEUTRINO_CONNECT = "faucet.lightning.community,rbtcdt.rawtx.com";
@@ -170,6 +171,7 @@ class LndProvider extends Component {
 
   componentDidMount() {
     readWalletConfig().then(cfg => this.setState({ walletConf: cfg }));
+    this.setState({ walletListener: new WalletListener() });
   }
 
   componentWillUnmount() {}
@@ -223,7 +225,8 @@ class LndProvider extends Component {
           encodeBase64,
           stopLndFromWallet,
           displaySatoshi: this.displaySatoshi,
-          scanQrCode
+          scanQrCode,
+          walletListener: this.state.walletListener
         }}
       >
         {this.props.children}

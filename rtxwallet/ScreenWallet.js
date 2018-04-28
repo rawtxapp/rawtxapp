@@ -53,23 +53,15 @@ class CheckingAccount extends Component {
   }
 
   componentDidMount() {
-    this.watchBalance();
-    const watchingBalance = setInterval(this.watchBalance, 2000);
-    this.setState({ watchingBalance });
+    this.balanceListener_ = this.props.walletListener.listenToBalanceChannels(
+      balance => this.setState({ balance })
+    );
   }
 
   componentWillUnmount() {
-    clearInterval(this.state.watchingBalance);
+    this.balanceListener_.remove();
   }
 
-  watchBalance = async () => {
-    try {
-      const balance = await this.props.lndApi.balanceChannels();
-      this.setState({ balance });
-    } catch (err) {
-      this.setState({ balance: {} });
-    }
-  };
   render() {
     return (
       <View style={shared.container}>
@@ -108,22 +100,13 @@ class SavingsAccount extends Component {
     };
   }
   componentDidMount() {
-    this.watchBalance();
-    const watchingBalance = setInterval(this.watchBalance, 2000);
-    this.setState({ watchingBalance });
+    this.balanceListener_ = this.props.walletListener.listenToBalanceBlockchain(
+      balance => this.setState({ balance })
+    );
   }
   componentWillUnmount() {
-    clearInterval(this.state.watchingBalance);
+    this.balanceListener_.remove();
   }
-
-  watchBalance = async () => {
-    try {
-      const balance = await this.props.lndApi.balanceBlockchain();
-      this.setState({ balance });
-    } catch (err) {
-      this.setState({ balance: {} });
-    }
-  };
 
   render() {
     return (
@@ -198,34 +181,27 @@ class ScreenWallet extends Component {
 
   componentDidMount() {
     this.setRunningWallet();
-    this.i = 0;
-
-    const watchingGetInfo = setInterval(this.watchGetInfo, 1500);
-    this.setState({ watchingGetInfo });
+    this.props.walletListener.startWatching();
+    this.getInfoListener_ = this.props.walletListener.listenToGetInfo(
+      getinfo => {
+        this.setState({ getinfo });
+      }
+    );
   }
 
   componentWillUnmount() {
-    clearInterval(this.state.watchingGetInfo);
+    this.getInfoListener_.remove();
   }
 
   setRunningWallet = async () => {
-    if (!this.state.wallet || !this.state.getinfo) {
+    if (!this.state.wallet) {
       try {
         const wallet = await this.props.getRunningWallet();
-        const getinfo = await this.props.lndApi.getInfo();
-        this.setState({ wallet, getinfo });
+        this.setState({ wallet });
       } catch (err) {
         this.setTimeout(this.setRunningWallet, 1000);
       }
     }
-  };
-
-  watchGetInfo = async () => {
-    try {
-      const getinfo = await this.props.lndApi.getInfo();
-      getinfo["testIx"] = this.i++;
-      this.setState({ getinfo });
-    } catch (err) {}
   };
 
   render() {
