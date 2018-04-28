@@ -174,6 +174,11 @@ class LndApi {
     this.log("getting graph information");
     return await this.genericGetJson("graph");
   };
+
+  graphInfo = async () => {
+    this.log("getting graph summary information");
+    return await this.genericGetJson("graph/info");
+  };
 }
 
 export default new LndApi();
