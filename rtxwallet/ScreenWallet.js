@@ -140,7 +140,7 @@ class SavingsAccount extends Component {
               const newaddress = await this.props.lndApi.newaddress();
               this.setState({
                 generatedAddress: newaddress["address"],
-                showingGeneratedAddress: true
+                showingGeneratedAddress: !this.state.showingGeneratedAddress
               });
             } catch (err) {}
           }}

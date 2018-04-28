@@ -143,7 +143,7 @@ class ComponentTransferToChecking extends Component {
           style={[shared.inCardButton]}
           onPress={async () => {
             this.setState({
-              transferring: true
+              transferring: !this.state.transferring
             });
           }}
         >
