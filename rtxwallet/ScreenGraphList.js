@@ -145,6 +145,8 @@ const styles = StyleSheet.create({
     flex: 9
   },
   actionContainer: {
-    flex: 1
+    flex: 1,
+    borderTopWidth: 1,
+    borderColor: "gray"
   }
 });
