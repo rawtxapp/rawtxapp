@@ -21,6 +21,7 @@ import shared from "./SharedStyles.js";
 import ComponentPayInvoiceButtonInCard from "./ComponentPayInvoiceButtonInCard.js";
 import ComponentTransferToChecking from "./ComponentTransferToChecking.js";
 import ComponentWalletOperations from "./ComponentWalletOperations.js";
+import ComponentTransferToSavings from "./ComponentTransferToSavings.js";
 
 class SyncingBlock extends Component {
   render() {
@@ -81,6 +82,8 @@ class CheckingAccount extends Component {
         </Text>
         <View style={shared.separator} />
         <ComponentPayInvoiceButtonInCard />
+        <View style={shared.separator} />
+        <ComponentTransferToSavings />
       </View>
     );
   }
