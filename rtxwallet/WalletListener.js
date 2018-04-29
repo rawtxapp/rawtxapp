@@ -43,7 +43,7 @@ export default class WalletListener {
     // to listen whichever event they want.
     for (let i = 0; i < watchers.length; i++) {
       const listener = watchers[i];
-      this["listenTo" + listener.method] = async (fn, immediate = true) => {
+      this["listenTo" + listener.method] = (fn, immediate = true) => {
         const listenerResult = this.eventListener.addListener(
           listener.method,
           fn
