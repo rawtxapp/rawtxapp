@@ -18,11 +18,16 @@ class LndApi {
     this.TAG = "LndApi";
   }
 
-  url = path => {
+  url = (path, queryParams) => {
     if (!path.startsWith("/")) {
       path = "/" + path;
     }
-    return "https://" + this.host + ":" + this.port + this.pathPrefix + path;
+    let finalPath =
+      "https://" + this.host + ":" + this.port + this.pathPrefix + path;
+    if (queryParams) {
+      finalPath += "?" + queryParams;
+    }
+    return finalPath;
   };
 
   log = (...args) => {
@@ -43,6 +48,18 @@ class LndApi {
     }
   };
 
+  genericDeleteJson = async (urlIn, queryParams) => {
+    try {
+      const url = this.url(urlIn, queryParams);
+      const response = await fetch({ url, method: "delete" });
+      const json = JSON.parse(response["bodyString"]);
+      return json;
+    } catch (error) {
+      this.log("for url: " + urlIn + error);
+      throw error;
+    }
+  };
+
   genericPostJson = async (urlIn, jsonIn) => {
     try {
       const url = this.url(urlIn);
@@ -54,7 +71,7 @@ class LndApi {
       const json = JSON.parse(response["bodyString"]);
       return json;
     } catch (error) {
-      console.error("for url: " + urlIn + error);
+      this.log("for url: " + urlIn + error);
       throw error;
     }
   };
@@ -183,6 +200,24 @@ class LndApi {
   channels = async () => {
     this.log("getting channel information");
     return await this.genericGetJson("channels");
+  };
+
+  pendingChannels = async () => {
+    this.log("getting pending channel information");
+    return await this.genericGetJson("channels/pending");
+  };
+
+  // chan_point format => tx_id:out_ix
+  closeChannel = async chan_point => {
+    const split = chan_point.split(":");
+    const chan_point_tx_id = split[0];
+    const chan_point_out_ix = split[1];
+    this.log("closing channel: ", chan_point_tx_id, chan_point_out_ix);
+
+    return await this.genericDeleteJson(
+      "channels/" + chan_point_tx_id + "/" + chan_point_out_ix,
+      "force=true"
+    );
   };
 }
 
