@@ -57,10 +57,14 @@ class CheckingAccount extends Component {
     this.balanceListener_ = this.props.walletListener.listenToBalanceChannels(
       balance => this.setState({ balance })
     );
+    this.pendingChannelListener_ = this.props.walletListener.listenToPendingChannels(
+      pendingChannel => this.setState({ pendingChannel })
+    );
   }
 
   componentWillUnmount() {
     this.balanceListener_.remove();
+    this.pendingChannelListener_.remove();
   }
 
   render() {
@@ -77,6 +81,14 @@ class CheckingAccount extends Component {
           Pending open balance:{" "}
           {this.props.displaySatoshi(
             (this.state.balance && this.state.balance.pending_open_balance) ||
+              "0"
+          )}
+        </Text>
+        <Text style={shared.baseText}>
+          Total limbo balance:{" "}
+          {this.props.displaySatoshi(
+            (this.state.pendingChannel &&
+              this.state.pendingChannel.total_limbo_balance) ||
               "0"
           )}
         </Text>
