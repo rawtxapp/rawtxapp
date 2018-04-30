@@ -412,7 +412,7 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
                     if(jsRequest.hasKey("method") &&
                             jsRequest.getString("method").toLowerCase().equals("post")) {
                         if (jsRequest.hasKey("jsonBody")) {
-                            String body =jsRequest.getString("jsonBody");
+                            String body = jsRequest.getString("jsonBody");
                             connection.setRequestMethod("POST");
                             connection.setRequestProperty("Content-Type",
                                     "application/x-www-form-urlencoded");
@@ -422,11 +422,16 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
                             connection.setDoOutput(true);
 
                             //Send request
-                            DataOutputStream wr = new DataOutputStream (
+                            DataOutputStream wr = new DataOutputStream(
                                     connection.getOutputStream());
                             wr.writeBytes(body);
                             wr.close();
                         }
+                    }else if(jsRequest.hasKey("method") && jsRequest.getString("method").toLowerCase().equals("delete")){
+                        connection.setRequestMethod("DELETE");
+                        connection.setRequestProperty("Content-Type",
+                                "application/x-www-form-urlencoded");
+                        connection.setDoOutput(true);
                     } else {
                         connection.setRequestMethod("GET");
                     }
