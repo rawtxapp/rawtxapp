@@ -13,7 +13,9 @@ class ComponentTransferToChecking extends Component {
       transferring: false,
       selectingPeer: false,
       selectedPeer: undefined,
-      amount: ""
+      amount: "",
+      error: undefined,
+      success: undefined
     };
   }
 
@@ -48,23 +50,53 @@ class ComponentTransferToChecking extends Component {
         <Button
           style={shared.inCardButton}
           onPress={async () => {
-            if (this.state.scannedPeerCode) {
-              const splitted = this.state.scannedPeerCode.split("@");
-              //Connect to the peer first
-              await this.props.lndApi.addPeers(splitted[0], splitted[1], true);
+            try {
+              if (this.state.scannedPeerCode) {
+                const splitted = this.state.scannedPeerCode.split("@");
+                //Connect to the peer first
+                await this.props.lndApi.addPeers(
+                  splitted[0],
+                  splitted[1],
+                  true
+                );
+              }
+              const res = await this.props.lndApi.openChannel({
+                node_pubkey_string: peerPubkey,
+                local_funding_amount: this.props.displayUnitToSatoshi(
+                  this.state.amount
+                )
+              });
+              if (res.error) {
+                this.setState({ error: res.error });
+                return;
+              } else {
+                this.setState({ success: "Successfully created channel!" });
+              }
+            } catch (error) {
+              this.setState({ error });
             }
-            const res = await this.props.lndApi.openChannel({
-              node_pubkey_string: peerPubkey,
-              local_funding_amount: this.props.displayUnitToSatoshi(
-                this.state.amount
-              )
-            });
           }}
         >
           Create channel
         </Button>
       </View>
     );
+  };
+
+  _renderSuccessOrError = () => {
+    if (this.state.error) {
+      return (
+        <View>
+          <Text style={shared.errorText}>{this.state.error}</Text>
+        </View>
+      );
+    } else if (this.state.success) {
+      return (
+        <View>
+          <Text>{this.state.success}</Text>
+        </View>
+      );
+    }
   };
 
   _renderTransferring = () => {
@@ -99,6 +131,7 @@ class ComponentTransferToChecking extends Component {
           Create new channel to a peer by QR code
         </Button>
         {this._renderSelectedPeer()}
+        {this._renderSuccessOrError()}
         <Button
           onPress={() =>
             this.setState({
@@ -107,9 +140,12 @@ class ComponentTransferToChecking extends Component {
               scannedPeerCode: undefined
             })
           }
-          style={[shared.inCardButton, shared.cancelButton]}
+          style={[
+            shared.inCardButton,
+            !this.state.success && shared.cancelButton
+          ]}
         >
-          Cancel transfer
+          {this.state.success ? "Done" : "Cancel transfer"}
         </Button>
       </View>
     );
