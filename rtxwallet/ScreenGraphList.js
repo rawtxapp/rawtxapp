@@ -9,7 +9,11 @@ import {
 import withLnd from "./withLnd";
 import shared from "./SharedStyles";
 import Button from "react-native-button";
-import { orderNodesByLastUpdate, updateNodesInAndOutCounts } from "./Utils";
+import {
+  orderNodesByLastUpdate,
+  updateNodesInAndOutCounts,
+  orderNodesByRtxScore
+} from "./Utils";
 
 class ScreenGraphList extends Component {
   constructor(props) {
@@ -24,8 +28,8 @@ class ScreenGraphList extends Component {
   getGraph = async () => {
     try {
       const graph = await this.props.lndApi.graph();
-      orderNodesByLastUpdate(graph);
       updateNodesInAndOutCounts(graph);
+      orderNodesByRtxScore(graph);
       this.setState({ graph });
     } catch (err) {}
   };

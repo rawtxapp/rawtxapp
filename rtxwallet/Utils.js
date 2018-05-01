@@ -60,6 +60,68 @@ export const orderNodesByLastUpdate = function(graph) {
   });
 };
 
+export const orderNodesByRtxScore = function(graph) {
+  generateScoresForNodes_(graph);
+  if (!graph || !graph.nodes) return;
+  graph.nodes.sort((a, b) => {
+    if (b.rtx_score == undefined) {
+      return -1;
+    } else if (a.rtx_score == undefined) {
+      return 1;
+    }
+    return b.rtx_score - a.rtx_score;
+  });
+};
+
+// Rtx score is how likely that node is to behave good
+// if we make a channel to it.
+const generateScoresForNodes_ = function(graph) {
+  if (!graph || !graph.nodes || graph.nodes.length == 0) {
+    return;
+  }
+  let least_updated = graph.nodes[0].last_update;
+  let most_updated = graph.nodes[0].last_update;
+  for (let i = 0; i < graph.nodes.length; i++) {
+    const node = graph.nodes[i];
+    if (node.last_update < least_updated) {
+      least_updated = node.last_update;
+    } else if (node.last_update > most_updated) {
+      most_updated = node.last_update;
+    }
+  }
+
+  for (let i = 0; i < graph.nodes.length; i++) {
+    const node = graph.nodes[i];
+
+    // TODO: this is a relatively stupid scoring, do better.
+    let freshness = 0;
+    if (node.last_update && most_updated != least_updated) {
+      freshness =
+        (node.last_update - least_updated) / (most_updated - least_updated);
+    }
+
+    let channel = 0;
+    if (node.in_count && node.in_count > 20) {
+      channel += 0.4;
+    } else if (node.in_count && node.in_count > 10) {
+      channel += 0.2;
+    } else {
+      channel -= 0.2;
+    }
+
+    if (node.out_count && node.out_count > 20) {
+      channel += 0.4;
+    } else if (node.out_count && node.out_count > 10) {
+      channel += 0.2;
+    } else {
+      // if there is limited out channels, that node could have problem routing our payments
+      channel -= 0.9;
+    }
+
+    node.rtx_score = freshness + 1.3 * channel;
+  }
+};
+
 // This function adds an extra field to nodes object with
 // in_count and out_count fields which describes number of
 // incoming and outgoing channels.
