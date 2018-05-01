@@ -15,7 +15,8 @@ class ComponentPayInvoiceButtonInCard extends Component {
   _initState = () => {
     this.setState({
       payreq: undefined,
-      error: ""
+      error: "",
+      paymentSuccess: false
     });
   };
 
@@ -103,15 +104,27 @@ class ComponentPayInvoiceButtonInCard extends Component {
               const payment = await this.props.lndApi.sendpaymentPayreq(
                 this.state.payreqQR
               );
-              this.setState({ payment });
+              if (payment.error) {
+                this.setState({ error: payment.error });
+              } else if (payment.payment_error) {
+                this.setState({ error: payment.payment_error });
+              } else if (payment.payment_preimage) {
+                this.setState({ payment, paymentSuccess: true });
+              } else {
+                this.setState({
+                  error:
+                    "Something happened, got the following result from lnd SendPayment method: " +
+                    payment
+                });
+              }
             } catch (error) {
-              this.setState({ error });
+              this.setState({ error: error.message });
             }
           }}
         >
           Pay
         </Button>
-        <Text>{JSON.stringify(this.state.payment)}</Text>
+        <Text>{this.state.paymentSuccess ? "Successfully paid!" : ""}</Text>
       </View>
     );
   };
@@ -132,17 +145,30 @@ class ComponentPayInvoiceButtonInCard extends Component {
         </Button>
         {this._renderPaying()}
         {this._renderPaybutton()}
-        {this.state.paying && (
-          <Button
-            onPress={() => {
-              this._initState();
-              this.setState({ paying: false });
-            }}
-            style={[shared.inCardButton, shared.cancelButton]}
-          >
-            Cancel payment
-          </Button>
-        )}
+        {this.state.paying &&
+          !this.state.paymentSuccess && (
+            <Button
+              onPress={() => {
+                this._initState();
+                this.setState({ paying: false });
+              }}
+              style={[shared.inCardButton, shared.cancelButton]}
+            >
+              Cancel payment
+            </Button>
+          )}
+        {this.state.paying &&
+          this.state.paymentSuccess && (
+            <Button
+              onPress={() => {
+                this._initState();
+                this.setState({ paying: false });
+              }}
+              style={[shared.inCardButton]}
+            >
+              Done
+            </Button>
+          )}
       </View>
     );
   }
