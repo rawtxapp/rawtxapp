@@ -32,6 +32,8 @@ class ScreenChannels extends Component {
   };
 
   _renderChannelItem = (c, ix) => {
+    const errorKey = "error" + c.chain_id;
+    const successKey = "success" + c.chain_id;
     return (
       <View key={ix} style={styles.nodeItem}>
         <Text selectable>
@@ -58,6 +60,23 @@ class ScreenChannels extends Component {
           <Text style={shared.boldText}>Is active: </Text>
           {c.active ? "yes" : "no"}
         </Text>
+
+        <Button
+          style={[shared.smallButton, shared.textAlignLeft]}
+          onPress={async () => {
+            try {
+              const result = await this.props.lndApi.closeChannel(
+                c.channel_point
+              );
+            } catch (err) {
+              this.setState({ [errorKey]: JSON.stringify(err) });
+            }
+          }}
+        >
+          Close channel
+        </Button>
+        {this.state[errorKey] && <Text>{this.state[errorKey]}</Text>}
+        {this.state[successKey] && <Text>{this.state[successKey]}</Text>}
       </View>
     );
   };
