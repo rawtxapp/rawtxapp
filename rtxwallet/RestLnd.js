@@ -219,6 +219,14 @@ class LndApi {
       "force=true"
     );
   };
+
+  addInvoiceSimple = async (memo, amount_sat) => {
+    this.log("adding simple invoice: ", memo, ", ", amount_sat);
+    return await this.genericPostJson("invoices", {
+      memo,
+      value: parseInt(amount_sat)
+    });
+  };
 }
 
 export default new LndApi();

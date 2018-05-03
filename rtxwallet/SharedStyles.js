@@ -56,6 +56,13 @@ const shared = StyleSheet.create({
     color: LOGO_COLOR,
     fontWeight: "bold"
   },
+  headerText: {
+    fontSize: 16,
+    fontWeight: "bold"
+  },
+  explanationText: {
+    fontSize: 14
+  },
   textInput: {
     backgroundColor: "white",
     borderRadius: 10,

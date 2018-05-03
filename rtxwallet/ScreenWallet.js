@@ -22,6 +22,7 @@ import ComponentPayInvoiceButtonInCard from "./ComponentPayInvoiceButtonInCard.j
 import ComponentTransferToChecking from "./ComponentTransferToChecking.js";
 import ComponentWalletOperations from "./ComponentWalletOperations.js";
 import ComponentTransferToSavings from "./ComponentTransferToSavings.js";
+import ComponentReceive from "./ComponentReceive.js";
 
 class SyncingBlock extends Component {
   render() {
@@ -94,6 +95,8 @@ class CheckingAccount extends Component {
         </Text>
         <View style={shared.separator} />
         <ComponentPayInvoiceButtonInCard />
+        <View style={shared.separator} />
+        <ComponentReceive />
         <View style={shared.separator} />
         <ComponentTransferToSavings />
       </View>
