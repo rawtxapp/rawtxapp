@@ -56,6 +56,11 @@ const shared = StyleSheet.create({
     color: LOGO_COLOR,
     fontWeight: "bold"
   },
+  smallerHeader: {
+    fontSize: 14,
+    color: LOGO_COLOR,
+    fontWeight: "bold"
+  },
   headerText: {
     fontSize: 16,
     fontWeight: "bold"

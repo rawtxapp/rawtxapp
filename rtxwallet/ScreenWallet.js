@@ -33,7 +33,7 @@ class SyncingBlock extends Component {
       status = "Synced to the chain!";
       statusStyle = syncingStyles.syncedText;
     } else {
-      status = "Syncing to the chain";
+      status = "Syncing to the chain (some operations won't work)";
       if (getinfo && getinfo["block_height"]) {
         status += " (block height: " + getinfo["block_height"] + ")";
       }
@@ -71,7 +71,10 @@ class CheckingAccount extends Component {
   render() {
     return (
       <View style={shared.container}>
-        <Text style={shared.accountHeader}>Checking account</Text>
+        <Text style={shared.accountHeader}>
+          Checking account{" "}
+          <Text style={shared.smallerHeader}>(funds on channels)</Text>
+        </Text>
         <Text style={shared.baseText}>
           Balance:{" "}
           {this.props.displaySatoshi(
@@ -129,7 +132,10 @@ class SavingsAccount extends Component {
   render() {
     return (
       <View style={shared.container}>
-        <Text style={shared.accountHeader}>Savings account</Text>
+        <Text style={shared.accountHeader}>
+          Savings account{" "}
+          <Text style={shared.smallerHeader}>(funds on blockchain)</Text>
+        </Text>
         <Text style={shared.baseText}>
           Total balance:{" "}
           {this.props.displaySatoshi(
