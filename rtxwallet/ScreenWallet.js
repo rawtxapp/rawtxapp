@@ -61,12 +61,95 @@ class CheckingAccount extends Component {
     this.pendingChannelListener_ = this.props.walletListener.listenToPendingChannels(
       pendingChannel => this.setState({ pendingChannel })
     );
+    this.channelListener_ = this.props.walletListener.listenToChannels(
+      ({ channels }) => this.setState({ channels })
+    );
   }
 
   componentWillUnmount() {
     this.balanceListener_.remove();
     this.pendingChannelListener_.remove();
+    this.channelListener_.remove();
   }
+
+  _renderChannelCount = () => {
+    let total = 0;
+    let active = 0;
+    let pending_open = 0;
+    let pending_close = 0;
+    if (this.state.channels) {
+      const c = this.state.channels;
+      total = c.length;
+      for (let i = 0; i < c.length; i++) {
+        if (c[i].active) {
+          active++;
+        }
+      }
+    }
+
+    if (this.state.pendingChannel) {
+      const {
+        pending_open_channels,
+        pending_closing_channels,
+        pending_force_closing_channels
+      } = this.state.pendingChannel;
+      pending_open = pending_open_channels && pending_open_channels.length;
+      pending_close =
+        pending_closing_channels && pending_closing_channels.length;
+      pending_force_close =
+        pending_force_closing_channels && pending_force_closing_channels.length;
+      pending_close = (pending_close || 0) + (pending_force_close || 0);
+    }
+
+    return (
+      <View>
+        <Text>
+          <Text style={shared.boldText}>Total channel count:</Text>
+          {total}
+        </Text>
+        <Text>
+          <Text style={shared.boldText}>Active channel count:</Text>
+          {active}
+        </Text>
+        <Text>
+          <Text style={shared.boldText}>Pending open channel count:</Text>
+          {pending_open || 0}
+        </Text>
+        <Text>
+          <Text style={shared.boldText}>Pending close channel count:</Text>
+          {pending_close}
+        </Text>
+      </View>
+    );
+  };
+
+  _renderBalances = () => {
+    return (
+      <View>
+        <Text style={shared.baseText}>
+          <Text style={shared.boldText}>Balance:</Text>{" "}
+          {this.props.displaySatoshi(
+            (this.state.balance && this.state.balance.balance) || "0"
+          )}
+        </Text>
+        <Text style={shared.baseText}>
+          <Text style={shared.boldText}>Pending open balance:</Text>{" "}
+          {this.props.displaySatoshi(
+            (this.state.balance && this.state.balance.pending_open_balance) ||
+              "0"
+          )}
+        </Text>
+        <Text style={shared.baseText}>
+          <Text style={shared.boldText}>Total limbo balance:</Text>{" "}
+          {this.props.displaySatoshi(
+            (this.state.pendingChannel &&
+              this.state.pendingChannel.total_limbo_balance) ||
+              "0"
+          )}
+        </Text>
+      </View>
+    );
+  };
 
   render() {
     return (
@@ -75,27 +158,8 @@ class CheckingAccount extends Component {
           Checking account{" "}
           <Text style={shared.smallerHeader}>(funds on channels)</Text>
         </Text>
-        <Text style={shared.baseText}>
-          Balance:{" "}
-          {this.props.displaySatoshi(
-            (this.state.balance && this.state.balance.balance) || "0"
-          )}
-        </Text>
-        <Text style={shared.baseText}>
-          Pending open balance:{" "}
-          {this.props.displaySatoshi(
-            (this.state.balance && this.state.balance.pending_open_balance) ||
-              "0"
-          )}
-        </Text>
-        <Text style={shared.baseText}>
-          Total limbo balance:{" "}
-          {this.props.displaySatoshi(
-            (this.state.pendingChannel &&
-              this.state.pendingChannel.total_limbo_balance) ||
-              "0"
-          )}
-        </Text>
+        {this._renderBalances()}
+        {this._renderChannelCount()}
         <View style={shared.separator} />
         <ComponentPayInvoiceButtonInCard />
         <View style={shared.separator} />
@@ -129,6 +193,32 @@ class SavingsAccount extends Component {
     this.balanceListener_.remove();
   }
 
+  _renderBalances = () => {
+    return (
+      <View>
+        <Text style={shared.baseText}>
+          <Text style={shared.boldText}>Total balance:</Text>{" "}
+          {this.props.displaySatoshi(
+            (this.state.balance && this.state.balance.total_balance) || "0"
+          )}
+        </Text>
+        <Text style={shared.baseText}>
+          <Text style={shared.boldText}>Confirmed balance:</Text>{" "}
+          {this.props.displaySatoshi(
+            (this.state.balance && this.state.balance.confirmed_balance) || "0"
+          )}
+        </Text>
+        <Text style={shared.baseText}>
+          <Text style={shared.boldText}>Unconfirmed balance:</Text>{" "}
+          {this.props.displaySatoshi(
+            (this.state.balance && this.state.balance.unconfirmed_balance) ||
+              "0"
+          )}
+        </Text>
+      </View>
+    );
+  };
+
   render() {
     return (
       <View style={shared.container}>
@@ -136,26 +226,8 @@ class SavingsAccount extends Component {
           Savings account{" "}
           <Text style={shared.smallerHeader}>(funds on blockchain)</Text>
         </Text>
-        <Text style={shared.baseText}>
-          Total balance:{" "}
-          {this.props.displaySatoshi(
-            (this.state.balance && this.state.balance.total_balance) || "0"
-          )}
-        </Text>
-        <Text style={shared.baseText}>
-          Confirmed balance:{" "}
-          {this.props.displaySatoshi(
-            (this.state.balance && this.state.balance.confirmed_balance) || "0"
-          )}
-        </Text>
-        <Text style={shared.baseText}>
-          Unconfirmed balance:{" "}
-          {this.props.displaySatoshi(
-            (this.state.balance && this.state.balance.unconfirmed_balance) ||
-              "0"
-          )}
-        </Text>
 
+        {this._renderBalances()}
         <View style={shared.separator} />
         <Button
           style={[shared.inCardButton]}
