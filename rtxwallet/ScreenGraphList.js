@@ -4,6 +4,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View
 } from "react-native";
 import withLnd from "./withLnd";
@@ -102,13 +103,18 @@ class ScreenGraphList extends Component {
   _renderGraphList = () => {
     if (!this.state.graph || !this.state.graph.nodes)
       return <ActivityIndicator />;
+    const filtered = this.state.graph.nodes.filter(
+      n =>
+        !this.state.filter_to ||
+        this.state.filter_to == "" ||
+        ((n.pub_key && n.pub_key.includes(this.state.filter_to)) ||
+          (n.alias && n.alias.includes(this.state.filter_to)))
+    );
     return (
       <View>
-        {this.state.graph.nodes
-          .slice(0, this.state.nPeersToShow)
-          .map((n, i) => {
-            return <View key={i}>{this._renderGraphNode(n)}</View>;
-          })}
+        {filtered.slice(0, this.state.nPeersToShow).map((n, i) => {
+          return <View key={i}>{this._renderGraphNode(n)}</View>;
+        })}
 
         <Button
           style={[shared.inCardButton]}
@@ -116,9 +122,26 @@ class ScreenGraphList extends Component {
             this.setState({ nPeersToShow: this.state.nPeersToShow + 20 });
           }}
         >
-          Show more (showing {this.state.nPeersToShow} out of{" "}
-          {this.state.graph.nodes.length} nodes)
+          Show more (showing{" "}
+          {filtered.length > this.state.nPeersToShow
+            ? this.state.nPeersToShow
+            : filtered.length}{" "}
+          out of {filtered.length} nodes)
         </Button>
+      </View>
+    );
+  };
+
+  _renderFilterInput = () => {
+    return (
+      <View style={styles.filterContainer}>
+        <TextInput
+          style={[shared.textInput]}
+          underlineColorAndroid="transparent"
+          placeholder="Filter nodes (pubkey and alias)"
+          value={this.state.filter_to}
+          onChangeText={text => this.setState({ filter_to: text })}
+        />
       </View>
     );
   };
@@ -126,6 +149,7 @@ class ScreenGraphList extends Component {
   render() {
     return (
       <View style={[shared.containerStyleOnly, shared.flexOne]}>
+        {this._renderFilterInput()}
         <View style={styles.scrollContainer}>
           <ScrollView contentContainerStyle={styles.scrollStyle}>
             {this._renderGraphList()}
@@ -151,6 +175,11 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderColor: "#BDBDBD"
+  },
+  filterContainer: {
+    flex: 1,
+    borderBottomWidth: 1,
+    borderColor: "gray"
   },
   scrollContainer: {
     flex: 9
