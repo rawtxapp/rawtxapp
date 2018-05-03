@@ -102,7 +102,8 @@ class ComponentTransferToChecking extends Component {
         <Text style={shared.warningText}>
           Opening a channel could fail for many reasons (peer is down, etc), if
           opening channel with 1 peer fails, try another one. You can connect to
-          more peers by opening the network graph nodes in "Wallet operations".
+          more peers by opening the network graph nodes in "Wallet operations"
+          below.
         </Text>
         <Text style={shared.warningText}>
           It's recommended that you have more than a single channel (preferably
