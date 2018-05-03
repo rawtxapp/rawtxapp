@@ -19,6 +19,18 @@ class ComponentTransferToChecking extends Component {
     };
   }
 
+  resetState = () => {
+    this.setState({
+      selectingPeer: false,
+      selectedPeer: undefined,
+      amount: "",
+      error: undefined,
+      success: undefined,
+      scannedPeerCode: "",
+      working: false
+    });
+  };
+
   _renderSelectedPeer = () => {
     if (!this.state.selectedPeer && !this.state.scannedPeerCode) return;
     let peerPubkey;
@@ -67,13 +79,13 @@ class ComponentTransferToChecking extends Component {
                 )
               });
               if (res.error) {
-                this.setState({ error: res.error });
+                this.setState({ error: JSON.stringify(res.error) });
                 return;
               } else {
                 this.setState({ success: "Successfully created channel!" });
               }
             } catch (error) {
-              this.setState({ error });
+              this.setState({ error: JSON.stringify(error.message) });
             }
           }}
         >
@@ -133,13 +145,12 @@ class ComponentTransferToChecking extends Component {
         {this._renderSelectedPeer()}
         {this._renderSuccessOrError()}
         <Button
-          onPress={() =>
+          onPress={() => {
             this.setState({
-              transferring: false,
-              selectedPeer: undefined,
-              scannedPeerCode: undefined
-            })
-          }
+              transferring: false
+            });
+            this.resetState();
+          }}
           style={[
             shared.inCardButton,
             !this.state.success && shared.cancelButton
@@ -177,10 +188,11 @@ class ComponentTransferToChecking extends Component {
       <View>
         <Button
           style={[shared.inCardButton]}
-          onPress={async () => {
+          onPress={() => {
             this.setState({
               transferring: !this.state.transferring
             });
+            this.resetState();
           }}
         >
           Transfer funds to checking account
