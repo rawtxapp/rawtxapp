@@ -132,16 +132,20 @@ class ComponentReceive extends Component {
     if (!this.state.payment_request) return;
     return (
       <View>
-        <Text style={shared.explanationText}>
+        <Text style={shared.warningText}>
           In order for the payer to find your pubkey, you need to have an IP
           address, on mobile phones, it's difficult to determine an IP address.
         </Text>
-        <Text>
+        <Text style={shared.warningText}>
           So, you need to either connect to them directly, or connect to a node
           in the lightning network graph and if they connect to the same node,
           they will be able to find your pubkey and open a connection to you in
           order to pay. This is a short term solution, as the network matures
           and the software gets better, you won't have to worry about this.
+        </Text>
+        <Text style={shared.warningText}>
+          You can connect to a node by looking through lightning node under
+          "Wallet Operations" below.
         </Text>
       </View>
     );

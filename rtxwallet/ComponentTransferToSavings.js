@@ -19,7 +19,7 @@ class ComponentTransferToSavings extends Component {
     if (!this.state.transferring) return;
     return (
       <View>
-        <Text>
+        <Text style={shared.warningText}>
           To transfer funds to saving account, you need to close channels:
         </Text>
         <Button
