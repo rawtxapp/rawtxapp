@@ -42,7 +42,14 @@ class ScreenGraphList extends Component {
     const successKey = "success" + n.pub_key;
     return (
       <View style={styles.nodeItem}>
-        <Text>{n.alias}</Text>
+        <Text>
+          <Text style={shared.boldText}>alias:</Text>
+          {n.alias}
+        </Text>
+        <Text>
+          <Text style={shared.boldText}>pubkey:</Text>
+          {n.pub_key}
+        </Text>
         <Text>
           <Text style={shared.boldText}>last updated:</Text>
           {lastUpdate.toDateString() || "No last_update found for node."}
