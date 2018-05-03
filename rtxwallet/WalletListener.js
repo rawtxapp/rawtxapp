@@ -37,6 +37,7 @@ export default class WalletListener {
         try {
           const res = await watcher.api();
           this.resetFail(method);
+          this.updateLastResponse(method, res);
           this.eventListener.emit(method, res);
         } catch (error) {
           this.addFail(method, error);
