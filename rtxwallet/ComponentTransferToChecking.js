@@ -91,6 +91,30 @@ class ComponentTransferToChecking extends Component {
         >
           Create channel
         </Button>
+        <Text style={shared.warningText}>
+          All the following issues will go away once the software and the
+          network are more mature, but for now you should know the following:
+        </Text>
+        <Text style={shared.warningText}>
+          Your savings account balance could go to 0 while creating the channel,
+          it's expected, the balance will be accurate after the channel is open.
+        </Text>
+        <Text style={shared.warningText}>
+          Opening a channel could fail for many reasons (peer is down, etc), if
+          opening channel with 1 peer fails, try another one. You can connect to
+          more peers by opening the network graph nodes in "Wallet operations".
+        </Text>
+        <Text style={shared.warningText}>
+          It's recommended that you have more than a single channel (preferably
+          5) in your checking account so that your payments get routed to the
+          destination without problem.
+        </Text>
+        <Text style={shared.warningText}>
+          If opening a channel fails with timeout, it's possible that it's still
+          being created in the background, but we didn't get a response in time.
+          Just wait a little bit, if you see pending open channel increased in
+          "Checking account", it's working!
+        </Text>
       </View>
     );
   };

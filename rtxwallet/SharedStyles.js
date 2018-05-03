@@ -113,6 +113,10 @@ const shared = StyleSheet.create({
   },
   greenButton: {
     color: "green"
+  },
+  warningText: {
+    fontSize: 12,
+    color: "orange"
   }
 });
 
