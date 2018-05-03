@@ -28,6 +28,11 @@ export default class WalletListener {
         method: "PendingChannels",
         api: restLnd.pendingChannels,
         interval: 2000
+      },
+      {
+        method: "Channels",
+        api: restLnd.channels,
+        interval: 2000
       }
     ];
     for (let i = 0; i < watchers.length; i++) {
