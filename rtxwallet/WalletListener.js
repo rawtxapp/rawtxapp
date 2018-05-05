@@ -1,13 +1,13 @@
 // docs: https://github.com/facebook/react-native/blob/235b16d93287061a09c4624e612b5dc4f960ce47/Libraries/vendor/emitter/EventEmitter.js
 import EventEmitter from "EventEmitter";
-import restLnd from "./RestLnd";
 
 export default class WalletListener {
-  constructor() {
+  constructor(restLnd) {
     this.eventListener = new EventEmitter();
     this.watching_ = false;
     this.lastResponse = {};
     this.failedRest = {};
+    this.restLnd = restLnd;
 
     // Adds internal function for watchers
     // Example watchgetInfo, will call getInfo repeatedly and emit events.
@@ -123,5 +123,25 @@ export default class WalletListener {
     if (this.lastResponse.hasOwnProperty(method)) {
       return this.lastResponse[method];
     }
+  };
+
+  // the graph call is very heavy, so we want to do it only once every 5 minutes
+  // the only problem is the timers don't allow timing events more than
+  // 1 minute. This method will fetch the graph on the first call and
+  // return the last graph response if it was less than 5 minutes ago, if more
+  // it will fetch it again.
+  getLastGraph = async () => {
+    if (
+      this.lastGraphTime_ &&
+      Date.now() - this.lastGraphTime_ < 5 * 60 * 1000 &&
+      this.getLastResponse("Graph")
+    ) {
+      return this.getLastResponse("Graph");
+    }
+
+    const graph = await this.restLnd.graph();
+    this.updateLastResponse("Graph", graph);
+    this.lastGraphTime_ = Date.now();
+    return graph;
   };
 }
