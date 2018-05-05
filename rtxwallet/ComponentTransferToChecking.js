@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { Modal, StyleSheet, View, Text, TextInput } from "react-native";
+import {
+  ActivityIndicator,
+  Modal,
+  StyleSheet,
+  View,
+  Text,
+  TextInput
+} from "react-native";
 
 import shared from "./SharedStyles.js";
 import Button from "react-native-button";
@@ -61,60 +68,49 @@ class ComponentTransferToChecking extends Component {
         </View>
         <Button
           style={shared.inCardButton}
-          onPress={async () => {
-            try {
-              if (this.state.scannedPeerCode) {
-                const splitted = this.state.scannedPeerCode.split("@");
-                //Connect to the peer first
-                await this.props.lndApi.addPeers(
-                  splitted[0],
-                  splitted[1],
-                  true
-                );
+          styleDisabled={shared.disabledButton}
+          disabled={this.state.working}
+          onPress={() => {
+            if (this.state.working) return;
+            this.setState({ working: true }, async () => {
+              try {
+                if (this.state.scannedPeerCode) {
+                  const splitted = this.state.scannedPeerCode.split("@");
+                  //Connect to the peer first
+                  await this.props.lndApi.addPeers(
+                    splitted[0],
+                    splitted[1],
+                    true
+                  );
+                }
+                const res = await this.props.lndApi.openChannel({
+                  node_pubkey_string: peerPubkey,
+                  local_funding_amount: this.props.displayUnitToSatoshi(
+                    this.state.amount
+                  )
+                });
+                if (res.error) {
+                  this.setState({ error: JSON.stringify(res.error) });
+                } else {
+                  this.setState({
+                    error: "",
+                    success: "Successfully created channel!"
+                  });
+                }
+              } catch (error) {
+                this.setState({ error: JSON.stringify(error.message) });
               }
-              const res = await this.props.lndApi.openChannel({
-                node_pubkey_string: peerPubkey,
-                local_funding_amount: this.props.displayUnitToSatoshi(
-                  this.state.amount
-                )
-              });
-              if (res.error) {
-                this.setState({ error: JSON.stringify(res.error) });
-                return;
-              } else {
-                this.setState({ success: "Successfully created channel!" });
-              }
-            } catch (error) {
-              this.setState({ error: JSON.stringify(error.message) });
-            }
+              this.setState({ working: false });
+            });
           }}
         >
           Create channel
         </Button>
-        <Text style={shared.warningText}>
-          All the following issues will go away once the software and the
-          network are more mature, but for now you should know the following:
-        </Text>
-        <Text style={shared.warningText}>
-          Your savings account balance could go to 0 while creating the channel,
-          it's expected, the balance will be accurate after the channel is open.
-        </Text>
-        <Text style={shared.warningText}>
-          Opening a channel could fail for many reasons (peer is down, etc), if
-          opening channel with 1 peer fails, try another one. You can connect to
-          more peers by opening the network graph nodes in "Wallet operations"
-          below.
-        </Text>
-        <Text style={shared.warningText}>
-          It's recommended that you have more than a single channel (preferably
-          5) in your checking account so that your payments get routed to the
-          destination without problem.
-        </Text>
+        {this.state.working && <ActivityIndicator />}
         <Text style={shared.warningText}>
           If opening a channel fails with timeout, it's possible that it's still
-          being created in the background, but we didn't get a response in time.
-          Just wait a little bit, if you see pending open channel increased in
-          "Checking account", it's working!
+          being created in the background, wait a little bit to see if pending
+          open channel increased in "Checking account" card above!
         </Text>
       </View>
     );
@@ -196,13 +192,14 @@ class ComponentTransferToChecking extends Component {
       >
         <ScreenSelectPeer
           onCancel={() => this.setState({ selectingPeer: false })}
-          selectPeer={p =>
+          selectPeer={p => {
+            this.resetState();
             this.setState({
               selectedPeer: p,
               selectingPeer: false,
               scannedPeerCode: undefined
-            })
-          }
+            });
+          }}
         />
       </Modal>
     );
