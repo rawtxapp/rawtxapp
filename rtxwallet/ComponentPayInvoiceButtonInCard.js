@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 
 import Button from "react-native-button";
 import withLnd from "./withLnd.js";
@@ -16,7 +16,9 @@ class ComponentPayInvoiceButtonInCard extends Component {
     this.setState({
       payreq: undefined,
       error: "",
-      paymentSuccess: false
+      paymentSuccess: false,
+      payingWithInvoice: false,
+      invoice: ""
     });
   };
 
@@ -87,8 +89,42 @@ class ComponentPayInvoiceButtonInCard extends Component {
         >
           By QR code
         </Button>
+        <Button
+          style={[shared.inCardButton]}
+          onPress={() => {
+            this._initState();
+            this.setState({ payingWithInvoice: !this.state.payingWithInvoice });
+          }}
+        >
+          By lightning invoice
+        </Button>
+        {this._renderPayingWithInvoice()}
         {this._renderPayreq(this.state.payreq)}
         {this._renderError(this.state.error)}
+      </View>
+    );
+  };
+
+  _renderPayingWithInvoice = () => {
+    if (!this.state.payingWithInvoice) return;
+    return (
+      <View>
+        <TextInput
+          style={shared.textInput}
+          underlineColorAndroid="transparent"
+          placeholder="Lightning invoice"
+          value={this.state.invoice}
+          onChangeText={invoice => this.setState({ invoice })}
+        />
+        <Button
+          style={[shared.inCardButton]}
+          onPress={() => {
+            this.setState({ error: "", payreq: undefined });
+            this.decodePayreq(this.state.invoice);
+          }}
+        >
+          Decode payreq
+        </Button>
       </View>
     );
   };
