@@ -188,9 +188,13 @@ class SavingsAccount extends Component {
     this.balanceListener_ = this.props.walletListener.listenToBalanceBlockchain(
       balance => this.setState({ balance })
     );
+    this.pendingChannelListener_ = this.props.walletListener.listenToPendingChannels(
+      pendingChannel => this.setState({ pendingChannel })
+    );
   }
   componentWillUnmount() {
     this.balanceListener_.remove();
+    this.pendingChannelListener_.remove();
   }
 
   _renderBalances = () => {
@@ -215,6 +219,14 @@ class SavingsAccount extends Component {
               "0"
           )}
         </Text>
+        {this.state.pendingChannel &&
+          this.state.pendingChannel.pending_open_channels &&
+          this.state.pendingChannel.pending_open_channels.length > 0 && (
+            <Text style={shared.warningText}>
+              Your balance could be lower than expected during channel opening,
+              will be accurate after channel is open!
+            </Text>
+          )}
       </View>
     );
   };
