@@ -208,7 +208,7 @@ class LndApi {
   };
 
   // chan_point format => tx_id:out_ix
-  closeChannel = async chan_point => {
+  closeChannel = async (chan_point, force_close = false) => {
     const split = chan_point.split(":");
     const chan_point_tx_id = split[0];
     const chan_point_out_ix = split[1];
@@ -216,7 +216,7 @@ class LndApi {
 
     return await this.genericDeleteJson(
       "channels/" + chan_point_tx_id + "/" + chan_point_out_ix,
-      "force=true"
+      force_close ? "force=true" : ""
     );
   };
 
