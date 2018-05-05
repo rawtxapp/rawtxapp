@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { Linking, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  ActivityIndicator,
+  Linking,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
+} from "react-native";
 
 import Button from "react-native-button";
 import withLnd from "./withLnd.js";
@@ -32,7 +39,8 @@ class ComponentPayInvoiceButtonInCard extends Component {
       error: "",
       paymentSuccess: false,
       payingWithInvoice: false,
-      invoice: ""
+      invoice: "",
+      working: false
     });
   };
 
@@ -143,35 +151,44 @@ class ComponentPayInvoiceButtonInCard extends Component {
 
   _renderPaybutton = () => {
     if (!this.state.payreq) return;
+    const notWorking = () => this.setState({ working: false });
     return (
       <View>
         <Button
           style={[shared.inCardButton, shared.greenButton]}
+          styleDisabled={shared.disabledButton}
+          disabled={this.state.working}
           onPress={async () => {
-            try {
-              const payment = await this.props.lndApi.sendpaymentPayreq(
-                this.state.payreqQR
-              );
-              if (payment.error) {
-                this.setState({ error: payment.error });
-              } else if (payment.payment_error) {
-                this.setState({ error: payment.payment_error });
-              } else if (payment.payment_preimage) {
-                this.setState({ payment, paymentSuccess: true });
-              } else {
-                this.setState({
-                  error:
-                    "Something happened, got the following result from lnd SendPayment method: " +
-                    payment
-                });
+            if (this.state.working) return;
+            this.setState({ working: true }, async () => {
+              try {
+                const payment = await this.props.lndApi.sendpaymentPayreq(
+                  this.state.payreqQR
+                );
+                if (payment.error) {
+                  this.setState({ error: payment.error });
+                } else if (payment.payment_error) {
+                  this.setState({ error: payment.payment_error });
+                } else if (payment.payment_preimage) {
+                  this.setState({ payment, paymentSuccess: true });
+                } else {
+                  this.setState({
+                    error:
+                      "Something happened, got the following result from lnd SendPayment method: " +
+                      payment
+                  });
+                }
+                notWorking();
+              } catch (error) {
+                this.setState({ error: error.message });
+                notWorking();
               }
-            } catch (error) {
-              this.setState({ error: error.message });
-            }
+            });
           }}
         >
           Pay
         </Button>
+        {this.state.working && <ActivityIndicator />}
         <Text>{this.state.paymentSuccess ? "Successfully paid!" : ""}</Text>
       </View>
     );

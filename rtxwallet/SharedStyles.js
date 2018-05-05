@@ -117,6 +117,9 @@ const shared = StyleSheet.create({
   warningText: {
     fontSize: 12,
     color: "orange"
+  },
+  disabledButton: {
+    color: "gray"
   }
 });
 
