@@ -407,8 +407,8 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
                     connection = (HttpsURLConnection) url.openConnection();
                     connection.setSSLSocketFactory(sslContext.getSocketFactory());
                     connection.setUseCaches(false);
-                    connection.setConnectTimeout(5000);
-                    connection.setReadTimeout(5000);
+                    connection.setConnectTimeout(3000);
+                    connection.setReadTimeout(10000);
                     if(jsRequest.hasKey("method") &&
                             jsRequest.getString("method").toLowerCase().equals("post")) {
                         if (jsRequest.hasKey("jsonBody")) {
