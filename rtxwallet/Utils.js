@@ -181,3 +181,31 @@ export const updateNodesInAndOutCounts = function(graph) {
     }
   }
 };
+
+// nodes is an array of node pubkeys to look for.
+// result will be {nodeInfo: {...}, found_nodes:[], missing_nodes:[]}
+export const findNodesInGraph = function(graph, nodes) {
+  let result = { nodeInfo: {}, found_nodes: [], missing_nodes: [] };
+
+  let looking_for = {};
+  for (let i = 0; i < nodes.length; i++) {
+    looking_for[nodes[i]] = true;
+  }
+
+  for (let i = 0; i < graph.nodes.length; i++) {
+    const node = graph.nodes[i];
+    if (looking_for[node.pub_key]) {
+      result.nodeInfo[node.pub_key] = node;
+      result.found_nodes.push(node.pub_key);
+      looking_for[node.pub_key] = false;
+    }
+  }
+
+  for (const [key, value] of Object.entries(looking_for)) {
+    if (value) {
+      result.missing_nodes.push(key);
+    }
+  }
+
+  return result;
+};

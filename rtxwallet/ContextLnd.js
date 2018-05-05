@@ -18,6 +18,7 @@ import {
 } from "./NativeRtxModule.js";
 import LndApi from "./RestLnd.js";
 import WalletListener from "./WalletListener";
+import { findNodesInGraph } from "./Utils.js";
 
 const WALLET_CONF_FILE = "wallet.conf";
 const DEFAULT_NEUTRINO_CONNECT = "faucet.lightning.community,rbtcdt.rawtx.com";
@@ -171,10 +172,38 @@ class LndProvider extends Component {
 
   componentDidMount() {
     readWalletConfig().then(cfg => this.setState({ walletConf: cfg }));
-    this.setState({ walletListener: new WalletListener() });
+    const walletListener = new WalletListener(LndApi);
+    this.setState({ walletListener });
+    this.reactivateInactiveChannels(walletListener, LndApi);
   }
 
-  componentWillUnmount() {}
+  componentWillUnmount() {
+    this.channelListener_.remove();
+  }
+
+  // Because of changing ip addresses and ports, some channels
+  // go inactive when can't communicate with the peer.
+  reactivateInactiveChannels(walletListener, lndApi) {
+    this.channelListener_ = walletListener.listenToChannels(async c => {
+      const inactive_pubkeys = c.channels
+        .filter(c => !c.active)
+        .map(c => c.remote_pubkey);
+      if (inactive_pubkeys.length > 0) {
+        const graph = await walletListener.getLastGraph();
+        const found = findNodesInGraph(graph, inactive_pubkeys);
+        for (let i = 0; i < found.found_nodes.length; i++) {
+          const nodeInfo = found.nodeInfo[found.found_nodes[i]];
+          if (nodeInfo.addresses && nodeInfo.addresses.length > 0) {
+            await lndApi.addPeers(
+              nodeInfo.pub_key,
+              nodeInfo.addresses[0].addr,
+              true
+            );
+          }
+        }
+      }
+    });
+  }
 
   // Returns string representation with the unit
   // (ex displaySatoshi(2) = "2 sat")
