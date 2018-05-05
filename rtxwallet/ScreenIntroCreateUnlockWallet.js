@@ -4,10 +4,12 @@ import {
   ActivityIndicator,
   Image,
   LayoutAnimation,
+  Linking,
   StyleSheet,
   ScrollView,
   Text,
   TouchableWithoutFeedback,
+  ToastAndroid,
   View,
   TextInput,
   Platform
@@ -366,6 +368,18 @@ class ScreenIntroCreateUnlockWallet extends Component {
     const lndRunning = await this.props.isLndProcessRunning();
     if (!lndRunning) {
       // nothing to do
+      Linking.getInitialURL().then(url => {
+        if (
+          url &&
+          url.startsWith("lightning:") &&
+          !this.props.isInitialInvoiceHandled()
+        ) {
+          ToastAndroid.show(
+            "Your wallet isn't running, open you wallet to pay the invoice!",
+            ToastAndroid.LONG
+          );
+        }
+      });
       return;
     }
 

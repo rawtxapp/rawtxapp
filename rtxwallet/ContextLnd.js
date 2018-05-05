@@ -227,6 +227,18 @@ class LndProvider extends Component {
     //TODO: implement
   };
 
+  initialInvoiceHandled = false;
+  // Deep linking in Android using Linking.getInitialUrl always will have
+  // value so if multiple components use it, each one of them will run.
+  // Make sure it's handled only once.
+  isInitialInvoiceHandled = () => {
+    return this.initialInvoiceHandled;
+  };
+
+  setInitialInvoiceHandled = () => {
+    this.initialInvoiceHandled = true;
+  };
+
   render() {
     const walletConf = this.state.walletConf;
     const addWalletUpdateState = async newWallet => {
@@ -255,7 +267,9 @@ class LndProvider extends Component {
           stopLndFromWallet,
           displaySatoshi: this.displaySatoshi,
           scanQrCode,
-          walletListener: this.state.walletListener
+          walletListener: this.state.walletListener,
+          isInitialInvoiceHandled: this.isInitialInvoiceHandled,
+          setInitialInvoiceHandled: this.setInitialInvoiceHandled
         }}
       >
         {this.props.children}

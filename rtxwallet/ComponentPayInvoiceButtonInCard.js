@@ -15,8 +15,13 @@ class ComponentPayInvoiceButtonInCard extends Component {
   componentDidMount() {
     this._initState();
     Linking.getInitialURL().then(url => {
-      if (url && url.startsWith("lightning:")) {
+      if (
+        url &&
+        url.startsWith("lightning:") &&
+        !this.props.isInitialInvoiceHandled()
+      ) {
         this.decodePayreq(url);
+        this.props.setInitialInvoiceHandled();
       }
     });
   }
