@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { Linking, StyleSheet, Text, TextInput, View } from "react-native";
 
 import Button from "react-native-button";
 import withLnd from "./withLnd.js";
@@ -10,6 +10,15 @@ class ComponentPayInvoiceButtonInCard extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+  componentDidMount() {
+    this._initState();
+    Linking.getInitialURL().then(url => {
+      if (url && url.startsWith("lightning:")) {
+        this.decodePayreq(url);
+      }
+    });
   }
 
   _initState = () => {
@@ -26,7 +35,7 @@ class ComponentPayInvoiceButtonInCard extends Component {
     try {
       const payreq = await this.props.lndApi.decodepayreq(payreqQR);
       if (!payreq.error) {
-        this.setState({ payreq, payreqQR });
+        this.setState({ payreq, payreqQR, paying: true });
       } else {
         this.setState({ error: payreq.error });
       }
@@ -67,7 +76,7 @@ class ComponentPayInvoiceButtonInCard extends Component {
   };
 
   _renderPaying = () => {
-    if (!this.state.paying) return;
+    if (!this.state.paying || this.state.payreq) return;
 
     return (
       <View>
@@ -99,8 +108,6 @@ class ComponentPayInvoiceButtonInCard extends Component {
           By lightning invoice
         </Button>
         {this._renderPayingWithInvoice()}
-        {this._renderPayreq(this.state.payreq)}
-        {this._renderError(this.state.error)}
       </View>
     );
   };
@@ -180,6 +187,8 @@ class ComponentPayInvoiceButtonInCard extends Component {
           Pay invoice
         </Button>
         {this._renderPaying()}
+        {this._renderPayreq(this.state.payreq)}
+        {this._renderError(this.state.error)}
         {this._renderPaybutton()}
         {this.state.paying &&
           !this.state.paymentSuccess && (
