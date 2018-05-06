@@ -120,6 +120,13 @@ const shared = StyleSheet.create({
   },
   disabledButton: {
     color: "gray"
+  },
+  successText: {
+    fontSize: 12,
+    color: "green"
+  },
+  successTextColorOnly: {
+    color: "green"
   }
 });
 

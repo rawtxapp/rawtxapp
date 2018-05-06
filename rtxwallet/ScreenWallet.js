@@ -23,6 +23,7 @@ import ComponentTransferToChecking from "./ComponentTransferToChecking.js";
 import ComponentWalletOperations from "./ComponentWalletOperations.js";
 import ComponentTransferToSavings from "./ComponentTransferToSavings.js";
 import ComponentReceive from "./ComponentReceive.js";
+import ComponentReceiveFaucet from "./ComponentReceiveFaucet.js";
 
 class SyncingBlock extends Component {
   render() {
@@ -64,6 +65,7 @@ class CheckingAccount extends Component {
     this.channelListener_ = this.props.walletListener.listenToChannels(
       ({ channels }) => this.setState({ channels })
     );
+    this.getRunningWallet();
   }
 
   componentWillUnmount() {
@@ -71,6 +73,11 @@ class CheckingAccount extends Component {
     this.pendingChannelListener_.remove();
     this.channelListener_.remove();
   }
+
+  getRunningWallet = async () => {
+    const runningWallet = await this.props.getRunningWallet();
+    this.setState({ runningWallet });
+  };
 
   _renderChannelCount = () => {
     let total = 0;
@@ -151,6 +158,22 @@ class CheckingAccount extends Component {
     );
   };
 
+  _renderFaucet = () => {
+    if (
+      !this.state.runningWallet ||
+      this.state.runningWallet.coin != "bitcoin" ||
+      this.state.runningWallet.network != "testnet"
+    ) {
+      return;
+    }
+    return (
+      <View>
+        <View style={shared.separator} />
+        <ComponentReceiveFaucet />
+      </View>
+    );
+  };
+
   render() {
     return (
       <View style={shared.container}>
@@ -160,6 +183,7 @@ class CheckingAccount extends Component {
         </Text>
         {this._renderBalances()}
         {this._renderChannelCount()}
+        {this._renderFaucet()}
         <View style={shared.separator} />
         <ComponentPayInvoiceButtonInCard />
         <View style={shared.separator} />
