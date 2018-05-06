@@ -155,6 +155,14 @@ class LndApi {
     });
   };
 
+  addPeersAddr = async addr => {
+    const splitted = addr.split("@").filter(String);
+    if (splitted.length < 2) {
+      throw new Error("Addresses doesn't have 2 components (pubkey+ip)!");
+    }
+    return await this.addPeers(splitted[0], splitted[1]);
+  };
+
   openChannel = async channelRequest => {
     this.log("opening channel to: ", channelRequest.node_pubkey_string);
     if (channelRequest.node_pubkey_string.includes("@")) {
