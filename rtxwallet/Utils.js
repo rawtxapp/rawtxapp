@@ -213,11 +213,23 @@ export const findNodesInGraph = function(graph, nodes) {
 export const sortPaymentsByCreationDateDescending = payments => {
   if (!payments) return;
   payments.sort((a, b) => {
-    if (b.last_update == undefined) {
+    if (b.creation_date == undefined) {
       return -1;
-    } else if (a.last_update == undefined) {
+    } else if (a.creation_date == undefined) {
       return 1;
     }
     return parseInt(b.creation_date) - parseInt(a.creation_date);
+  });
+};
+
+export const sortBySettleDateDescending = payments => {
+  if (!payments) return;
+  payments.sort((a, b) => {
+    if (b.settle_date == undefined) {
+      return -1;
+    } else if (a.settle_date == undefined) {
+      return 1;
+    }
+    return parseInt(b.settle_date) - parseInt(a.settle_date);
   });
 };
