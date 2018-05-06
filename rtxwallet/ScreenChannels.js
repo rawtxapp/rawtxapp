@@ -82,7 +82,13 @@ class ScreenChannels extends Component {
   };
 
   _renderChannelList = () => {
-    if (!this.state.channels) return;
+    if (!this.state.channels || this.state.channels.length == 0) {
+      return (
+        <View>
+          <Text>No channels.</Text>
+        </View>
+      );
+    }
     return (
       <View>
         {this.state.channels.map((c, i) => this._renderChannelItem(c, i))}
