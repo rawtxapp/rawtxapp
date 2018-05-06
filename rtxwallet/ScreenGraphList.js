@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {
   ActivityIndicator,
+  FlatList,
   ScrollView,
   StyleSheet,
   Text,
@@ -35,7 +36,7 @@ class ScreenGraphList extends Component {
     } catch (err) {}
   };
 
-  _renderGraphNode = n => {
+  _renderGraphNode = ({ item: n }) => {
     const lastUpdate = new Date();
     lastUpdate.setTime(parseInt(n.last_update) * 1000);
 
@@ -146,15 +147,32 @@ class ScreenGraphList extends Component {
     );
   };
 
+  _keyExtractor = (i, ix) => i.pub_key;
+
+  _renderFlatList = () => {
+    if (!this.state.graph || !this.state.graph.nodes)
+      return <ActivityIndicator />;
+    const filtered = this.state.graph.nodes.filter(
+      n =>
+        !this.state.filter_to ||
+        this.state.filter_to == "" ||
+        ((n.pub_key && n.pub_key.includes(this.state.filter_to)) ||
+          (n.alias && n.alias.includes(this.state.filter_to)))
+    );
+    return (
+      <FlatList
+        data={filtered}
+        renderItem={this._renderGraphNode}
+        keyExtractor={this._keyExtractor}
+      />
+    );
+  };
+
   render() {
     return (
       <View style={[shared.containerStyleOnly, shared.flexOne]}>
         {this._renderFilterInput()}
-        <View style={styles.scrollContainer}>
-          <ScrollView contentContainerStyle={styles.scrollStyle}>
-            {this._renderGraphList()}
-          </ScrollView>
-        </View>
+        <View style={styles.scrollContainer}>{this._renderFlatList()}</View>
         <View style={[styles.actionContainer, shared.centerPrimaryAxis]}>
           <Button
             style={[shared.inCardButton, shared.cancelButton]}
