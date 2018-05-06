@@ -24,6 +24,7 @@ import ComponentWalletOperations from "./ComponentWalletOperations.js";
 import ComponentTransferToSavings from "./ComponentTransferToSavings.js";
 import ComponentReceive from "./ComponentReceive.js";
 import ComponentReceiveFaucet from "./ComponentReceiveFaucet.js";
+import ScreenPayments from "./ScreenPayments.js";
 
 class SyncingBlock extends Component {
   render() {
@@ -52,7 +53,7 @@ class SyncingBlock extends Component {
 class CheckingAccount extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { showingPayments: false };
   }
 
   componentDidMount() {
@@ -174,6 +175,31 @@ class CheckingAccount extends Component {
     );
   };
 
+  _renderShowPayments = () => {
+    const closeModal = () => this.setState({ showingPayments: false });
+    return (
+      <View>
+        <Button
+          style={[shared.inCardButton]}
+          onPress={() => {
+            this.setState({
+              showingPayments: true
+            });
+          }}
+        >
+          Show outgoing payments
+        </Button>
+        <Modal
+          visible={this.state.showingPayments}
+          onRequestClose={closeModal}
+          animationType="slide"
+        >
+          <ScreenPayments onCancel={closeModal} />
+        </Modal>
+      </View>
+    );
+  };
+
   render() {
     return (
       <View style={shared.container}>
@@ -190,6 +216,8 @@ class CheckingAccount extends Component {
         <ComponentReceive />
         <View style={shared.separator} />
         <ComponentTransferToSavings />
+        <View style={shared.separator} />
+        {this._renderShowPayments()}
       </View>
     );
   }
