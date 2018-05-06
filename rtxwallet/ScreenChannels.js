@@ -32,8 +32,9 @@ class ScreenChannels extends Component {
   };
 
   _renderChannelItem = (c, ix) => {
-    const errorKey = "error" + c.chain_id;
-    const successKey = "success" + c.chain_id;
+    const errorKey = "error" + c.chan_id;
+    const successKey = "success" + c.chan_id;
+    const closeChannelDisableKey = "disable" + c.chan_id;
     return (
       <View key={ix} style={styles.nodeItem}>
         <Text selectable>
@@ -63,20 +64,35 @@ class ScreenChannels extends Component {
 
         <Button
           style={[shared.smallButton, shared.textAlignLeft]}
+          disabled={this.state[closeChannelDisableKey]}
+          styleDisabled={shared.disabledButton}
           onPress={async () => {
+            this.setState({ [closeChannelDisableKey]: true });
             try {
               const result = await this.props.lndApi.closeChannel(
                 c.channel_point
               );
+              this.setState({ [successKey]: "Request for closure sent!" });
             } catch (err) {
-              this.setState({ [errorKey]: JSON.stringify(err) });
+              if (err == "timeout") {
+                this.setState({
+                  [errorKey]:
+                    "Received a timeout, but it's possible channel is being closed in the background."
+                });
+              } else {
+                this.setState({ [errorKey]: JSON.stringify(err.message) });
+              }
             }
           }}
         >
           Close channel
         </Button>
-        {this.state[errorKey] && <Text>{this.state[errorKey]}</Text>}
-        {this.state[successKey] && <Text>{this.state[successKey]}</Text>}
+        {this.state[errorKey] && (
+          <Text style={shared.errorText}>{this.state[errorKey]}</Text>
+        )}
+        {this.state[successKey] && (
+          <Text style={shared.successText}>{this.state[successKey]}</Text>
+        )}
       </View>
     );
   };
