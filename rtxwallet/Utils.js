@@ -209,3 +209,15 @@ export const findNodesInGraph = function(graph, nodes) {
 
   return result;
 };
+
+export const sortPaymentsByCreationDateDescending = payments => {
+  if (!payments) return;
+  payments.sort((a, b) => {
+    if (b.last_update == undefined) {
+      return -1;
+    } else if (a.last_update == undefined) {
+      return 1;
+    }
+    return parseInt(b.creation_date) - parseInt(a.creation_date);
+  });
+};
