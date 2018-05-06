@@ -227,6 +227,11 @@ class LndApi {
       value: parseInt(amount_sat)
     });
   };
+
+  getNodeInfo = async pub_key => {
+    this.log("getting node info for ", pub_key);
+    return await this.genericGetJson("graph/node/" + pub_key);
+  };
 }
 
 export default new LndApi();
