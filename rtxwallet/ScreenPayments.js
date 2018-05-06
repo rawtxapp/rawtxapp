@@ -48,7 +48,7 @@ class ScreenPayments extends Component {
         </Text>
         <Text selectable>
           <Text style={shared.boldText}>value:</Text>
-          {n.value}
+          {this.props.displaySatoshi(n.value)}
         </Text>
         <Text selectable>
           <Text style={shared.boldText}>creation date:</Text>
