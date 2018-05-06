@@ -185,6 +185,7 @@ class LndProvider extends Component {
   // go inactive when can't communicate with the peer.
   reactivateInactiveChannels(walletListener, lndApi) {
     this.channelListener_ = walletListener.listenToChannels(async c => {
+      if (!c || !c.channels) return;
       const inactive_pubkeys = c.channels
         .filter(c => !c.active)
         .map(c => c.remote_pubkey);
