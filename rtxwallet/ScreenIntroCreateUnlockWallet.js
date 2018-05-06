@@ -21,6 +21,7 @@ import RadioForm, {
   RadioButtonInput,
   RadioButtonLabel
 } from "react-native-simple-radio-button";
+import shared from "./SharedStyles";
 
 import LndConsumer from "./ContextLnd.js";
 import { withLnd } from "./withLnd.js";
@@ -219,7 +220,7 @@ class CreateWallet extends Component {
       coin: "bitcoin",
       network: "testnet",
       mode: "neutrino",
-      neutrinoConnect: "faucet.lightning.community",
+      neutrinoConnect: "rbtcd-t-g.rawtx.com",
       creating: false,
       error: ""
     };
@@ -322,7 +323,9 @@ class CreateWallet extends Component {
           </View>
           {this.state.mode == "neutrino" && (
             <View>
-              <Text style={createWalletStyles.subtitle}>Neutrino server</Text>
+              <Text style={createWalletStyles.subtitle}>
+                Neutrino peers to add
+              </Text>
               <TextInput
                 style={createWalletStyles.nameInput}
                 underlineColorAndroid="transparent"
@@ -331,6 +334,10 @@ class CreateWallet extends Component {
                 value={this.state.neutrinoConnect}
                 onChangeText={text => this.setState({ neutrinoConnect: text })}
               />
+              <Text style={shared.warningText}>
+                Adding extra known peers will help you sync faster. You can add
+                more peers separated by a comma(,).
+              </Text>
             </View>
           )}
           <Button
