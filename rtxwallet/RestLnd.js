@@ -240,6 +240,11 @@ class LndApi {
     this.log("getting node info for ", pub_key);
     return await this.genericGetJson("graph/node/" + pub_key);
   };
+
+  getPayments = async () => {
+    this.log("getting payments");
+    return await this.genericGetJson("payments");
+  };
 }
 
 export default new LndApi();
