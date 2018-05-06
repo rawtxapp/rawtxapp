@@ -245,6 +245,11 @@ class LndApi {
     this.log("getting payments");
     return await this.genericGetJson("payments");
   };
+
+  getInvoices = async () => {
+    this.log("getting invoices");
+    return await this.genericGetJson("invoices");
+  };
 }
 
 export default new LndApi();
