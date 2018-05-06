@@ -184,23 +184,31 @@ class LndProvider extends Component {
   // Because of changing ip addresses and ports, some channels
   // go inactive when can't communicate with the peer.
   reactivateInactiveChannels(walletListener, lndApi) {
+    let rateLimit = -1;
     this.channelListener_ = walletListener.listenToChannels(async c => {
       if (!c || !c.channels) return;
       const inactive_pubkeys = c.channels
         .filter(c => !c.active)
         .map(c => c.remote_pubkey);
-      if (inactive_pubkeys.length > 0) {
-        const graph = await walletListener.getLastGraph();
-        const found = findNodesInGraph(graph, inactive_pubkeys);
-        for (let i = 0; i < found.found_nodes.length; i++) {
-          const nodeInfo = found.nodeInfo[found.found_nodes[i]];
-          if (nodeInfo.addresses && nodeInfo.addresses.length > 0) {
-            await lndApi.addPeers(
-              nodeInfo.pub_key,
-              nodeInfo.addresses[0].addr,
-              true
-            );
-          }
+      if (inactive_pubkeys.length == 0) {
+        return;
+      }
+      rateLimit++;
+      if (rateLimit > 10) {
+        rateLimit = 0;
+      }
+      if (rateLimit != 0) {
+        return;
+      }
+      for (let i = 0; i < inactive_pubkeys.length; i++) {
+        const inactive = inactive_pubkeys[i];
+        const { node } = await lndApi.getNodeInfo(inactive);
+        if (node.addresses && node.addresses.length > 0) {
+          const b = await lndApi.addPeers(
+            node.pub_key,
+            node.addresses[0].addr,
+            true
+          );
         }
       }
     });
