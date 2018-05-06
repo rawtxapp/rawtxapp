@@ -101,38 +101,6 @@ class ScreenGraphList extends Component {
     );
   };
 
-  _renderGraphList = () => {
-    if (!this.state.graph || !this.state.graph.nodes)
-      return <ActivityIndicator />;
-    const filtered = this.state.graph.nodes.filter(
-      n =>
-        !this.state.filter_to ||
-        this.state.filter_to == "" ||
-        ((n.pub_key && n.pub_key.includes(this.state.filter_to)) ||
-          (n.alias && n.alias.includes(this.state.filter_to)))
-    );
-    return (
-      <View>
-        {filtered.slice(0, this.state.nPeersToShow).map((n, i) => {
-          return <View key={i}>{this._renderGraphNode(n)}</View>;
-        })}
-
-        <Button
-          style={[shared.inCardButton]}
-          onPress={() => {
-            this.setState({ nPeersToShow: this.state.nPeersToShow + 20 });
-          }}
-        >
-          Show more (showing{" "}
-          {filtered.length > this.state.nPeersToShow
-            ? this.state.nPeersToShow
-            : filtered.length}{" "}
-          out of {filtered.length} nodes)
-        </Button>
-      </View>
-    );
-  };
-
   _renderFilterInput = () => {
     return (
       <View style={styles.filterContainer}>
