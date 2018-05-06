@@ -48,7 +48,7 @@ class ScreenGraphList extends Component {
           <Text style={shared.boldText}>alias:</Text>
           {n.alias}
         </Text>
-        <Text>
+        <Text selectable>
           <Text style={shared.boldText}>pubkey:</Text>
           {n.pub_key}
         </Text>
