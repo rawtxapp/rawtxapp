@@ -123,8 +123,7 @@ class ScreenGenSeed extends Component {
                   this.setState({ passwordErrorMessage: response.error });
                   return;
                 }
-                // TODO: navigate
-                console.log("navigating to wallet screen!!");
+                this.props.navigation.navigate("Wallet");
               }}
             >
               Confirm
@@ -262,7 +261,7 @@ class ScreenGenSeed extends Component {
                 onPress={async () => {
                   const runningWallet = this.state.runningWallet;
                   const walletDir = await this.props.walletDir(runningWallet);
-                  await this.props.stopLnd(walletDir);
+                  this.props.stopLnd(walletDir);
                   this.props.navigation.navigate("WalletCreate");
                 }}
               >
