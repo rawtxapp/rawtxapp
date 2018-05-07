@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import {
   ActivityIndicator,
   Image,
+  Linking,
   Modal,
   ScrollView,
   StyleSheet,
@@ -340,6 +341,16 @@ class SavingsAccount extends Component {
             <Text style={shared.selectableText} selectable>
               {this.state.generatedAddress}
             </Text>
+
+            <Text>Faucet for receiving testnet coins:</Text>
+            <Button
+              style={[shared.smallButton]}
+              onPress={() => {
+                Linking.openURL("https://testnet.coinfaucet.eu/en/");
+              }}
+            >
+              https://testnet.coinfaucet.eu/en/
+            </Button>
 
             <Button
               style={[shared.inCardButton]}
