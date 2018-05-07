@@ -22,6 +22,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -38,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
 import java.net.URL;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
@@ -409,6 +411,15 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
                     connection.setUseCaches(false);
                     connection.setConnectTimeout(3000);
                     connection.setReadTimeout(10000);
+                    if (jsRequest.hasKey("headers")) {
+                        ReadableMap jsHeaders = jsRequest.getMap("headers");
+                        ReadableMapKeySetIterator iterator = jsHeaders.keySetIterator();
+                        while(iterator.hasNextKey()) {
+                            String key = iterator.nextKey();
+                            String value = jsHeaders.getString(key);
+                            connection.setRequestProperty(key, value);
+                        }
+                    }
                     if(jsRequest.hasKey("method") &&
                             jsRequest.getString("method").toLowerCase().equals("post")) {
                         if (jsRequest.hasKey("jsonBody")) {
@@ -471,6 +482,45 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
             }
         }.execute();
 
+    }
+
+    private static byte[] readFileByte(File file) throws IOException {
+        // Open file
+        RandomAccessFile f = new RandomAccessFile(file, "r");
+        try {
+            // Get and check length
+            long longlength = f.length();
+            int length = (int) longlength;
+            if (length != longlength)
+                throw new IOException("File size >= 2 GB");
+            // Read file and return data
+            byte[] data = new byte[length];
+            f.readFully(data);
+            return data;
+        } finally {
+            f.close();
+        }
+    }
+
+    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    private static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for ( int j = 0; j < bytes.length; j++ ) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+
+    @ReactMethod
+    public void getMacaroonHex(String macaroonFile, Promise promise) {
+        try {
+            promise.resolve(bytesToHex(readFileByte(new File(macaroonFile))));
+        }catch (Exception e){
+            e.printStackTrace();
+            promise.reject(e);
+        }
     }
 
     // Some POST methods on GRPC rest are "bytes" fields and they are converted from base64 strings.
