@@ -10,6 +10,7 @@ import {
 import shared from "./SharedStyles.js";
 import Button from "react-native-button";
 import withLnd from "./withLnd.js";
+import QRCode from "react-native-qrcode";
 
 class ComponentReceive extends Component {
   constructor(props) {
@@ -124,6 +125,9 @@ class ComponentReceive extends Component {
         <Text selectable style={shared.textInput}>
           {this.state.payment_request}
         </Text>
+        <View style={styles.qrCodeContainer}>
+          <QRCode text={"lightning:" + this.payment_request} />
+        </View>
       </View>
     );
   };
@@ -179,4 +183,9 @@ class ComponentReceive extends Component {
 
 export default withLnd(ComponentReceive);
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  qrCodeContainer: {
+    alignItems: "center",
+    justifyContent: "center"
+  }
+});

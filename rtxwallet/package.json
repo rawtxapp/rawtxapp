@@ -13,6 +13,7 @@
     "react-mixin": "^4.0.0",
     "react-native": "^0.55.2",
     "react-native-button": "^2.3.0",
+    "react-native-qrcode": "^0.2.6",
     "react-native-simple-radio-button": "^2.7.1",
     "react-navigation": "^1.5.9",
     "react-timer-mixin": "^0.13.3"
