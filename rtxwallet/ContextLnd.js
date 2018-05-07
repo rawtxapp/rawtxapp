@@ -14,7 +14,8 @@ import {
   writeFile,
   isLndProcessRunning,
   encodeBase64,
-  scanQrCode
+  scanQrCode,
+  getMacaroonHex
 } from "./NativeRtxModule.js";
 import LndApi from "./RestLnd.js";
 import WalletListener from "./WalletListener";
@@ -105,7 +106,6 @@ const writeLndConf = async function(wallet) {
 debuglevel=info
 debughtlc=true
 maxpendingchannels=10
-no-macaroons=true
 maxlogfiles=3
 maxlogfilesize=10
 
@@ -248,6 +248,17 @@ class LndProvider extends Component {
     this.initialInvoiceHandled = true;
   };
 
+  // this method also makes sure LndApi has the right admin.macaroon.
+  _getRunningWallet = async () => {
+    const w = await getRunningWallet();
+    if (w) {
+      const walletDirectory = await walletDir(w);
+      const mac = await getMacaroonHex(walletDirectory + "/admin.macaroon");
+      LndApi.setAdminMacaroon(mac);
+    }
+    return w;
+  };
+
   render() {
     const walletConf = this.state.walletConf;
     const addWalletUpdateState = async newWallet => {
@@ -270,7 +281,7 @@ class LndProvider extends Component {
           displayUnitToSatoshi: this.displayUnitToSatoshi,
           startLndFromWallet,
           isLndProcessRunning,
-          getRunningWallet,
+          getRunningWallet: this._getRunningWallet,
           walletDir,
           encodeBase64,
           stopLndFromWallet,

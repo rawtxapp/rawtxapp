@@ -16,7 +16,20 @@ class LndApi {
     this.port = port;
     this.pathPrefix = pathPrefix;
     this.TAG = "LndApi";
+    this.adminMacaroon = "";
   }
+
+  headers = () => {
+    let headers = {};
+    if (this.adminMacaroon) {
+      headers["Grpc-Metadata-macaroon"] = this.adminMacaroon;
+    }
+    return headers;
+  };
+
+  setAdminMacaroon = adminMacaroon => {
+    this.adminMacaroon = adminMacaroon;
+  };
 
   url = (path, queryParams) => {
     if (!path.startsWith("/")) {
@@ -39,7 +52,7 @@ class LndApi {
   genericGetJson = async urlIn => {
     try {
       const url = this.url(urlIn);
-      const response = await fetch({ url });
+      const response = await fetch({ url, headers: this.headers() });
       const json = JSON.parse(response["bodyString"]);
       return json;
     } catch (error) {
@@ -51,7 +64,11 @@ class LndApi {
   genericDeleteJson = async (urlIn, queryParams) => {
     try {
       const url = this.url(urlIn, queryParams);
-      const response = await fetch({ url, method: "delete" });
+      const response = await fetch({
+        url,
+        method: "delete",
+        headers: this.headers()
+      });
       const json = JSON.parse(response["bodyString"]);
       return json;
     } catch (error) {
@@ -66,7 +83,8 @@ class LndApi {
       const response = await fetch({
         url,
         method: "post",
-        jsonBody: JSON.stringify(jsonIn)
+        jsonBody: JSON.stringify(jsonIn),
+        headers: this.headers()
       });
       const json = JSON.parse(response["bodyString"]);
       return json;
