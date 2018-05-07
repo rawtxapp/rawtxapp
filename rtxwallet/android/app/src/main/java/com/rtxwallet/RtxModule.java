@@ -15,7 +15,6 @@ import android.util.Log;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.BaseActivityEventListener;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -69,7 +68,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
  */
 public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
     private static final String TAG = "RtxJava";
-    private static final int MAX_LINES_LOG_WINDOW = 200;
 
 //    private LogWatcher logWatcher;
 
@@ -561,40 +559,41 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
         promise.resolve(f.exists() && !f.isDirectory());
     }
 
+    // Returns last N lines of a file. Very ineffient, do better.
     @ReactMethod
-    public void getLogContent(Callback callback) {
-        // The name of the file to open.
-        String fileName =  "" ; //getLogFile();
-
+    public void getLastNLines(String file, int maxLine, Promise promise) {
         // This will reference one line at a time
         String line;
-        ArrayDeque<String> movingWindowLog = new ArrayDeque<>(MAX_LINES_LOG_WINDOW);
-
+        ArrayDeque<String> movingWindowLog = new ArrayDeque<>(maxLine+1);
         try {
             // FileReader reads text files in the default encoding.
             FileReader fileReader =
-                    new FileReader(fileName);
+                    new FileReader(file);
 
             // Always wrap FileReader in BufferedReader.
             BufferedReader bufferedReader =
                     new BufferedReader(fileReader);
 
             while ((line = bufferedReader.readLine()) != null) {
+                // TODO: super ugly hack to remove [INF] RPCS lines from logs because they are
+                // not very useful. Find a much better approach!!!
+                if (line.contains("[INF] RPCS")) {
+                    continue;
+                }
                 movingWindowLog.addLast(line);
-                if (movingWindowLog.size() > MAX_LINES_LOG_WINDOW) {
+                if (movingWindowLog.size() > maxLine) {
                     movingWindowLog.removeFirst();
                 }
             }
 
-            // Always close files.
             bufferedReader.close();
         } catch (FileNotFoundException ex) {
-            Log.e(TAG, "Unable to open file '" + fileName + "'");
-            callback.invoke("");
+            Log.e(TAG, "Unable to open file '" + file + "'");
+            promise.reject(ex);
             return;
         } catch (IOException ex) {
-            Log.e(TAG, "Error reading file '" + fileName + "'");
-            callback.invoke("");
+            Log.e(TAG, "Error reading file '" + file + "'");
+            promise.reject(ex);
             return;
         }
 
@@ -604,20 +603,8 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
             String next = reverseIterator.next();
             stringBuilder.append(next + '\n');
         }
-        callback.invoke(stringBuilder.toString());
+        promise.resolve(stringBuilder.toString());
     }
-
-//    private String getLndDir() {
-//        String filesDir = getReactApplicationContext().getFilesDir().getPath();
-//        if (filesDir.charAt(filesDir.length() - 1) != '/') {
-//            filesDir = filesDir + '/';
-//        }
-//        return filesDir + "lnd/";
-//    }
-
-//    private String getLogFile() {
-//        return getLndDir() + "logs/bitcoin/testnet/lnd.log";
-//    }
 
     @Override
     public void onHostResume() {
