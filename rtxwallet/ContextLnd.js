@@ -15,7 +15,8 @@ import {
   isLndProcessRunning,
   encodeBase64,
   scanQrCode,
-  getMacaroonHex
+  getMacaroonHex,
+  getLastNLines
 } from "./NativeRtxModule.js";
 import LndApi from "./RestLnd.js";
 import WalletListener from "./WalletListener";
@@ -88,6 +89,29 @@ const addWallet = async function(newWallet) {
 
 const walletDir = async function(wallet) {
   return (await getAppDir()) + "/wallets/" + (wallet.ix || 0) + "/";
+};
+
+const logDir = async function(wallet) {
+  let w = wallet;
+  if (!wallet) {
+    const runningWallet = await getRunningWallet();
+    if (runningWallet) {
+      w = runningWallet;
+    } else {
+      return;
+    }
+  }
+  const walletD = await walletDir(w);
+  return walletD + "logs/" + w.coin + "/" + w.network + "/";
+};
+
+const getLogs = async function(nLines) {
+  try {
+    const logD = await logDir();
+    const logFile = logD + "lnd.log";
+    const lastN = await getLastNLines(logFile, nLines);
+    return lastN;
+  } catch (e) {}
 };
 
 const writeLndConf = async function(wallet) {
@@ -289,7 +313,8 @@ class LndProvider extends Component {
           scanQrCode,
           walletListener: this.state.walletListener,
           isInitialInvoiceHandled: this.isInitialInvoiceHandled,
-          setInitialInvoiceHandled: this.setInitialInvoiceHandled
+          setInitialInvoiceHandled: this.setInitialInvoiceHandled,
+          getLogs
         }}
       >
         {this.props.children}
