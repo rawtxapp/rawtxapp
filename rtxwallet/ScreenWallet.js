@@ -27,6 +27,7 @@ import ComponentReceive from "./ComponentReceive.js";
 import ComponentReceiveFaucet from "./ComponentReceiveFaucet.js";
 import ScreenPayments from "./ScreenPayments.js";
 import ScreenInvoices from "./ScreenInvoices";
+import ComponentWhereSpend from "./ComponentWhereSpend.js";
 
 class SyncingBlock extends Component {
   render() {
@@ -247,6 +248,8 @@ class CheckingAccount extends Component {
         {this._renderShowPayments()}
         <View style={shared.separator} />
         {this._renderShowInvoices()}
+        <View style={shared.separator} />
+        <ComponentWhereSpend />
       </View>
     );
   }
