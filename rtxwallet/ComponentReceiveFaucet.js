@@ -110,7 +110,7 @@ class ComponentReceiveFaucet extends Component {
   };
 
   _renderFaucetLink = () => {
-    if (!this.state.receiving) return;
+    if (!this.state.receiving || !this.state.success) return;
     return (
       <View>
         <Button
