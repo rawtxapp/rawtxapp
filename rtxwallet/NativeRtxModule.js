@@ -70,6 +70,10 @@ const scanQrCode = async function() {
   return await Rtx.scanQrCode();
 };
 
+const getMacaroonHex = async function(macaroonFile) {
+  return await Rtx.getMacaroonHex(macaroonFile);
+};
+
 export {
   getLogContent,
   startLnd,
@@ -83,5 +87,6 @@ export {
   getAppDir,
   isLndProcessRunning,
   encodeBase64,
-  scanQrCode
+  scanQrCode,
+  getMacaroonHex
 };
