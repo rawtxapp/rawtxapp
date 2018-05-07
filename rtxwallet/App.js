@@ -21,7 +21,6 @@ import ScreenLog from "./ScreenLog.js";
 import ScreenWallet from "./ScreenWallet.js";
 import ScreenIntroCreateUnlockWallet from "./ScreenIntroCreateUnlockWallet.js";
 import ScreenGenSeed from "./ScreenGenSeed.js";
-import { LogProvider } from "./ContextLog.js";
 import { LndProvider } from "./ContextLnd.js";
 
 if (Platform.OS === "android") {
@@ -43,9 +42,7 @@ export default class App extends Component<Props> {
     return (
       <View style={styles.container}>
         <LndProvider>
-          <LogProvider>
-            <RootSwitch />
-          </LogProvider>
+          <RootSwitch />
         </LndProvider>
       </View>
     );
