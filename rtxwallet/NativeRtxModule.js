@@ -16,8 +16,8 @@ const stopLnd = async function(lndDir) {
   return await NativeModules.RtxModule.stopLnd(lndDir);
 };
 
-const getLogContent = function(callback) {
-  Rtx.getLogContent(callback);
+const getLastNLines = async function(file, n) {
+  return await Rtx.getLastNLines(file, n);
 };
 
 const startWatchingLogContent = function(callback) {
@@ -75,7 +75,6 @@ const getMacaroonHex = async function(macaroonFile) {
 };
 
 export {
-  getLogContent,
   startLnd,
   stopLnd,
   startWatchingLogContent,
@@ -88,5 +87,6 @@ export {
   isLndProcessRunning,
   encodeBase64,
   scanQrCode,
-  getMacaroonHex
+  getMacaroonHex,
+  getLastNLines
 };
