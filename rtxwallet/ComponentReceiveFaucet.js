@@ -78,10 +78,14 @@ class ComponentReceiveFaucet extends Component {
                 const result = await this.props.lndApi.addPeersAddr(
                   this.state.faucetPubkey
                 );
-                this.setState({
-                  success:
-                    "Connected! You can now go to the faucet's webpage. (Channel amount must be at least 250,000 sat, otherwise opening channel might fail)."
-                });
+                if (result.error) {
+                  this.setState({ error: result.error });
+                } else {
+                  this.setState({
+                    success:
+                      "Connected! You can now go to the faucet's webpage. (Channel amount must be at least 250,000 sat, otherwise opening channel might fail)."
+                  });
+                }
               } catch (err) {
                 if (err == "timeout") {
                   this.setState({
