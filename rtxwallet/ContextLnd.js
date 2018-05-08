@@ -290,9 +290,11 @@ class LndProvider extends Component {
   _getRunningWallet = async () => {
     const w = await getRunningWallet();
     if (w) {
-      const walletDirectory = await walletDir(w);
-      const mac = await getMacaroonHex(walletDirectory + "/admin.macaroon");
-      LndApi.setAdminMacaroon(mac);
+      try {
+        const walletDirectory = await walletDir(w);
+        const mac = await getMacaroonHex(walletDirectory + "/admin.macaroon");
+        LndApi.setAdminMacaroon(mac);
+      } catch (e) {}
     }
     return w;
   };
