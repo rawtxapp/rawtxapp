@@ -263,8 +263,8 @@ class CreateWallet extends Component {
             <Text style={createWalletStyles.subtitle}>Network</Text>
             <RadioForm
               radio_props={[
-                { label: "Testnet    ", value: "testnet" },
-                { label: "Mainnet", value: "mainnet" }
+                { label: "Testnet    ", value: "testnet" }
+                // { label: "Mainnet", value: "mainnet" }
               ]}
               initial={0}
               animation={false}
@@ -298,8 +298,8 @@ class CreateWallet extends Component {
                 this.state.network == "mainnet"
                   ? [{ label: "btcd-full", value: "btcd" }]
                   : [
-                      { label: "neutrino    ", value: "neutrino" },
-                      { label: "btcd-full", value: "btcd" }
+                      { label: "neutrino    ", value: "neutrino" }
+                      // { label: "btcd-full", value: "btcd" }
                     ]
               }
               initial={0}

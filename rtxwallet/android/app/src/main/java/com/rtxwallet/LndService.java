@@ -45,8 +45,8 @@ public class LndService extends IntentService {
         }
         Notification notification =
                 new NotificationCompat.Builder(this, notification_channel_id)
-                        .setContentTitle("LND started")
-                        .setContentText("Dismiss this notification to shutdown LND.")
+                        .setContentTitle("LND running in background")
+                        .setContentText("Closing the wallet will shut it down.")
                         .setSmallIcon(R.drawable.ic_action_name)
                         .setContentIntent(main)
                         .build();

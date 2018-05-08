@@ -67,7 +67,7 @@ class ScreenAbout extends Component {
             <Text style={shared.boldText}>Support:</Text>
             you can reach us at{" "}
             <Text style={shared.boldText} selectable>
-              twitter.com/rawtx
+              twitter.com/rawtxapp
             </Text>, reddit:{" "}
             <Text style={shared.boldText} selectable>
               /u/rawtxapp
