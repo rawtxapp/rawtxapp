@@ -268,6 +268,14 @@ class LndApi {
     this.log("getting invoices");
     return await this.genericGetJson("invoices");
   };
+
+  sendTransactionBlockchain = async (addr, amount) => {
+    this.log("sending btc (blockchain) to ", addr);
+    return await this.genericPostJson("transactions", {
+      addr,
+      amount
+    });
+  };
 }
 
 export default new LndApi();

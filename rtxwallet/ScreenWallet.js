@@ -368,6 +368,94 @@ class SavingsAccount extends Component {
         )}
 
         <View style={shared.separator} />
+        <Button
+          style={[shared.inCardButton]}
+          onPress={async () => {
+            this.setState({
+              showingSending: !this.state.showingSending,
+              destinationAddress: "",
+              paymentSat: "",
+              paymentTx: undefined,
+              paymentError: undefined
+            });
+          }}
+        >
+          Send on blockchain
+        </Button>
+        {this.state.showingSending && (
+          <View>
+            <TextInput
+              style={[shared.textInput]}
+              underlineColorAndroid="transparent"
+              placeholder="Destination address"
+              value={this.state.destinationAddress}
+              onChangeText={text => this.setState({ destinationAddress: text })}
+            />
+            <TextInput
+              style={[shared.textInput]}
+              underlineColorAndroid="transparent"
+              placeholder="Amount (in satoshis)"
+              value={this.state.paymentSat}
+              keyboardType="numeric"
+              onChangeText={text => this.setState({ paymentSat: text })}
+            />
+
+            <Button
+              style={[shared.inCardButton]}
+              disabled={this.state.sendingPayment}
+              styleDisabled={shared.disabledButton}
+              onPress={async () => {
+                try {
+                  this.setState({ sendingPayment: true });
+                  const payment = await this.props.lndApi.sendTransactionBlockchain(
+                    this.state.destinationAddress,
+                    this.state.paymentSat
+                  );
+                  if (payment.txid) {
+                    this.setState({ paymentTx: payment.txid });
+                  } else if (
+                    payment.error &&
+                    payment.error.includes("already have transaction")
+                  ) {
+                    let paymentTx;
+                    if (payment.error.startsWith("Transaction")) {
+                      paymentTx = payment.error.split(" ").filter(String)[1];
+                    }
+                    this.setState({
+                      paymentTx: paymentTx
+                        ? paymentTx
+                        : "Your payment should be sent!"
+                    });
+                  } else if (payment.error) {
+                    this.setState({ paymentError: payment.error });
+                  } else {
+                    this.setState({ paymentError: "Couldn't send coins!" });
+                  }
+                } catch (e) {
+                  this.setState({ paymentError: JSON.stringify(e) });
+                }
+                this.setState({ sendingPayment: false });
+              }}
+            >
+              Send
+            </Button>
+            {this.state.paymentError && (
+              <Text style={shared.errorText} selectable>
+                {this.state.paymentError}
+              </Text>
+            )}
+            {this.state.paymentTx && (
+              <View>
+                <Text style={shared.boldText}>Transaction id:</Text>
+                <Text style={shared.selectableText} selectable>
+                  {this.state.paymentTx}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
+
+        <View style={shared.separator} />
         <ComponentTransferToChecking />
       </View>
     );
