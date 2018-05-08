@@ -164,12 +164,13 @@ public class RtxModule extends ReactContextBaseJavaModule implements LifecycleEv
 
     @ReactMethod
     public void stopLnd(String lndDir, final Promise promise) {
+        Log.i(TAG, "Stopping LND service("+lndDir+").");
         AsyncTask<String, Void, Void> task = new AsyncTask<String, Void, Void>() {
             @Override
             protected Void doInBackground(String... strings) {
                 String lndDir = strings[0];
 
-                Log.i(TAG, "Stopping LND service.");
+                Log.i(TAG, "Stopping LND service background.");
                 Intent intent = new Intent(getCurrentActivity().getApplicationContext(), LndService.class);
                 getCurrentActivity().stopService(intent);
 
