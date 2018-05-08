@@ -30,7 +30,8 @@ export default class ComponentWelcome extends Component {
           Welcome to rawtx lightning wallet!
         </Text>
         <Text>
-          You can currently send and receive testnet bitcoins on this app.
+          You can currently send and receive testnet bitcoins on this app (on
+          the blockchain and lightning network).
         </Text>
         <Text>
           It will take about 10-15 minutes to sync with the blockchain, you can
