@@ -5,11 +5,16 @@ import shared from "./SharedStyles";
 import Button from "react-native-button";
 import ScreenGraphList from "./ScreenGraphList";
 import ScreenLog from "./ScreenLog";
+import ScreenAbout from "./ScreenAbout";
 
 class ComponentWalletOperations extends Component {
   constructor(props) {
     super(props);
-    this.state = { showingGraphNodes: false, showingLogs: false };
+    this.state = {
+      showingGraphNodes: false,
+      showingLogs: false,
+      showingAbout: false
+    };
   }
 
   componentDidMount() {
@@ -61,6 +66,28 @@ class ComponentWalletOperations extends Component {
           animationType="slide"
         >
           <ScreenLog onCancel={cancelOp} />
+        </Modal>
+      </View>
+    );
+  }
+
+  _renderShowAbout() {
+    const cancelOp = () => this.setState({ showingAbout: false });
+    return (
+      <View>
+        <Button
+          style={[shared.inCardButton]}
+          onPress={() => this.setState({ showingAbout: true })}
+        >
+          About
+        </Button>
+
+        <Modal
+          visible={this.state.showingAbout}
+          onRequestClose={cancelOp}
+          animationType="slide"
+        >
+          <ScreenAbout onCancel={cancelOp} />
         </Modal>
       </View>
     );
@@ -132,6 +159,8 @@ class ComponentWalletOperations extends Component {
         {this._renderShowGraphNodes()}
         <View style={shared.separator} />
         {this._renderShowLogs()}
+        <View style={shared.separator} />
+        {this._renderShowAbout()}
       </View>
     );
   }
