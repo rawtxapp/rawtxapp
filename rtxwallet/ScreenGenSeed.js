@@ -1,12 +1,5 @@
 import React, { Component } from "react";
-import {
-  LayoutAnimation,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View,
-  Text
-} from "react-native";
+import { ScrollView, StyleSheet, TextInput, View, Text } from "react-native";
 
 import Button from "react-native-button";
 import { LOGO_COLOR } from "./Colors.js";
@@ -134,7 +127,6 @@ class ScreenGenSeed extends Component {
               style={[styles.buttonText, styles.cancel]}
               containerStyle={styles.buttonContainer}
               onPress={() => {
-                LayoutAnimation.easeInEaseOut();
                 this.setState({
                   seed: "",
                   confirming: true,
@@ -174,7 +166,6 @@ class ScreenGenSeed extends Component {
                 if (!this.state.seed || this.state.seed == "") {
                   return;
                 }
-                LayoutAnimation.easeInEaseOut();
                 const enteredSeed = this.state.seed.split(" ").filter(String);
                 const equal =
                   enteredSeed.length == this.state.cipher.length &&
@@ -200,7 +191,6 @@ class ScreenGenSeed extends Component {
               style={[styles.buttonText, styles.cancel]}
               containerStyle={styles.buttonContainer}
               onPress={() => {
-                LayoutAnimation.easeInEaseOut();
                 this.setState({ seed: "", confirming: false });
               }}
             >
@@ -212,7 +202,6 @@ class ScreenGenSeed extends Component {
               style={[styles.buttonText, styles.cancel]}
               containerStyle={styles.buttonContainer}
               onPress={() => {
-                LayoutAnimation.easeInEaseOut();
                 this.setState({ seed: this.state.cipher.join(" ") });
               }}
             >
@@ -236,7 +225,6 @@ class ScreenGenSeed extends Component {
                 style={[styles.buttonText, styles.confirm]}
                 containerStyle={styles.buttonContainer}
                 onPress={() => {
-                  LayoutAnimation.easeInEaseOut();
                   this.setState({ confirming: true });
                 }}
               >
