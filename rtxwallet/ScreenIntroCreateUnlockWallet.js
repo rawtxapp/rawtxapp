@@ -108,7 +108,13 @@ class UnlockWallet extends Component {
                       { animatingIx: i, working: true },
                       async () => {
                         const navigating = await this.props.unlockWallet(w);
-                        if (navigating) {
+                        if (navigating == "alreadyRunning") {
+                          this.setState({
+                            animatingIx: undefined,
+                            working: false
+                          });
+                          return;
+                        } else if (navigating) {
                           return;
                         }
                         this.setState({ unlocking: w, working: false });
@@ -229,7 +235,13 @@ class CreateWallet extends Component {
     const addWallet = async () => {
       this.setState({ creating: true, error: "" }, async () => {
         try {
-          await this.props.addWallet(this.state);
+          const res = await this.props.addWallet(this.state);
+          if (res == "alreadyRunning") {
+            this.setState({
+              creating: false,
+              error: "A wallet is already running!"
+            });
+          }
         } catch (error) {
           this.setState({ error: error.toString(), creating: false });
         }
@@ -394,6 +406,7 @@ class ScreenIntroCreateUnlockWallet extends Component {
     if (!runningWallet) {
       return;
     }
+    this.setState({ runningWallet });
 
     // check if we are at genseed stage
     try {
@@ -402,10 +415,11 @@ class ScreenIntroCreateUnlockWallet extends Component {
       if (seed.cipher_seed_mnemonic) {
         console.log("Found GenSeed, navigating to it");
         this.props.navigation.navigate("GenSeed", { seedResponse: seed });
+        this.setState({ foundState: true });
         return true;
       } else if (seed.error == "wallet already exists") {
         console.log("Wallet already created, asking for password");
-        this.setState({ unlockingWallet: runningWallet });
+        this.setState({ unlockingWallet: runningWallet, foundState: true });
         return false;
       }
     } catch (err) {
@@ -427,6 +441,7 @@ class ScreenIntroCreateUnlockWallet extends Component {
 
     console.log("Couldn't determine wallet state, shutting down LND!");
     await this.props.stopLndFromWallet(runningWallet);
+    this.setState({ runningWallet: undefined });
   };
 
   render() {
@@ -465,6 +480,14 @@ class ScreenIntroCreateUnlockWallet extends Component {
                   unlockwallet={this.props.lndApi.unlockwallet}
                   stopLndFromWallet={this.props.stopLndFromWallet}
                   unlockWallet={async w => {
+                    const running = await this.props.getRunningWallet();
+                    if (running) {
+                      ToastAndroid.show(
+                        "A wallet is already running in the background, if the app hangs, please kill the server and try to start again!",
+                        ToastAndroid.LONG
+                      );
+                      return "alreadyRunning";
+                    }
                     await this.props.startLndFromWallet(w);
                     return await this.checkStateAndNavigate();
                   }}
@@ -473,6 +496,14 @@ class ScreenIntroCreateUnlockWallet extends Component {
               <View style={styles.buttonContainer}>
                 <CreateWallet
                   addWallet={async newWallet => {
+                    const running = await this.props.getRunningWallet();
+                    if (running) {
+                      ToastAndroid.show(
+                        "A wallet is already running in the background, if the app hangs, please kill the server and try to start again!",
+                        ToastAndroid.LONG
+                      );
+                      return "alreadyRunning";
+                    }
                     newWallet = await addWallet(newWallet);
                     await this.props.startLndFromWallet(newWallet);
                     this.props.navigation.navigate("GenSeed", {
@@ -484,6 +515,24 @@ class ScreenIntroCreateUnlockWallet extends Component {
             </View>
           )}
         </LndConsumer>
+        {this.state.runningWallet &&
+          !this.state.foundState && (
+            <Button
+              style={[buttonStyles.container, styles.killButton]}
+              onPress={async () => {
+                this.setState({ killing: true });
+                try {
+                  await this.props.stopLndFromWallet(this.state.runningWallet);
+                } catch (e) {}
+                this.setState({ runningWallet: undefined, killing: false });
+              }}
+            >
+              Determining LND state, if it hangs, click here to kill it and
+              reopen wallet!{" "}
+              {this.state.killing &&
+                "(killing, if this hangs, you can kill from Android settings!)"}
+            </Button>
+          )}
       </ScrollView>
     );
   }
@@ -519,6 +568,11 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flex: 1
+  },
+  killButton: {
+    padding: 20,
+    color: "red",
+    marginTop: 40
   }
 });
 
