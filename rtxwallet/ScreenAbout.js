@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import Button from "react-native-button";
 import shared from "./SharedStyles";
 
@@ -9,7 +9,33 @@ import withLnd from "./withLnd";
 class ScreenAbout extends Component {
   constructor(props) {
     super(props);
+    this.state = {};
   }
+
+  componentDidMount() {
+    this.getDev();
+  }
+
+  getDev = async () => {
+    try {
+      const httpsCert = await this.props.getWalletFile("tls.cert");
+      const adminMacaroon = await this.props.getWalletMacaroon(
+        "admin.macaroon"
+      );
+      const readonlyMacaroon = await this.props.getWalletMacaroon(
+        "readonly.macaroon"
+      );
+      const invoiceMacaroon = await this.props.getWalletMacaroon(
+        "invoice.macaroon"
+      );
+      this.setState({
+        httpsCert,
+        adminMacaroon,
+        readonlyMacaroon,
+        invoiceMacaroon
+      });
+    } catch (e) {}
+  };
 
   render() {
     return (
@@ -58,6 +84,26 @@ class ScreenAbout extends Component {
           <Text style={shared.paragraph}>
             If you're interested in talking to the lnd server that's running on
             your phone, here are the certs and macaroons:
+          </Text>
+          <View style={styles.spacer} />
+          <Text style={shared.boldText}>Https cert:</Text>
+          <Text style={shared.selectableText} multiline={true} selectable>
+            {this.state.httpsCert}
+          </Text>
+          <View style={styles.spacer} />
+          <Text style={shared.boldText}>admin macaroon:</Text>
+          <Text style={shared.selectableText} multiline={true} selectable>
+            {this.state.adminMacaroon}
+          </Text>
+          <View style={styles.spacer} />
+          <Text style={shared.boldText}>readonly macaroon:</Text>
+          <Text style={shared.selectableText} multiline={true} selectable>
+            {this.state.readonlyMacaroon}
+          </Text>
+          <View style={styles.spacer} />
+          <Text style={shared.boldText}>invoice macaroon:</Text>
+          <Text style={shared.selectableText} multiline={true} selectable>
+            {this.state.invoiceMacaroon}
           </Text>
         </ScrollView>
       </View>

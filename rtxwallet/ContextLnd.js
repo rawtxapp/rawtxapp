@@ -114,6 +114,20 @@ const getLogs = async function(nLines) {
   } catch (e) {}
 };
 
+const getWalletFile = async function(file) {
+  try {
+    const walletD = await walletDir(await getRunningWallet());
+    return await readFile(walletD + file);
+  } catch (e) {}
+};
+
+const getWalletMacaroon = async function(file) {
+  try {
+    const walletD = await walletDir(await getRunningWallet());
+    return await getMacaroonHex(walletD + file);
+  } catch (e) {}
+};
+
 const writeLndConf = async function(wallet) {
   const walletDirectory = await walletDir(wallet);
   const network = wallet.network || "testnet";
@@ -314,7 +328,9 @@ class LndProvider extends Component {
           walletListener: this.state.walletListener,
           isInitialInvoiceHandled: this.isInitialInvoiceHandled,
           setInitialInvoiceHandled: this.setInitialInvoiceHandled,
-          getLogs
+          getLogs,
+          getWalletFile,
+          getWalletMacaroon
         }}
       >
         {this.props.children}
