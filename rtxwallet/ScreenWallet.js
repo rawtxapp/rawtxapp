@@ -28,6 +28,7 @@ import ComponentReceiveFaucet from "./ComponentReceiveFaucet.js";
 import ScreenPayments from "./ScreenPayments.js";
 import ScreenInvoices from "./ScreenInvoices";
 import ComponentWhereSpend from "./ComponentWhereSpend.js";
+import ComponentWelcome from "./ComponentWelcome";
 
 class SyncingBlock extends Component {
   render() {
@@ -450,6 +451,7 @@ class ScreenWallet extends Component {
       content = (
         <View>
           <SyncingBlock getinfo={this.state.getinfo} />
+          <ComponentWelcome />
           <CheckingAccountWithLnd />
           <SavingsAccountWithLnd />
           <ComponentWalletOperations />
