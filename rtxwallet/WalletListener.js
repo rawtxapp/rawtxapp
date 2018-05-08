@@ -23,7 +23,7 @@ export default class WalletListener {
         api: restLnd.balanceBlockchain,
         interval: 1000
       },
-      { method: "GraphInfo", api: restLnd.graphInfo, interval: 60000 },
+      { method: "GraphInfo", api: restLnd.graphInfo, interval: 3000 },
       {
         method: "PendingChannels",
         api: restLnd.pendingChannels,
