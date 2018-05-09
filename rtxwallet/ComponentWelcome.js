@@ -30,21 +30,21 @@ export default class ComponentWelcome extends Component {
           Welcome to rawtx lightning wallet!
         </Text>
         <Text>
-          You can currently send and receive testnet bitcoins on this app (on
-          the blockchain and lightning network).
+          You can send/receive testnet Bitcoins on this app (on the blockchain
+          and lightning network).
         </Text>
         <Text>
-          It will take about 10-15 minutes to sync with the blockchain, you can
-          do other stuff and it will keep syncing even if it's in the
-          background. Once the sync is finished, you will be able to use all the
-          functionality, until then, most operations below won't work!
+          Please give the app <Text style={shared.boldText}>15-30 mins</Text> to
+          sync and bootstrap, you can come back to check it in a while, it will
+          work even if you put it in background!
         </Text>
         <Text>
-          Let the app run in the background and check back in 10-15 minutes.
+          Operations below won't work until you see a{" "}
+          <Text style={shared.boldText}>"Synced"</Text> message in green above.
         </Text>
         <Text>
-          If you run into problem, you can find us on twitter or reddit under
-          rawtxapp usernames.
+          If you run into problems, you can find us on twitter or reddit under
+          rawtxapp usernames. Our email is rawtxapp@gmail.com.
         </Text>
         <Text>
           Please show what lightning is capable of to your friends and family
