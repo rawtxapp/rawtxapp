@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {
   ActivityIndicator,
+  AppState,
   Linking,
   StyleSheet,
   Text,
@@ -16,22 +17,41 @@ import { BoldText } from "./ComponentShared.js";
 class ComponentPayInvoiceButtonInCard extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { appState: AppState.currentState };
   }
 
   componentDidMount() {
     this._initState();
+
+    this.getInitialUrl();
+    AppState.addEventListener("change", this._handleAppStateChange);
+  }
+
+  componentWillUnmount() {
+    AppState.removeEventListener("change", this._handleAppStateChange);
+  }
+
+  getInitialUrl = () => {
     Linking.getInitialURL().then(url => {
-      if (
-        url &&
-        url.startsWith("lightning:") &&
-        !this.props.isInitialInvoiceHandled()
-      ) {
+      if (url && url.startsWith("lightning:")) {
         this.decodePayreq(url);
         this.props.setInitialInvoiceHandled();
       }
     });
-  }
+  };
+
+  // sometimes when a link is pressed, android will just launch
+  // the existing activity and componentDidMount won't be called.
+  // So use AppState listener to also check initialUrl.
+  _handleAppStateChange = nextAppState => {
+    if (
+      this.state.appState.match(/inactive|background/) &&
+      nextAppState === "active"
+    ) {
+      this.getInitialUrl();
+    }
+    this.setState({ appState: nextAppState });
+  };
 
   _initState = () => {
     this.setState({
