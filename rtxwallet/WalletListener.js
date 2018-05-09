@@ -97,6 +97,7 @@ export default class WalletListener {
         const watcher = watchers[i];
         clearInterval(this["watch" + watcher.method + "Interval_"]);
       }
+      this.lastResponse = {};
       this.watching_ = false;
     };
   }

@@ -482,6 +482,7 @@ class ScreenWallet extends Component {
 
   componentWillUnmount() {
     this.getInfoListener_.remove();
+    this.props.walletListener.stopWatching();
   }
 
   setRunningWallet = async () => {
