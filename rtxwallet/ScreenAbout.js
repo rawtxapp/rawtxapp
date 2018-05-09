@@ -76,9 +76,11 @@ class ScreenAbout extends Component {
             <Text style={shared.boldText} selectable>
               lightningcommunity.slack.com
             </Text>{" "}
-            under rawtxapp username. The support you will receive will be as
-            fast as the payments you will make on this app :) Our webpage is
-            still wip, will be available at https://rawtx.com.
+            under rawtxapp username. Our email address is{" "}
+            <Text style={shared.boldText}>rawtxapp@gmail.com</Text>. The support
+            you will receive will be as fast as the payments you will make on
+            this app :) Our webpage is still wip, will be available at
+            https://rawtx.com.
           </Text>
           <View style={styles.spacer} />
           <Text style={shared.paragraph}>
