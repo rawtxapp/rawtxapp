@@ -150,8 +150,12 @@ class ComponentReceiveFaucet extends Component {
   };
 
   render() {
+    if (this.state.started) {
+      return <View />;
+    }
     return (
       <View>
+        <View style={shared.separator} />
         <Button
           style={[
             shared.inCardButton,

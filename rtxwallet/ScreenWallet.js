@@ -171,12 +171,7 @@ class CheckingAccount extends Component {
     ) {
       return;
     }
-    return (
-      <View>
-        <View style={shared.separator} />
-        <ComponentReceiveFaucet />
-      </View>
-    );
+    return <ComponentReceiveFaucet />;
   };
 
   _renderShowPayments = () => {
