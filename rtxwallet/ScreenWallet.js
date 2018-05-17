@@ -113,7 +113,8 @@ class CheckingAccount extends Component {
         pending_force_closing_channels && pending_force_closing_channels.length;
       pending_close = (pending_close || 0) + (pending_force_close || 0);
     }
-    const hasPending = pending_open > 0 || pending_close > 0;
+    const inactive = total - active;
+    const hasPending = pending_open > 0 || pending_close > 0 || inactive > 0;
 
     return (
       <View>
@@ -123,7 +124,12 @@ class CheckingAccount extends Component {
           {hasPending && (
             <Text>
               {" "}
-              ({pending_open > 0
+              ({inactive > 0
+                ? "inactive: " +
+                  inactive +
+                  (pending_open > 0 || pending_close > 0 ? ", " : "")
+                : ""}
+              {pending_open > 0
                 ? "opening: " + pending_open + (pending_close > 0 ? ", " : "")
                 : ""}
               {pending_close > 0 ? "closing: " + pending_close : ""})
