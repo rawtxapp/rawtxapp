@@ -56,13 +56,6 @@ class ComponentReceive extends Component {
               { working: true, error: "", payment_request: "" },
               async () => {
                 try {
-                  if (this.state.amt_sat == "") {
-                    this.setState({
-                      error: "You need to specify an amount!",
-                      working: false
-                    });
-                    return;
-                  }
                   const res = await this.props.lndApi.addInvoiceSimple(
                     this.state.memo,
                     this.state.amt_sat
