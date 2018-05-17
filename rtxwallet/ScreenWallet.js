@@ -105,37 +105,44 @@ class CheckingAccount extends Component {
         pending_closing_channels,
         pending_force_closing_channels
       } = this.state.pendingChannel;
-      pending_open = pending_open_channels && pending_open_channels.length;
+      pending_open =
+        (pending_open_channels && pending_open_channels.length) || 0;
       pending_close =
         pending_closing_channels && pending_closing_channels.length;
       pending_force_close =
         pending_force_closing_channels && pending_force_closing_channels.length;
       pending_close = (pending_close || 0) + (pending_force_close || 0);
     }
+    const hasPending = pending_open > 0 || pending_close > 0;
 
     return (
       <View>
         <Text>
-          <Text style={shared.boldText}>Total channel count:</Text>
-          {total}
-        </Text>
-        <Text>
-          <Text style={shared.boldText}>Active channel count:</Text>
+          <Text style={shared.boldText}>Channels:</Text>
           {active}
-        </Text>
-        <Text>
-          <Text style={shared.boldText}>Pending open channel count:</Text>
-          {pending_open || 0}
-        </Text>
-        <Text>
-          <Text style={shared.boldText}>Pending close channel count:</Text>
-          {pending_close}
+          {hasPending && (
+            <Text>
+              {" "}
+              ({pending_open > 0
+                ? "opening: " + pending_open + (pending_close > 0 ? ", " : "")
+                : ""}
+              {pending_close > 0 ? "closing: " + pending_close : ""})
+            </Text>
+          )}
         </Text>
       </View>
     );
   };
 
   _renderBalances = () => {
+    const pendingOpen =
+      this.state.balance && parseInt(this.state.balance.pending_open_balance);
+    const limbo =
+      this.state.pendingChannel &&
+      parseInt(this.state.pendingChannel.total_limbo_balance);
+    const hasOpen = pendingOpen > 0;
+    const hasLimbo = limbo > 0;
+    const hasOpenLimbo = hasOpen || hasLimbo;
     return (
       <View>
         <Text style={shared.baseText}>
@@ -143,20 +150,16 @@ class CheckingAccount extends Component {
           {this.props.displaySatoshi(
             (this.state.balance && this.state.balance.balance) || "0"
           )}
-        </Text>
-        <Text style={shared.baseText}>
-          <Text style={shared.boldText}>Pending open balance:</Text>{" "}
-          {this.props.displaySatoshi(
-            (this.state.balance && this.state.balance.pending_open_balance) ||
-              "0"
-          )}
-        </Text>
-        <Text style={shared.baseText}>
-          <Text style={shared.boldText}>Total limbo balance:</Text>{" "}
-          {this.props.displaySatoshi(
-            (this.state.pendingChannel &&
-              this.state.pendingChannel.total_limbo_balance) ||
-              "0"
+          {hasOpenLimbo && (
+            <Text>
+              {" "}
+              ({hasOpen
+                ? "pending: +" +
+                  this.props.displaySatoshi(pendingOpen) +
+                  (hasLimbo ? ", " : "")
+                : ""}
+              {hasLimbo ? "limbo: " + this.props.displaySatoshi(limbo) : ""})
+            </Text>
           )}
         </Text>
       </View>
@@ -278,25 +281,22 @@ class SavingsAccount extends Component {
   }
 
   _renderBalances = () => {
+    const unconfirmed =
+      (this.state.balance &&
+        parseInt(this.state.balance.unconfirmed_balance)) ||
+      0;
     return (
       <View>
         <Text style={shared.baseText}>
-          <Text style={shared.boldText}>Total balance:</Text>{" "}
-          {this.props.displaySatoshi(
-            (this.state.balance && this.state.balance.total_balance) || "0"
-          )}
-        </Text>
-        <Text style={shared.baseText}>
-          <Text style={shared.boldText}>Confirmed balance:</Text>{" "}
+          <Text style={shared.boldText}>Balance:</Text>{" "}
           {this.props.displaySatoshi(
             (this.state.balance && this.state.balance.confirmed_balance) || "0"
           )}
-        </Text>
-        <Text style={shared.baseText}>
-          <Text style={shared.boldText}>Unconfirmed balance:</Text>{" "}
-          {this.props.displaySatoshi(
-            (this.state.balance && this.state.balance.unconfirmed_balance) ||
-              "0"
+          {unconfirmed > 0 && (
+            <Text>
+              {" "}
+              (unconfirmed: {this.props.displaySatoshi(unconfirmed)})
+            </Text>
           )}
         </Text>
         {this.state.pendingChannel &&
