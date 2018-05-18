@@ -186,50 +186,26 @@ class CheckingAccount extends Component {
   _renderShowPayments = () => {
     const closeModal = () => this.setState({ showingPayments: false });
     return (
-      <View>
-        <Button
-          style={[shared.inCardButton]}
-          onPress={() => {
-            this.setState({
-              showingPayments: true
-            });
-          }}
-        >
-          Show outgoing payments
-        </Button>
-        <Modal
-          visible={this.state.showingPayments}
-          onRequestClose={closeModal}
-          animationType="slide"
-        >
-          <ScreenPayments onCancel={closeModal} />
-        </Modal>
-      </View>
+      <Modal
+        visible={this.state.showingPayments}
+        onRequestClose={closeModal}
+        animationType="slide"
+      >
+        <ScreenPayments onCancel={closeModal} />
+      </Modal>
     );
   };
 
   _renderShowInvoices = () => {
     const closeModal = () => this.setState({ showingInvoices: false });
     return (
-      <View>
-        <Button
-          style={[shared.inCardButton]}
-          onPress={() => {
-            this.setState({
-              showingInvoices: true
-            });
-          }}
-        >
-          Show invoices (incoming payments)
-        </Button>
-        <Modal
-          visible={this.state.showingInvoices}
-          onRequestClose={closeModal}
-          animationType="slide"
-        >
-          <ScreenInvoices onCancel={closeModal} />
-        </Modal>
-      </View>
+      <Modal
+        visible={this.state.showingInvoices}
+        onRequestClose={closeModal}
+        animationType="slide"
+      >
+        <ScreenInvoices onCancel={closeModal} />
+      </Modal>
     );
   };
 
@@ -242,6 +218,42 @@ class CheckingAccount extends Component {
         </Text>
         {this._renderBalances()}
         {this._renderChannelCount()}
+        <View style={{ flexDirection: "row" }}>
+          <Button
+            containerStyle={{
+              borderRadius: 10,
+              backgroundColor: LOGO_COLOR,
+              flex: 1,
+              margin: 5,
+              padding: 5
+            }}
+            style={{ color: "white" }}
+            onPress={() => {
+              this.setState({
+                showingPayments: true
+              });
+            }}
+          >
+            Show payments
+          </Button>
+          <Button
+            containerStyle={{
+              borderRadius: 10,
+              backgroundColor: LOGO_COLOR,
+              flex: 1,
+              margin: 5,
+              padding: 5
+            }}
+            style={{ color: "white" }}
+            onPress={() => {
+              this.setState({
+                showingInvoices: true
+              });
+            }}
+          >
+            Show invoices
+          </Button>
+        </View>
         {this._renderFaucet()}
         <View style={shared.separator} />
         <ComponentPayInvoiceButtonInCard />
@@ -249,12 +261,8 @@ class CheckingAccount extends Component {
         <ComponentReceive />
         <View style={shared.separator} />
         <ComponentTransferToSavings />
-        <View style={shared.separator} />
         {this._renderShowPayments()}
-        <View style={shared.separator} />
         {this._renderShowInvoices()}
-        <View style={shared.separator} />
-        <ComponentWhereSpend />
       </View>
     );
   }
