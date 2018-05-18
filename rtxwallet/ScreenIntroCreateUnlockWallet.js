@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { LOGO_COLOR } from "./Colors.js";
 import Button from "react-native-button";
+import CheckBox from "react-native-check-box";
 import RadioForm, {
   RadioButton,
   RadioButtonInput,
@@ -66,13 +67,17 @@ class UnlockWallet extends Component {
     this.state = {
       unlocking: undefined,
       working: false,
-      error: ""
+      error: "",
+      withRememberedPassword: false
     };
   }
 
   componentWillReceiveProps(nextProps) {
     if (!this.state.unlocking && nextProps.unlockingWallet) {
-      this.setState({ unlocking: nextProps.unlockingWallet });
+      this.setState({
+        unlocking: nextProps.unlockingWallet,
+        withRememberedPassword: nextProps.unlockWallet.usesKeychain
+      });
     }
   }
 
@@ -117,7 +122,11 @@ class UnlockWallet extends Component {
                         } else if (navigating) {
                           return;
                         }
-                        this.setState({ unlocking: w, working: false });
+                        this.setState({
+                          unlocking: w,
+                          working: false,
+                          withRememberedPassword: w.usesKeychain
+                        });
                       }
                     );
                   }}
@@ -132,7 +141,47 @@ class UnlockWallet extends Component {
           })}
         </View>
       );
+    } else if (this.state.unlocking && this.state.withRememberedPassword) {
+      // Make sure the wallet does indeed use keychains and that we didn't
+      // end up in this state by mistake.
+      if (!this.state.unlocking.usesKeychain) {
+        this.setState({ withRememberedPassword: false });
+        content = <View />;
+      } else {
+        const getPassword = async () => {
+          const password = await this.props.walletKeychain.getWalletPassword(
+            this.state.unlocking.ix
+          );
+          if (password == "") {
+            this.setState({
+              withRememberedPassword: false,
+              error: "Couldn't retrieve remembered password!"
+            });
+          } else {
+            const unlockResult = await this.props.unlockwallet(password);
+            if (unlockResult.error) {
+              this.setState({
+                withRememberedPassword: false,
+                error: unlockResult.error
+              });
+            } else {
+              this.props.navigate("Wallet");
+            }
+          }
+        };
+        getPassword();
+      }
+      content = (
+        <View>
+          <ActivityIndicator />
+          <Text>Unlocking with remembered password!</Text>
+        </View>
+      );
     } else if (this.state.unlocking) {
+      const showKeychainOpt =
+        !this.state.unlocking.usesKeychain &&
+        this.props.walletKeychain &&
+        this.props.walletKeychain.isKeychainEnabled();
       content = (
         <View>
           <TextInput
@@ -143,6 +192,17 @@ class UnlockWallet extends Component {
             value={this.state.password}
             onChangeText={text => this.setState({ password: text })}
           />
+          {showKeychainOpt && (
+            <CheckBox
+              style={{ flex: 1, padding: 10 }}
+              onClick={() =>
+                this.setState({ useKeychain: !this.state.useKeychain })
+              }
+              isChecked={this.state.useKeychain}
+              rightText="Remember password"
+              checkBoxColor={LOGO_COLOR}
+            />
+          )}
           <View style={unlockWalletStyles.actionContainer}>
             <Button
               style={[
@@ -159,7 +219,9 @@ class UnlockWallet extends Component {
                   animatingIx: undefined,
                   password: "",
                   error: "",
-                  working: false
+                  working: false,
+                  useKeychain: false,
+                  withRememberedPassword: false
                 });
               }}
             >
@@ -184,7 +246,14 @@ class UnlockWallet extends Component {
                     this.setState({ error: unlockResult.error });
                     return;
                   }
-                  console.log(unlockResult);
+                  if (this.state.useKeychain) {
+                    this.state.unlocking.usesKeychain = true;
+                    await this.props.updateWalletConf(this.state.unlocking);
+                    await this.props.walletKeychain.setWalletPassword(
+                      this.state.unlocking.ix,
+                      this.state.password
+                    );
+                  }
                   this.props.navigate("Wallet");
                 });
               }}
@@ -479,6 +548,8 @@ class ScreenIntroCreateUnlockWallet extends Component {
                   navigate={this.props.navigation.navigate}
                   unlockwallet={this.props.lndApi.unlockwallet}
                   stopLndFromWallet={this.props.stopLndFromWallet}
+                  walletKeychain={this.props.walletKeychain}
+                  updateWalletConf={this.props.updateWalletConf}
                   unlockWallet={async w => {
                     const running = await this.props.getRunningWallet();
                     if (running) {

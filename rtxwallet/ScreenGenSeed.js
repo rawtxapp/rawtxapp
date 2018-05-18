@@ -5,6 +5,7 @@ import Button from "react-native-button";
 import { LOGO_COLOR } from "./Colors.js";
 import LndConsumer from "./ContextLnd.js";
 import { withLnd } from "./withLnd.js";
+import CheckBox from "react-native-check-box";
 
 class ScreenGenSeed extends Component {
   constructor(props) {
@@ -14,7 +15,8 @@ class ScreenGenSeed extends Component {
       errorMessage: "",
       confirmErrorMessage: "",
       confirming: false,
-      settingPassword: false
+      settingPassword: false,
+      useKeychain: false
     };
   }
 
@@ -92,6 +94,17 @@ class ScreenGenSeed extends Component {
             </Text>
           </View>
           <View>
+            <CheckBox
+              rightTextStyle={{ color: "white" }}
+              onClick={() =>
+                this.setState({ useKeychain: !this.state.useKeychain })
+              }
+              isChecked={this.state.useKeychain}
+              rightText="Remember password"
+              checkBoxColor="white"
+            />
+          </View>
+          <View>
             <Button
               style={[styles.buttonText, styles.confirm]}
               containerStyle={styles.buttonContainer}
@@ -115,6 +128,14 @@ class ScreenGenSeed extends Component {
                 if (response.error) {
                   this.setState({ passwordErrorMessage: response.error });
                   return;
+                }
+                if (this.state.useKeychain) {
+                  this.state.runningWallet.usesKeychain = true;
+                  await this.props.updateWalletConf(this.state.runningWallet);
+                  await this.props.walletKeychain.setWalletPassword(
+                    this.state.runningWallet.ix,
+                    this.state.password
+                  );
                 }
                 this.props.navigation.navigate("Wallet");
               }}

@@ -21,6 +21,7 @@ import {
 import LndApi from "./RestLnd.js";
 import WalletListener from "./WalletListener";
 import { findNodesInGraph } from "./Utils.js";
+import WalletKeychain from "./WalletKeychain.js";
 
 const WALLET_CONF_FILE = "wallet.conf";
 const DEFAULT_NEUTRINO_CONNECT = "faucet.lightning.community,rbtcdt.rawtx.com";
@@ -41,6 +42,9 @@ const readWalletConfig = async function() {
     if (!walletExists) {
       wallet["exists"] = false;
     }
+    if (!wallet.usesKeychain) {
+      wallet.usesKeychain = false;
+    }
   }
   return json;
 };
@@ -53,12 +57,22 @@ const writeWalletConfig = async function(contentJSON) {
 };
 
 const addWallet = async function(newWallet) {
-  newWallet = (({ name, coin, network, mode, neutrinoConnect }) => ({
+  newWallet.usesKeychain = newWallet.usesKeychain || false;
+  // Only keep known fields from newWallet.
+  newWallet = (({
     name,
     coin,
     network,
     mode,
-    neutrinoConnect
+    neutrinoConnect,
+    usesKeychain
+  }) => ({
+    name,
+    coin,
+    network,
+    mode,
+    neutrinoConnect,
+    usesKeychain
   }))(newWallet);
 
   // the wallets have folders appDir/wallets/<X>/ structure, the X can't be
@@ -85,6 +99,22 @@ const addWallet = async function(newWallet) {
   currentConfig.wallets.push(newWallet);
   await writeWalletConfig(currentConfig);
   return newWallet;
+};
+
+// This function will find the wallet by ix in wallet.conf and
+// replace it's fields with the updatedWallet.
+// TODO: it's worth putting all wallet.conf related functionality
+// into a class of it's own.
+const updateWalletConf = async function(updatedWallet) {
+  const currentConfig = await readWalletConfig();
+  currentConfig.wallets = currentConfig.wallets || [];
+  for (let i = 0; i < currentConfig.wallets.length; i++) {
+    const wallet = currentConfig.wallets[i];
+    if (wallet.ix == updatedWallet.ix) {
+      currentConfig.wallets[i] = updatedWallet;
+    }
+  }
+  await writeWalletConfig(currentConfig);
 };
 
 const walletDir = async function(wallet) {
@@ -210,8 +240,9 @@ class LndProvider extends Component {
 
   componentDidMount() {
     readWalletConfig().then(cfg => this.setState({ walletConf: cfg }));
+    const keychain = new WalletKeychain();
     const walletListener = new WalletListener(LndApi);
-    this.setState({ walletListener });
+    this.setState({ walletListener, keychain });
     this.reactivateInactiveChannels(walletListener, LndApi);
   }
 
@@ -332,7 +363,9 @@ class LndProvider extends Component {
           setInitialInvoiceHandled: this.setInitialInvoiceHandled,
           getLogs,
           getWalletFile,
-          getWalletMacaroon
+          getWalletMacaroon,
+          walletKeychain: this.state.keychain,
+          updateWalletConf
         }}
       >
         {this.props.children}
