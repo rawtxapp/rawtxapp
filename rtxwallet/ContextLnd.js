@@ -170,12 +170,21 @@ const writeLndConf = async function(wallet) {
     let peer = neutrinoConnect[i];
     peers += (peers.length == 0 ? "" : "\n") + "neutrino.addpeer=" + peer;
   }
+  let profile = "";
+  if (__DEV__) {
+    cpu = walletDirectory + "cpu.prof";
+    profile = `
+    profile=6060
+    cpuprofile=${cpu}
+    `;
+  }
   const conf = `[Application Options]
 debuglevel=info
 debughtlc=true
 maxpendingchannels=10
 maxlogfiles=3
 maxlogfilesize=10
+${profile}
 
 [Bitcoin]
 bitcoin.active=1
