@@ -60,7 +60,6 @@ class ComponentReceive extends Component {
                     this.state.memo,
                     this.state.amt_sat
                   );
-                  console.log("here :", res);
                   if (res.payment_request) {
                     this.setState({
                       payment_request: res.payment_request,
@@ -119,7 +118,10 @@ class ComponentReceive extends Component {
           {this.state.payment_request}
         </Text>
         <View style={styles.qrCodeContainer}>
-          <QRCode text={"lightning:" + this.payment_request} />
+          <QRCode
+            value={"lightning:" + this.state.payment_request}
+            size={300}
+          />
         </View>
       </View>
     );
