@@ -175,7 +175,6 @@ const writeLndConf = async function(wallet) {
     cpu = walletDirectory + "cpu.prof";
     profile = `
     profile=6060
-    cpuprofile=${cpu}
     `;
   }
   const conf = `[Application Options]
