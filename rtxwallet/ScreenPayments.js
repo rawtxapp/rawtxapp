@@ -86,16 +86,8 @@ class ScreenPayments extends Component {
 
   render() {
     return (
-      <View style={[shared.containerStyleOnly, shared.flexOne]}>
+      <View style={[shared.containerStyleOnly]}>
         <View style={styles.scrollContainer}>{this._renderFlatList()}</View>
-        <View style={[styles.actionContainer, shared.centerPrimaryAxis]}>
-          <Button
-            style={[shared.inCardButton, shared.cancelButton]}
-            onPress={this.props.onCancel}
-          >
-            Cancel
-          </Button>
-        </View>
       </View>
     );
   }
@@ -108,13 +100,5 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderColor: "#BDBDBD"
-  },
-  scrollContainer: {
-    flex: 9
-  },
-  actionContainer: {
-    flex: 1,
-    borderTopWidth: 1,
-    borderColor: "gray"
   }
 });

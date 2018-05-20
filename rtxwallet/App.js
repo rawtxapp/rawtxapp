@@ -23,6 +23,7 @@ import ScreenWallet from "./ScreenWallet.js";
 import ScreenIntroCreateUnlockWallet from "./ScreenIntroCreateUnlockWallet.js";
 import ScreenGenSeed from "./ScreenGenSeed.js";
 import { LndProvider } from "./ContextLnd.js";
+import { ThemeProvider } from "./ContextTheme";
 
 if (Platform.OS === "android") {
   UIManager.setLayoutAnimationEnabledExperimental &&
@@ -43,9 +44,11 @@ export default class App extends Component<Props> {
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor="#0091EA" animated={true} />
-        <LndProvider>
-          <RootSwitch />
-        </LndProvider>
+        <ThemeProvider>
+          <LndProvider>
+            <RootSwitch />
+          </LndProvider>
+        </ThemeProvider>
       </View>
     );
   }

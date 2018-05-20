@@ -29,6 +29,7 @@ import ScreenPayments from "./ScreenPayments.js";
 import ScreenInvoices from "./ScreenInvoices";
 import ComponentWhereSpend from "./ComponentWhereSpend.js";
 import ComponentWelcome from "./ComponentWelcome";
+import ComponentActionSheet from "./ComponentActionSheet";
 
 class SyncingBlock extends Component {
   render() {
@@ -186,13 +187,13 @@ class CheckingAccount extends Component {
   _renderShowPayments = () => {
     const closeModal = () => this.setState({ showingPayments: false });
     return (
-      <Modal
+      <ComponentActionSheet
         visible={this.state.showingPayments}
         onRequestClose={closeModal}
         animationType="slide"
       >
         <ScreenPayments onCancel={closeModal} />
-      </Modal>
+      </ComponentActionSheet>
     );
   };
 
