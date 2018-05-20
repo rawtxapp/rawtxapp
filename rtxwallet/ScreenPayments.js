@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  LayoutAnimation,
   ScrollView,
   StyleSheet,
   Text,
@@ -32,6 +33,7 @@ class ScreenPayments extends Component {
     try {
       const { payments } = await this.props.lndApi.getPayments();
       sortPaymentsByCreationDateDescending(payments);
+      LayoutAnimation.easeInEaseOut();
       this.setState({ payments });
     } catch (err) {}
   };
