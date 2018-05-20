@@ -10,6 +10,7 @@ import {
   NativeModules,
   Platform,
   StyleSheet,
+  StatusBar,
   Text,
   View,
   UIManager
@@ -41,6 +42,7 @@ export default class App extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
+        <StatusBar backgroundColor="#0091EA" animated={true} />
         <LndProvider>
           <RootSwitch />
         </LndProvider>
