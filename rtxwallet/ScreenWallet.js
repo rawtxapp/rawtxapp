@@ -527,7 +527,7 @@ class ScreenWallet extends Component {
     if (!this.state.wallet || !this.state.getinfo || this.state.working) {
       content = (
         <View>
-          <ActivityIndicator />
+          <ActivityIndicator color="white" />
         </View>
       );
     } else if (false) {
