@@ -61,6 +61,108 @@ class ExpandableButton extends Component {
   }
 }
 
+class QuickCreateWallet extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { creating: false };
+  }
+  render() {
+    if (!this.props.wallets || this.props.wallets.length != 0) {
+      return <View />;
+    }
+    const createWallet = async () => {
+      this.setState({ creating: true, error: "" }, async () => {
+        try {
+          const defaultWallet = {
+            name: "default",
+            coin: "bitcoin",
+            network: "testnet",
+            mode: "neutrino",
+            neutrinoConnect: "rbtcd-t-g.rawtx.com",
+            usesKeychain: true
+          };
+          // Add wallet to wallet.conf and start lnd.
+          const newWallet = await this.props.addWallet(defaultWallet);
+          await this.props.startLndFromWallet(newWallet);
+
+          // Generate seed.
+          const seed = await this.props.lndApi.genSeed();
+          let seedCipher;
+          if (seed.cipher_seed_mnemonic) {
+            seedCipher = seed.cipher_seed_mnemonic;
+          } else {
+            this.setState({
+              error: "There was a problem getting the seed!"
+            });
+            return;
+          }
+
+          // Set the password.
+          const response = await this.props.lndApi.initwallet(
+            seedCipher,
+            "12345678"
+          );
+          if (response.error) {
+            this.setState({ error: response.error });
+            return;
+          }
+          await this.props.walletKeychain.setWalletPassword(
+            newWallet.ix,
+            "12345678"
+          );
+          this.setState({ success: true, creating: false });
+        } catch (error) {
+          this.setState({ error: error.toString(), creating: false });
+        }
+      });
+    };
+    return (
+      <View style={[buttonStyles.container, this.props.style]}>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            if (this.state.creating) return;
+            createWallet();
+          }}
+        >
+          <View>
+            <Text style={[buttonStyles.actionText, buttonStyles.quickText]}>
+              Quick start with a default wallet
+            </Text>
+            {!!this.state.creating && (
+              <View style={unlockWalletStyles.contentContainer}>
+                <ActivityIndicator color={LOGO_COLOR} />
+              </View>
+            )}
+            {!!this.state.error && (
+              <View style={unlockWalletStyles.contentContainer}>
+                <Text style={shared.errorText}>Error: {this.state.error}</Text>
+              </View>
+            )}
+            {!!this.state.success && (
+              <View style={unlockWalletStyles.contentContainer}>
+                <Text>
+                  Successfully created testnet Bitcoin wallet with password
+                  12345678.
+                </Text>
+                <Button
+                  style={createWalletStyles.buttonText}
+                  onPress={() => {
+                    this.props.navigate("Wallet");
+                  }}
+                >
+                  Go to wallet
+                </Button>
+              </View>
+            )}
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
+    );
+  }
+}
+
+const QuickCreateWalletWithLnd = withLnd(QuickCreateWallet);
+
 class UnlockWallet extends Component {
   constructor(props) {
     super(props);
@@ -534,13 +636,18 @@ class ScreenIntroCreateUnlockWallet extends Component {
               adjustsFontSizeToFit={true}
               style={styles.slogan}
             >
-              Bitcoin Lightning Network wallet
+              lightning network wallet
             </Text>
           </View>
         </View>
         <LndConsumer>
           {({ addWallet, wallets }) => (
             <View style={styles.actionContainer}>
+              <View style={styles.buttonContainer}>
+                <QuickCreateWalletWithLnd
+                  navigate={this.props.navigation.navigate}
+                />
+              </View>
               <View style={styles.buttonContainer}>
                 <UnlockWallet
                   wallets={wallets}
@@ -660,6 +767,10 @@ const buttonStyles = StyleSheet.create({
     fontSize: 16,
     color: "black",
     padding: 20
+  },
+  quickText: {
+    color: "green",
+    fontWeight: "bold"
   }
 });
 
