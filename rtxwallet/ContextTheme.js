@@ -1,17 +1,21 @@
 import React, { Component, createContext } from "react";
-import { StyleSheet, View } from "react-native";
+import { Animated, StyleSheet, View } from "react-native";
 
 const Theme = createContext({});
 
 class ThemeProvider extends Component {
   constructor(props) {
     super(props);
-    this.state = { dimmed: false };
+    this.state = { dimmed: false, dimAnim: new Animated.Value(0) };
   }
 
   dimBackground = dim => {
     if (this.state.dimmed == dim) return;
     this.setState({ dimmed: dim });
+    Animated.timing(this.state.dimAnim, {
+      toValue: dim ? 0.7 : 0,
+      duration: 300
+    }).start();
   };
 
   render() {
@@ -23,7 +27,13 @@ class ThemeProvider extends Component {
         }}
       >
         {this.props.children}
-        {!!this.state.dimmed && <View style={styles.dim} />}
+        <Animated.View
+          style={[
+            styles.dim,
+            this.state.dimmed && styles.visible,
+            { opacity: this.state.dimAnim }
+          ]}
+        />
       </Theme.Provider>
     );
   }
@@ -35,12 +45,14 @@ export { ThemeProvider };
 const styles = StyleSheet.create({
   dim: {
     position: "absolute",
-    top: 0,
+    top: 10000,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "black",
-    opacity: 0.5
+    backgroundColor: "black"
+  },
+  visible: {
+    top: 0
   }
 });
 
