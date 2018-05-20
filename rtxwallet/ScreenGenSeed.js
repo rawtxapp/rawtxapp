@@ -44,7 +44,6 @@ class ScreenGenSeed extends Component {
     try {
       const { lndApi } = this.props;
       const seed = await lndApi.genSeed();
-      console.log(seed);
       if (seed.cipher_seed_mnemonic) {
         this.setState({ cipher: seed.cipher_seed_mnemonic });
       } else {
