@@ -4,6 +4,8 @@ import {
   Animated,
   AppState,
   Dimensions,
+  Image,
+  LayoutAnimation,
   Linking,
   Modal,
   StyleSheet,
@@ -16,35 +18,37 @@ import withTheme from "./withTheme";
 
 var window = Dimensions.get("window");
 
-class Button extends Component {
+class ButtonBase extends Component {
   render() {
     return (
       <TouchableOpacity
-        style={buttonStyles.button}
+        style={[this.props.theme.actionButton, buttonStyles.button]}
         onPress={this.props.onPress}
       >
-        <Text style={buttonStyles.buttonText}>{this.props.text}</Text>
+        <Text
+          style={[this.props.theme.actionButtonText, buttonStyles.buttonText]}
+        >
+          {this.props.text}
+        </Text>
       </TouchableOpacity>
     );
   }
 }
 
+const Button = withTheme(ButtonBase);
+
 const buttonStyles = StyleSheet.create({
   buttonText: {
-    color: "#0069d5",
     alignSelf: "center",
     fontSize: 18
   },
   button: {
     height: 36,
-    backgroundColor: "white",
-    borderColor: "white",
-    borderWidth: 1,
-    borderRadius: 6,
-    marginBottom: 10,
-    marginTop: 10,
-    alignSelf: "stretch",
-    justifyContent: "center"
+    justifyContent: "center",
+    alignSelf: "center",
+    padding: 10,
+    paddingHorizontal: 20,
+    borderRadius: 6
   }
 });
 
@@ -120,13 +124,41 @@ class ActionModal extends Component {
             onPress={this.props.onRequestClose}
             style={styles.backdropContainer}
           />
-          <View style={{ flex: 1, justifyContent: "flex-end" }}>
-            {this.props.children}
+          <View style={{ flex: 1, justifyContent: "flex-end", paddingTop: 60 }}>
+            <View style={[styles.modalTopContainer, this.props.theme.modal]}>
+              <View style={styles.xContainer}>
+                <TouchableOpacity onPress={this.props.onRequestClose}>
+                  <Image
+                    source={require("./assets/close.png")}
+                    style={{ width: 20, height: 20 }}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.titleContainer}>
+                <Text style={[styles.title, this.props.theme.modalTitle]}>
+                  Payments
+                </Text>
+              </View>
+              <View style={styles.rightActionContainer} />
+            </View>
+            <View style={this.props.theme.separator} />
+            <View style={[this.props.theme.modal, styles.sideBorder]}>
+              {this.props.children}
+            </View>
           </View>
-          <Button
-            onPress={this.props.onRequestClose}
-            text={this.props.buttonText || "Cancel"}
-          />
+          <View style={this.props.theme.separator} />
+          <View
+            style={[
+              styles.actionContainer,
+              styles.sideBorder,
+              this.props.theme.modal
+            ]}
+          >
+            <Button
+              onPress={this.props.onRequestClose}
+              text={this.props.buttonText || "Cancel"}
+            />
+          </View>
         </View>
       </Modal>
     );
@@ -142,9 +174,31 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    padding: 8,
     paddingBottom: 0,
     justifyContent: "flex-end"
+  },
+  modalTopContainer: {
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    backgroundColor: "white",
+    borderWidth: StyleSheet.hairlineWidth * 3,
+    borderBottomWidth: 0,
+    padding: 10,
+    flexDirection: "row"
+  },
+  xContainer: {
+    flex: 1
+  },
+  titleContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1
+  },
+  title: {
+    fontWeight: "bold"
+  },
+  rightActionContainer: {
+    flex: 1
   },
   backdropContainer: {
     position: "absolute",
@@ -152,5 +206,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0
+  },
+  actionContainer: {
+    padding: 10
+  },
+  sideBorder: {
+    borderLeftWidth: 3 * StyleSheet.hairlineWidth,
+    borderRightWidth: 3 * StyleSheet.hairlineWidth
   }
 });

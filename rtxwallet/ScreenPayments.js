@@ -18,6 +18,7 @@ import {
   orderNodesByRtxScore,
   sortPaymentsByCreationDateDescending
 } from "./Utils";
+import withTheme from "./withTheme";
 
 class ScreenPayments extends Component {
   constructor(props) {
@@ -33,7 +34,7 @@ class ScreenPayments extends Component {
     try {
       const { payments } = await this.props.lndApi.getPayments();
       sortPaymentsByCreationDateDescending(payments);
-      LayoutAnimation.easeInEaseOut();
+      LayoutAnimation.spring();
       this.setState({ payments });
     } catch (err) {}
   };
@@ -88,14 +89,14 @@ class ScreenPayments extends Component {
 
   render() {
     return (
-      <View style={[shared.containerStyleOnly]}>
+      <View>
         <View style={styles.scrollContainer}>{this._renderFlatList()}</View>
       </View>
     );
   }
 }
 
-export default withLnd(ScreenPayments);
+export default withTheme(withLnd(ScreenPayments));
 
 const styles = StyleSheet.create({
   nodeItem: {

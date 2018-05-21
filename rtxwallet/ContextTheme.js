@@ -1,5 +1,6 @@
 import React, { Component, createContext } from "react";
 import { Animated, StyleSheet, View } from "react-native";
+import { LIGHT_BLUE_500, LOGO_COLOR } from "./Colors";
 
 const Theme = createContext({});
 
@@ -56,4 +57,32 @@ const styles = StyleSheet.create({
   }
 });
 
-const defaultTheme = StyleSheet.create({});
+let themeColor = LIGHT_BLUE_500;
+const defaultTheme = StyleSheet.create({
+  button: {
+    backgroundColor: "white"
+  },
+  buttonText: {
+    color: themeColor
+  },
+  container: {
+    backgroundColor: "white"
+  },
+  modal: {
+    backgroundColor: "white",
+    borderColor: "grey"
+  },
+  modalTitle: {
+    color: "grey"
+  },
+  actionButton: {
+    backgroundColor: LOGO_COLOR
+  },
+  actionButtonText: {
+    color: "white"
+  },
+  separator: {
+    borderTopWidth: 3 * StyleSheet.hairlineWidth,
+    borderColor: "grey"
+  }
+});
