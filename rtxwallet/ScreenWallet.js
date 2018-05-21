@@ -191,6 +191,7 @@ class CheckingAccount extends Component {
         visible={this.state.showingPayments}
         onRequestClose={closeModal}
         animationType="slide"
+        buttonText="Done"
       >
         <ScreenPayments onCancel={closeModal} />
       </ComponentActionSheet>

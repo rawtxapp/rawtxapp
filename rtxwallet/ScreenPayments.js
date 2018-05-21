@@ -44,31 +44,28 @@ class ScreenPayments extends Component {
     creationDate.setTime(parseInt(n.creation_date) * 1000);
 
     return (
-      <View style={styles.nodeItem}>
-        <Text selectable>
-          <Text style={shared.boldText}>payment hash:</Text>
-          {n.payment_hash}
+      <View style={[styles.nodeItem, this.props.theme.actionContainer]}>
+        <Text selectable style={this.props.theme.actionContainerText}>
+          <Text style={shared.boldText}>
+            Paid {this.props.displaySatoshi(n.value)}
+          </Text>
         </Text>
-        <Text selectable>
-          <Text style={shared.boldText}>value:</Text>
-          {this.props.displaySatoshi(n.value)}
-        </Text>
-        <Text selectable>
-          <Text style={shared.boldText}>creation date:</Text>
+        <Text selectable style={this.props.theme.actionContainerText}>
+          <Text style={shared.boldText}>on </Text>
           {creationDate.toDateString() + " " + creationDate.toTimeString() ||
             "No creation date found."}
         </Text>
-        <Text>
+        <Text style={this.props.theme.actionContainerText}>
           <Text style={shared.boldText}>fee:</Text>
           {n.fee || 0}
         </Text>
-        <Text>
+        <Text style={this.props.theme.actionContainerText}>
           <Text style={shared.boldText}>path length:</Text>
           {n.path.length}
         </Text>
-        <Text selectable>
-          <Text style={shared.boldText}>payment preimage:</Text>
-          {n.payment_preimage}
+        <Text selectable style={this.props.theme.actionContainerText}>
+          <Text style={shared.boldText}>payment hash:</Text>
+          {n.payment_hash}
         </Text>
       </View>
     );
@@ -101,7 +98,8 @@ export default withTheme(withLnd(ScreenPayments));
 const styles = StyleSheet.create({
   nodeItem: {
     padding: 10,
-    borderBottomWidth: 1,
-    borderColor: "#BDBDBD"
+    margin: 10,
+    borderRadius: 6,
+    borderWidth: 3 * StyleSheet.hairlineWidth
   }
 });

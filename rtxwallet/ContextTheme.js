@@ -84,5 +84,12 @@ const defaultTheme = StyleSheet.create({
   separator: {
     borderTopWidth: 3 * StyleSheet.hairlineWidth,
     borderColor: "grey"
+  },
+  actionContainer: {
+    backgroundColor: "#66BB6A",
+    borderColor: "#43A047"
+  },
+  actionContainerText: {
+    color: "white"
   }
 });
