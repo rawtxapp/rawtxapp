@@ -52,7 +52,9 @@ class ScreenInvoices extends Component {
       unsettledInvoices.forEach(i => finalInvoices.push(i));
       LayoutAnimation.easeInEaseOut();
       this.setState({ invoices: finalInvoices });
-    } catch (err) {}
+    } catch (err) {
+      this.setState({ invoices: [] });
+    }
   };
 
   _renderInvoice = ({ item: n }) => {
@@ -104,6 +106,7 @@ class ScreenInvoices extends Component {
         data={this.state.invoices}
         renderItem={this._renderInvoice}
         keyExtractor={this._keyExtractor}
+        ListEmptyComponent={<Text>There are no invoices.</Text>}
       />
     );
   };

@@ -35,8 +35,10 @@ class ScreenPayments extends Component {
       const { payments } = await this.props.lndApi.getPayments();
       sortPaymentsByCreationDateDescending(payments);
       LayoutAnimation.easeInEaseOut();
-      this.setState({ payments });
-    } catch (err) {}
+      this.setState({ payments: payments || [] });
+    } catch (err) {
+      this.setState({ payments: [] });
+    }
   };
 
   _renderPayment = ({ item: n }) => {
@@ -80,6 +82,7 @@ class ScreenPayments extends Component {
         data={this.state.payments}
         renderItem={this._renderPayment}
         keyExtractor={this._keyExtractor}
+        ListEmptyComponent={<Text>There are no payments.</Text>}
       />
     );
   };
