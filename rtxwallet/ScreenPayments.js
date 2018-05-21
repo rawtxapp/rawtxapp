@@ -34,7 +34,7 @@ class ScreenPayments extends Component {
     try {
       const { payments } = await this.props.lndApi.getPayments();
       sortPaymentsByCreationDateDescending(payments);
-      LayoutAnimation.spring();
+      LayoutAnimation.easeInEaseOut();
       this.setState({ payments });
     } catch (err) {}
   };

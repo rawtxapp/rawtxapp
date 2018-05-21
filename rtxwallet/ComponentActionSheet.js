@@ -108,26 +108,29 @@ const fadeInStyles = StyleSheet.create({
 
 class ActionModal extends Component {
   componentWillReceiveProps(newProps) {
-    this.props.dimBackground(newProps.visible);
+    if (newProps.visible) {
+      this.props.dimBackground(true);
+    }
   }
 
   render() {
+    const close = () => {
+      this.props.dimBackground(false);
+      this.props.onRequestClose();
+    };
     return (
       <Modal
         animationType="slide"
         transparent={true}
         visible={this.props.visible}
-        onRequestClose={this.props.onRequestClose}
+        onRequestClose={close}
       >
         <View style={styles.modalContainer}>
-          <TouchableOpacity
-            onPress={this.props.onRequestClose}
-            style={styles.backdropContainer}
-          />
+          <TouchableOpacity onPress={close} style={styles.backdropContainer} />
           <View style={{ flex: 1, justifyContent: "flex-end", paddingTop: 60 }}>
             <View style={[styles.modalTopContainer, this.props.theme.modal]}>
               <View style={styles.xContainer}>
-                <TouchableOpacity onPress={this.props.onRequestClose}>
+                <TouchableOpacity onPress={close}>
                   <Image
                     source={require("./assets/close.png")}
                     style={{ width: 20, height: 20 }}
@@ -136,7 +139,7 @@ class ActionModal extends Component {
               </View>
               <View style={styles.titleContainer}>
                 <Text style={[styles.title, this.props.theme.modalTitle]}>
-                  Payments
+                  {this.props.title}
                 </Text>
               </View>
               <View style={styles.rightActionContainer} />
@@ -154,10 +157,7 @@ class ActionModal extends Component {
               this.props.theme.modal
             ]}
           >
-            <Button
-              onPress={this.props.onRequestClose}
-              text={this.props.buttonText || "Cancel"}
-            />
+            <Button onPress={close} text={this.props.buttonText || "Cancel"} />
           </View>
         </View>
       </Modal>

@@ -192,6 +192,7 @@ class CheckingAccount extends Component {
         onRequestClose={closeModal}
         animationType="slide"
         buttonText="Done"
+        title="Payments"
       >
         <ScreenPayments onCancel={closeModal} />
       </ComponentActionSheet>
@@ -201,13 +202,15 @@ class CheckingAccount extends Component {
   _renderShowInvoices = () => {
     const closeModal = () => this.setState({ showingInvoices: false });
     return (
-      <Modal
+      <ComponentActionSheet
         visible={this.state.showingInvoices}
         onRequestClose={closeModal}
         animationType="slide"
+        buttonText="Done"
+        title="Invoices"
       >
         <ScreenInvoices onCancel={closeModal} />
-      </Modal>
+      </ComponentActionSheet>
     );
   };
 

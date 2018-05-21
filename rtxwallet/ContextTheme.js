@@ -12,11 +12,18 @@ class ThemeProvider extends Component {
 
   dimBackground = dim => {
     if (this.state.dimmed == dim) return;
-    this.setState({ dimmed: dim });
+    if (dim) {
+      this.setState({ dimmed: dim });
+    }
     Animated.timing(this.state.dimAnim, {
       toValue: dim ? 0.7 : 0,
-      duration: 300
-    }).start();
+      duration: 300,
+      useNativeDriver: true
+    }).start(() => {
+      if (!dim) {
+        this.setState({ dimmed: dim });
+      }
+    });
   };
 
   render() {

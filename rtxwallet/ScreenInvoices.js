@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  LayoutAnimation,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,6 +19,7 @@ import {
   sortPaymentsByCreationDateDescending,
   sortBySettleDateDescending
 } from "./Utils";
+import withTheme from "./withTheme";
 
 class ScreenInvoices extends Component {
   constructor(props) {
@@ -48,6 +50,7 @@ class ScreenInvoices extends Component {
       const finalInvoices = [];
       settledInvoices.forEach(i => finalInvoices.push(i));
       unsettledInvoices.forEach(i => finalInvoices.push(i));
+      LayoutAnimation.easeInEaseOut();
       this.setState({ invoices: finalInvoices });
     } catch (err) {}
   };
@@ -60,29 +63,31 @@ class ScreenInvoices extends Component {
     settleDate.setTime(parseInt(n.settle_date) * 1000);
 
     return (
-      <View style={styles.nodeItem}>
-        <Text selectable>
-          <Text style={shared.boldText}>memo:</Text>
-          {n.memo}
+      <View style={[styles.nodeItem, this.props.theme.actionContainer]}>
+        {!!n.memo && (
+          <Text selectable style={this.props.theme.actionContainerText}>
+            <Text style={shared.boldText}>memo:</Text>
+            {n.memo}
+          </Text>
+        )}
+        <Text style={this.props.theme.actionContainerText}>
+          <Text style={shared.boldText}>value:</Text>
+          {this.props.displaySatoshi(n.value) || 0}
         </Text>
-        <Text selectable>
+        <Text selectable style={this.props.theme.actionContainerText}>
           <Text style={shared.boldText}>creation date:</Text>
           {creationDate.toDateString() + " " + creationDate.toTimeString() ||
             "No creation date found."}
         </Text>
         {n.settled && (
-          <Text selectable>
+          <Text selectable style={this.props.theme.actionContainerText}>
             <Text style={shared.boldText}>settle date:</Text>
             {settleDate.toDateString() + " " + settleDate.toTimeString() ||
               "No settle date found."}
           </Text>
         )}
-        <Text>
-          <Text style={shared.boldText}>value:</Text>
-          {this.props.displaySatoshi(n.value) || 0}
-        </Text>
         {n.private && (
-          <Text selectable>
+          <Text selectable style={this.props.theme.actionContainerText}>
             <Text style={shared.boldText}>private</Text>
           </Text>
         )}
@@ -104,36 +109,17 @@ class ScreenInvoices extends Component {
   };
 
   render() {
-    return (
-      <View style={[shared.containerStyleOnly, shared.flexOne]}>
-        <View style={styles.scrollContainer}>{this._renderFlatList()}</View>
-        <View style={[styles.actionContainer, shared.centerPrimaryAxis]}>
-          <Button
-            style={[shared.inCardButton, shared.cancelButton]}
-            onPress={this.props.onCancel}
-          >
-            Cancel
-          </Button>
-        </View>
-      </View>
-    );
+    return <View>{this._renderFlatList()}</View>;
   }
 }
 
-export default withLnd(ScreenInvoices);
+export default withTheme(withLnd(ScreenInvoices));
 
 const styles = StyleSheet.create({
   nodeItem: {
     padding: 10,
-    borderBottomWidth: 1,
-    borderColor: "#BDBDBD"
-  },
-  scrollContainer: {
-    flex: 9
-  },
-  actionContainer: {
-    flex: 1,
-    borderTopWidth: 1,
-    borderColor: "gray"
+    margin: 10,
+    borderRadius: 6,
+    borderWidth: 3 * StyleSheet.hairlineWidth
   }
 });
