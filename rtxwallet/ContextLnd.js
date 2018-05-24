@@ -347,6 +347,10 @@ class LndProvider extends Component {
       this.setState({ walletConf: newConf });
       return newWallet;
     };
+    const updateWalletConfState = async updatedWallet => {
+      await updateWalletConf(updatedWallet);
+      readWalletConfig().then(cfg => this.setState({ walletConf: cfg }));
+    };
     return (
       <LndContext.Provider
         value={{
@@ -373,7 +377,7 @@ class LndProvider extends Component {
           getWalletFile,
           getWalletMacaroon,
           walletKeychain: this.state.keychain,
-          updateWalletConf
+          updateWalletConf: updateWalletConfState
         }}
       >
         {this.props.children}
