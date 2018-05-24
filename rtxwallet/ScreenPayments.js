@@ -83,6 +83,9 @@ class ScreenPayments extends Component {
         renderItem={this._renderPayment}
         keyExtractor={this._keyExtractor}
         ListEmptyComponent={<Text>There are no payments.</Text>}
+        ItemSeparatorComponent={() => (
+          <View style={this.props.theme.separator} />
+        )}
       />
     );
   };
@@ -100,9 +103,6 @@ export default withTheme(withLnd(ScreenPayments));
 
 const styles = StyleSheet.create({
   nodeItem: {
-    padding: 10,
-    margin: 10,
-    borderRadius: 6,
-    borderWidth: 3 * StyleSheet.hairlineWidth
+    padding: 10
   }
 });

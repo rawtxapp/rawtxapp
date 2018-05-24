@@ -91,14 +91,11 @@ const defaultTheme = StyleSheet.create({
     color: "white"
   },
   separator: {
-    borderTopWidth: 3 * StyleSheet.hairlineWidth,
+    borderTopWidth: 2 * StyleSheet.hairlineWidth,
     borderColor: "grey"
   },
   actionContainer: {
-    backgroundColor: "#66BB6A",
-    borderColor: "#43A047"
+    backgroundColor: "white"
   },
-  actionContainerText: {
-    color: "white"
-  }
+  actionContainerText: {}
 });

@@ -8,6 +8,7 @@ import {
   LayoutAnimation,
   Linking,
   Modal,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -115,8 +116,8 @@ class ActionModal extends Component {
 
   render() {
     const close = () => {
-      this.props.dimBackground(false);
       this.props.onRequestClose();
+      this.props.dimBackground(false);
     };
     return (
       <Modal
@@ -125,6 +126,9 @@ class ActionModal extends Component {
         visible={this.props.visible}
         onRequestClose={close}
       >
+        {this.props.visible && (
+          <StatusBar backgroundColor={this.props.statusBarDark} />
+        )}
         <View style={styles.modalContainer}>
           <TouchableOpacity onPress={close} style={styles.backdropContainer} />
           <View style={{ flex: 1, justifyContent: "flex-end", paddingTop: 60 }}>

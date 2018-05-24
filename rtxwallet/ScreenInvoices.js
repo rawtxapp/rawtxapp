@@ -107,6 +107,9 @@ class ScreenInvoices extends Component {
         renderItem={this._renderInvoice}
         keyExtractor={this._keyExtractor}
         ListEmptyComponent={<Text>There are no invoices.</Text>}
+        ItemSeparatorComponent={() => (
+          <View style={this.props.theme.separator} />
+        )}
       />
     );
   };
@@ -120,9 +123,6 @@ export default withTheme(withLnd(ScreenInvoices));
 
 const styles = StyleSheet.create({
   nodeItem: {
-    padding: 10,
-    margin: 10,
-    borderRadius: 6,
-    borderWidth: 3 * StyleSheet.hairlineWidth
+    padding: 10
   }
 });
