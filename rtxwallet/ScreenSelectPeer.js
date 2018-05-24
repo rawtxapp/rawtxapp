@@ -18,12 +18,20 @@ class ScreenSelectPeer extends Component {
   getPeers = async () => {
     try {
       const { peers } = await this.props.lndApi.peers();
+      this.setState({ nodeInfos: peers });
       const nodeInfoPromises = peers.map(p =>
         this.props.lndApi.getNodeInfo(p.pub_key)
       );
-      const nodeInfos = (await Promise.all(nodeInfoPromises)).map(
-        ni => ni.node
-      );
+      let foundError = false;
+      const nodeInfos = (await Promise.all(nodeInfoPromises)).map(ni => {
+        if (ni.error) {
+          foundError = true;
+        }
+        return ni.node;
+      });
+      if (foundError) {
+        return;
+      }
       this.setState({ nodeInfos });
     } catch (err) {}
   };
@@ -36,10 +44,12 @@ class ScreenSelectPeer extends Component {
 
     return (
       <View style={styles.nodeItem}>
-        <Text>
-          <Text style={shared.boldText}>alias:</Text>
-          {n.alias}
-        </Text>
+        {!!n.alias && (
+          <Text>
+            <Text style={shared.boldText}>alias:</Text>
+            {n.alias}
+          </Text>
+        )}
         <Text>
           <Text style={shared.boldText}>pubkey:</Text>
           {n.pub_key}
