@@ -31,6 +31,8 @@ class ThemeProvider extends Component {
       <Theme.Provider
         value={{
           theme: defaultTheme,
+          statusBar: "#0091EA",
+          statusBarDark: "#616161",
           dimBackground: this.dimBackground
         }}
       >
