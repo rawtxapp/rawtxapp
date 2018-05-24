@@ -172,10 +172,7 @@ const writeLndConf = async function(wallet) {
   }
   let profile = "";
   if (__DEV__) {
-    cpu = walletDirectory + "cpu.prof";
-    profile = `
-    profile=6060
-    `;
+    profile = "profile=6060";
   }
   const conf = `[Application Options]
 debuglevel=info
