@@ -64,57 +64,63 @@ class ExpandableButton extends Component {
 class QuickCreateWallet extends Component {
   constructor(props) {
     super(props);
-    this.state = { creating: false };
+    this.state = { creating: false, noWallets: false };
   }
   render() {
-    if (!this.props.wallets || this.props.wallets.length != 0) {
+    if (
+      !this.state.noWallets &&
+      (!this.props.wallets || this.props.wallets.length != 0)
+    ) {
       return <View />;
     }
     const createWallet = async () => {
-      this.setState({ creating: true, error: "" }, async () => {
-        try {
-          const defaultWallet = {
-            name: "default",
-            coin: "bitcoin",
-            network: "testnet",
-            mode: "neutrino",
-            neutrinoConnect: "rbtcd-t-g.rawtx.com",
-            usesKeychain: true
-          };
-          // Add wallet to wallet.conf and start lnd.
-          const newWallet = await this.props.addWallet(defaultWallet);
-          await this.props.startLndFromWallet(newWallet);
+      this.setState(
+        { creating: true, error: "", noWallets: true },
+        async () => {
+          try {
+            const defaultWallet = {
+              name: "default",
+              coin: "bitcoin",
+              network: "testnet",
+              mode: "neutrino",
+              neutrinoConnect: "rbtcd-t-g.rawtx.com",
+              usesKeychain: true
+            };
+            // Add wallet to wallet.conf and start lnd.
+            const newWallet = await this.props.addWallet(defaultWallet);
+            await this.props.startLndFromWallet(newWallet);
 
-          // Generate seed.
-          const seed = await this.props.lndApi.genSeed();
-          let seedCipher;
-          if (seed.cipher_seed_mnemonic) {
-            seedCipher = seed.cipher_seed_mnemonic;
-          } else {
-            this.setState({
-              error: "There was a problem getting the seed!"
-            });
-            return;
-          }
+            // Generate seed.
+            const seed = await this.props.lndApi.genSeed();
+            let seedCipher;
+            if (seed.cipher_seed_mnemonic) {
+              seedCipher = seed.cipher_seed_mnemonic;
+            } else {
+              this.setState({
+                error: "There was a problem getting the seed!"
+              });
+              return;
+            }
 
-          // Set the password.
-          const response = await this.props.lndApi.initwallet(
-            seedCipher,
-            "12345678"
-          );
-          if (response.error) {
-            this.setState({ error: response.error });
-            return;
+            // Set the password.
+            const response = await this.props.lndApi.initwallet(
+              seedCipher,
+              "12345678"
+            );
+            if (response.error) {
+              this.setState({ error: response.error });
+              return;
+            }
+            await this.props.walletKeychain.setWalletPassword(
+              newWallet.ix,
+              "12345678"
+            );
+            this.setState({ success: true, creating: false });
+          } catch (error) {
+            this.setState({ error: error.toString(), creating: false });
           }
-          await this.props.walletKeychain.setWalletPassword(
-            newWallet.ix,
-            "12345678"
-          );
-          this.setState({ success: true, creating: false });
-        } catch (error) {
-          this.setState({ error: error.toString(), creating: false });
         }
-      });
+      );
     };
     return (
       <View style={[buttonStyles.container, this.props.style]}>
