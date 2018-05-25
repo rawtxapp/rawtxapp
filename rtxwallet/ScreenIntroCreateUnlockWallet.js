@@ -782,7 +782,7 @@ const buttonStyles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 10,
     margin: 10,
-    width: "80%",
+    width: "90%",
     alignSelf: "center",
     elevation: 1
   },
