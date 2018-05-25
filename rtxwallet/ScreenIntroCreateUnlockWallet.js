@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 import {
   ActivityIndicator,
+  AsyncStorage,
   Image,
   LayoutAnimation,
   Linking,
@@ -451,58 +452,39 @@ class CreateWallet extends Component {
           <View>
             <Text style={createWalletStyles.subtitle}>Network</Text>
             <RadioForm
-              radio_props={[
-                { label: "Testnet    ", value: "testnet" }
-                // { label: "Mainnet", value: "mainnet" }
-              ]}
+              radio_props={
+                this.props.recklessMode
+                  ? [
+                      { label: "Testnet    ", value: "testnet" },
+                      { label: "Mainnet", value: "mainnet" }
+                    ]
+                  : [{ label: "Testnet    ", value: "testnet" }]
+              }
               initial={0}
               animation={false}
               formHorizontal={true}
               onPress={val => {
-                // TODO: this is super ugly, fix!
                 if (val == "mainnet") {
-                  this.refs.networkModeRadio.updateIsActiveIndex(0);
-                  this.setState({ mode: "btcd" });
+                  this.setState({ neutrinoConnect: "btcd-m-g.rawtx.com" });
                 } else {
-                  this.refs.networkModeRadio.updateIsActiveIndex(0);
-                  this.setState({ mode: "neutrino" });
+                  this.setState({ neutrinoConnect: "rbtcd-t-g.rawtx.com" });
                 }
                 this.setState({ network: val });
               }}
             />
-            {this.state.network == "mainnet" && (
-              <Text style={createWalletStyles.warningText}>
-                Warning: while this app works with mainnet, it's still in beta
-                phase. Assume that any money you use on mainnet could be lost
-                and don't put more money than you can afford to lose.
-              </Text>
-            )}
           </View>
           <View>
             <Text style={createWalletStyles.subtitle}>Operation mode</Text>
             <RadioForm
               ref="networkModeRadio"
               animation={false}
-              radio_props={
-                this.state.network == "mainnet"
-                  ? [{ label: "btcd-full", value: "btcd" }]
-                  : [
-                      { label: "neutrino    ", value: "neutrino" }
-                      // { label: "btcd-full", value: "btcd" }
-                    ]
-              }
+              radio_props={[{ label: "Neutrino", value: "neutrino" }]}
               initial={0}
               formHorizontal={true}
               onPress={val => {
                 this.setState({ mode: val });
               }}
             />
-            {this.state.network == "mainnet" &&
-              this.state.mode == "neutrino" && (
-                <Text style={createWalletStyles.warningText}>
-                  Can't use neutrino with mainnet.{" "}
-                </Text>
-              )}
             {this.state.mode == "btcd" && (
               <Text style={createWalletStyles.warningText}>
                 Full btcd mode will take longer to sync and take bigger disk
@@ -551,12 +533,26 @@ class CreateWallet extends Component {
 class ScreenIntroCreateUnlockWallet extends Component {
   constructor(props) {
     super(props);
-    this.state = { unlockingWallet: undefined };
+    this.state = {
+      unlockingWallet: undefined,
+      recklessCounter: 0,
+      recklessMode: false
+    };
   }
 
   componentDidMount() {
     this.checkStateAndNavigate();
+    this.checkReckless();
   }
+
+  checkReckless = async () => {
+    try {
+      const recklessMode = await AsyncStorage.getItem("@rawtxapp:recklessMode");
+      if (recklessMode == "on") {
+        this.setState({ recklessMode: true });
+      }
+    } catch (err) {}
+  };
 
   // will return true if navigating.
   checkStateAndNavigate = async () => {
@@ -625,17 +621,37 @@ class ScreenIntroCreateUnlockWallet extends Component {
     return (
       <ScrollView style={styles.container}>
         <View style={styles.logoContainer}>
-          <View style={styles.simpleContainer}>
-            <Image
-              source={require("./assets/intro-logo.png")}
-              style={{
-                width: undefined,
-                height: 150,
-                flex: 1,
-                resizeMode: "contain"
-              }}
-            />
-          </View>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              if (Platform.OS == "ios") {
+                // No reckless mode on iOS for now :(
+                return;
+              }
+              if (this.state.recklessCounter == 10) {
+                ToastAndroid.show("#RECKLESS", ToastAndroid.LONG);
+                try {
+                  AsyncStorage.setItem("@rawtxapp:recklessMode", "on");
+                } catch (err) {}
+                this.setState({ recklessMode: true });
+                return;
+              }
+              this.setState({
+                recklessCounter: this.state.recklessCounter + 1
+              });
+            }}
+          >
+            <View style={styles.simpleContainer}>
+              <Image
+                source={require("./assets/intro-logo.png")}
+                style={{
+                  width: undefined,
+                  height: 150,
+                  flex: 1,
+                  resizeMode: "contain"
+                }}
+              />
+            </View>
+          </TouchableWithoutFeedback>
           <View style={styles.simpleContainer}>
             <Text
               numberOfLines={1}
@@ -679,6 +695,7 @@ class ScreenIntroCreateUnlockWallet extends Component {
               </View>
               <View style={styles.buttonContainer}>
                 <CreateWallet
+                  recklessMode={this.state.recklessMode}
                   addWallet={async newWallet => {
                     const running = await this.props.getRunningWallet();
                     if (running) {

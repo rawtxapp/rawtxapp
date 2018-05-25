@@ -16,7 +16,8 @@ class ScreenGenSeed extends Component {
       confirmErrorMessage: "",
       confirming: false,
       settingPassword: false,
-      useKeychain: false
+      useKeychain: false,
+      recklessModeConfirming: false
     };
   }
 
@@ -37,7 +38,10 @@ class ScreenGenSeed extends Component {
 
   initRunningWallet = async () => {
     const runningWallet = await this.props.getRunningWallet();
-    this.setState({ runningWallet });
+    this.setState({
+      runningWallet,
+      recklessModeConfirming: runningWallet.network == "mainnet"
+    });
   };
 
   initSeed = async () => {
@@ -61,6 +65,56 @@ class ScreenGenSeed extends Component {
     let content;
     if (this.state.errorMessage && this.state.errorMessage != "") {
       content = <Text>{this.state.errorMessage}</Text>;
+    } else if (this.state.recklessModeConfirming) {
+      let confirmText =
+        "This is very reckless, I will most probably lose all my funds, " +
+        "I understand the risks, I won't blame lightning technology or rawtx app when I lose my funds!";
+      content = (
+        <View style={styles.container}>
+          <Text style={styles.text}>You're creating a wallet on mainnet!</Text>
+          <Text style={styles.text}>
+            Please confirm that you really want to open a mainnet wallet by
+            entering the following in the text input (case sensitive):
+          </Text>
+          <Text style={styles.text}>{confirmText}</Text>
+          <View style={styles.textContainer}>
+            <TextInput
+              underlineColorAndroid="transparent"
+              style={styles.textInput}
+              placeholder="Confirm reckless mode"
+              value={this.state.recklessModeConfirmation}
+              onChangeText={t => this.setState({ recklessModeConfirmation: t })}
+            />
+          </View>
+          <View>
+            <Button
+              style={[styles.buttonText, styles.confirm]}
+              containerStyle={styles.buttonContainer}
+              disabled={this.state.recklessModeConfirmation != confirmText}
+              styleDisabled={styles.disabledButton}
+              onPress={() => {
+                this.setState({ recklessModeConfirming: false });
+              }}
+            >
+              Confirm reckless mode!
+            </Button>
+          </View>
+          <View>
+            <Button
+              style={[styles.buttonText, styles.cancel]}
+              containerStyle={styles.buttonContainer}
+              onPress={async () => {
+                const runningWallet = this.state.runningWallet;
+                const walletDir = await this.props.walletDir(runningWallet);
+                this.props.stopLnd(walletDir);
+                this.props.navigation.navigate("WalletCreate");
+              }}
+            >
+              Cancel wallet creation
+            </Button>
+          </View>
+        </View>
+      );
     } else if (this.state.settingPassword) {
       content = (
         <View style={styles.container}>
@@ -217,17 +271,19 @@ class ScreenGenSeed extends Component {
               Cancel
             </Button>
           </View>
-          <View>
-            <Button
-              style={[styles.buttonText, styles.cancel]}
-              containerStyle={styles.buttonContainer}
-              onPress={() => {
-                this.setState({ seed: this.state.cipher.join(" ") });
-              }}
-            >
-              Copy from previous screen (only for testnet)
-            </Button>
-          </View>
+          {this.state.runningWallet.network == "testnet" && (
+            <View>
+              <Button
+                style={[styles.buttonText, styles.cancel]}
+                containerStyle={styles.buttonContainer}
+                onPress={() => {
+                  this.setState({ seed: this.state.cipher.join(" ") });
+                }}
+              >
+                Copy from previous screen (only for testnet)
+              </Button>
+            </View>
+          )}
         </View>
       );
     } else if (this.state.cipher && this.state.cipher.length > 0) {
@@ -335,5 +391,8 @@ const styles = StyleSheet.create({
   errorMessage: {
     fontSize: 12,
     color: "white"
+  },
+  disabledButton: {
+    color: "gray"
   }
 });
