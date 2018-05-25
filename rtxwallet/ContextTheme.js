@@ -33,7 +33,8 @@ class ThemeProvider extends Component {
           theme: defaultTheme,
           statusBar: "#0091EA",
           statusBarDark: "#616161",
-          dimBackground: this.dimBackground
+          dimBackground: this.dimBackground,
+          logoOnBackgroundColor: "white"
         }}
       >
         {this.props.children}
@@ -77,6 +78,9 @@ const defaultTheme = StyleSheet.create({
   container: {
     backgroundColor: "white"
   },
+  containerText: {
+    color: "black"
+  },
   modal: {
     backgroundColor: "white",
     borderColor: "grey"
@@ -97,5 +101,11 @@ const defaultTheme = StyleSheet.create({
   actionContainer: {
     backgroundColor: "white"
   },
-  actionContainerText: {}
+  actionContainerText: {},
+  appBackground: {
+    backgroundColor: themeColor
+  },
+  textOnBackground: {
+    color: "white"
+  }
 });

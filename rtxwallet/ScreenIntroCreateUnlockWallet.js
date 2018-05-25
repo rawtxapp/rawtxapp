@@ -27,6 +27,7 @@ import shared from "./SharedStyles";
 
 import LndConsumer from "./ContextLnd.js";
 import { withLnd } from "./withLnd.js";
+import withTheme from "./withTheme";
 
 class ExpandableButton extends Component {
   constructor(props) {
@@ -619,7 +620,7 @@ class ScreenIntroCreateUnlockWallet extends Component {
 
   render() {
     return (
-      <ScrollView style={styles.container}>
+      <ScrollView style={[styles.container, this.props.theme.appBackground]}>
         <View style={styles.logoContainer}>
           <TouchableWithoutFeedback
             onPress={() => {
@@ -649,6 +650,7 @@ class ScreenIntroCreateUnlockWallet extends Component {
                   flex: 1,
                   resizeMode: "contain"
                 }}
+                tintColor={this.props.logoOnBackgroundColor}
               />
             </View>
           </TouchableWithoutFeedback>
@@ -656,7 +658,7 @@ class ScreenIntroCreateUnlockWallet extends Component {
             <Text
               numberOfLines={1}
               adjustsFontSizeToFit={true}
-              style={styles.slogan}
+              style={[styles.slogan, this.props.theme.textOnBackground]}
             >
               lightning network wallet
             </Text>
@@ -739,12 +741,11 @@ class ScreenIntroCreateUnlockWallet extends Component {
   }
 }
 
-export default withLnd(ScreenIntroCreateUnlockWallet);
+export default withTheme(withLnd(ScreenIntroCreateUnlockWallet));
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: LOGO_COLOR
+    flex: 1
   },
   simpleContainer: {
     flex: 1
@@ -759,7 +760,6 @@ const styles = StyleSheet.create({
   },
   slogan: {
     alignSelf: "center",
-    color: "white",
     flex: 1,
     fontSize: 16
   },
