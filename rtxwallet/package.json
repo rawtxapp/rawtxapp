@@ -17,6 +17,7 @@
     "react-native-keychain": "github:rawtxapp/react-native-keychain",
     "react-native-qrcode": "^0.2.6",
     "react-native-simple-radio-button": "^2.7.1",
+    "react-native-theme": "^0.1.8",
     "react-navigation": "^1.5.9",
     "react-timer-mixin": "^0.13.3"
   },

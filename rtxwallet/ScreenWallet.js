@@ -30,6 +30,7 @@ import ScreenInvoices from "./ScreenInvoices";
 import ComponentWhereSpend from "./ComponentWhereSpend.js";
 import ComponentWelcome from "./ComponentWelcome";
 import ComponentActionSheet from "./ComponentActionSheet";
+import ComponentAskFeedback from "./ComponentAskFeedback";
 
 class SyncingBlock extends Component {
   render() {
@@ -555,6 +556,7 @@ class ScreenWallet extends Component {
         <View>
           <SyncingBlock getinfo={this.state.getinfo} />
           <ComponentWelcome />
+          <ComponentAskFeedback />
           <CheckingAccountWithLnd />
           <SavingsAccountWithLnd />
           <ComponentWalletOperations />

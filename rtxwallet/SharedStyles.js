@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 import { LOGO_COLOR } from "./Colors.js";
 
+// DEPRECATED, use ContextTheme.
 const shared = StyleSheet.create({
   container: {
     borderRadius: 10,
