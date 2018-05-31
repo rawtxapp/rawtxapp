@@ -176,7 +176,6 @@ const writeLndConf = async function(wallet) {
   }
   const conf = `[Application Options]
 debuglevel=info
-debughtlc=true
 maxpendingchannels=10
 maxlogfiles=3
 maxlogfilesize=10
