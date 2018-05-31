@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Linking, StyleSheet, Text, View } from "react-native";
-import shared from "./SharedStyles";
+import { styles as theme } from "react-native-theme";
 import Button from "react-native-button";
 
 export default class ComponentWhereSpend extends Component {
@@ -13,7 +13,7 @@ export default class ComponentWhereSpend extends Component {
     return (
       <View>
         <Button
-          style={[shared.smallButton]}
+          style={[theme.smallButton]}
           onPress={() => {
             Linking.openURL(link);
           }}
@@ -39,7 +39,7 @@ export default class ComponentWhereSpend extends Component {
     return (
       <View>
         <Button
-          style={[shared.inCardButton]}
+          style={[theme.inCardButton]}
           onPress={async () => {
             this.setState({
               showing: !this.state.showing

@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { Text } from "react-native";
 
-import shared from "./SharedStyles.js";
+import { styles as theme } from "react-native-theme";
 
-const BoldText = text => <Text style={shared.boldText}>{text}</Text>;
+const BoldText = text => <Text style={theme.boldText}>{text}</Text>;
 
 export { BoldText };

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Modal, StyleSheet, Text, View } from "react-native";
 import withLnd from "./withLnd";
-import shared from "./SharedStyles";
+import { styles as theme } from "react-native-theme";
 import Button from "react-native-button";
 import ScreenGraphList from "./ScreenGraphList";
 import ScreenLog from "./ScreenLog";
@@ -32,7 +32,7 @@ class ComponentWalletOperations extends Component {
     return (
       <View>
         <Button
-          style={[shared.inCardButton]}
+          style={[theme.inCardButton]}
           onPress={() => this.setState({ showingGraphNodes: true })}
         >
           Show network graph nodes
@@ -54,7 +54,7 @@ class ComponentWalletOperations extends Component {
     return (
       <View>
         <Button
-          style={[shared.inCardButton]}
+          style={[theme.inCardButton]}
           onPress={() => this.setState({ showingLogs: true })}
         >
           Show lnd logs
@@ -76,7 +76,7 @@ class ComponentWalletOperations extends Component {
     return (
       <View>
         <Button
-          style={[shared.inCardButton]}
+          style={[theme.inCardButton]}
           onPress={() => this.setState({ showingAbout: true })}
         >
           About
@@ -97,51 +97,51 @@ class ComponentWalletOperations extends Component {
     if (!this.state.graphInfo) return;
     return (
       <View>
-        <Text style={shared.boldText}>Lightning network graph info</Text>
+        <Text style={theme.boldText}>Lightning network graph info</Text>
 
         <Text>
-          <Text style={shared.boldText}>Average out degree: </Text>
+          <Text style={theme.boldText}>Average out degree: </Text>
           {Math.round(this.state.graphInfo.avg_out_degree * 1000) / 1000}
         </Text>
 
         <Text>
-          <Text style={shared.boldText}>Max out degree: </Text>
+          <Text style={theme.boldText}>Max out degree: </Text>
           {this.state.graphInfo.max_out_degree}
         </Text>
 
         <Text>
-          <Text style={shared.boldText}>Number of nodes: </Text>
+          <Text style={theme.boldText}>Number of nodes: </Text>
           {this.state.graphInfo.num_nodes}
         </Text>
 
         <Text>
-          <Text style={shared.boldText}>Number of channels: </Text>
+          <Text style={theme.boldText}>Number of channels: </Text>
           {this.state.graphInfo.num_channels}
         </Text>
 
         <Text>
-          <Text style={shared.boldText}>Total network capacity: </Text>
+          <Text style={theme.boldText}>Total network capacity: </Text>
           {this.props.displaySatoshi(
             this.state.graphInfo.total_network_capacity
           )}
         </Text>
 
         <Text>
-          <Text style={shared.boldText}>Average channel size: </Text>
+          <Text style={theme.boldText}>Average channel size: </Text>
           {this.props.displaySatoshi(
             Math.round(this.state.graphInfo.avg_channel_size)
           )}
         </Text>
 
         <Text>
-          <Text style={shared.boldText}>Min channel size: </Text>
+          <Text style={theme.boldText}>Min channel size: </Text>
           {this.props.displaySatoshi(
             Math.round(this.state.graphInfo.min_channel_size)
           )}
         </Text>
 
         <Text>
-          <Text style={shared.boldText}>Max channel size: </Text>
+          <Text style={theme.boldText}>Max channel size: </Text>
           {this.props.displaySatoshi(
             Math.round(this.state.graphInfo.max_channel_size)
           )}
@@ -152,14 +152,14 @@ class ComponentWalletOperations extends Component {
 
   render() {
     return (
-      <View style={shared.container}>
-        <Text style={shared.accountHeader}>Wallet operations</Text>
+      <View style={theme.container}>
+        <Text style={theme.accountHeader}>Wallet operations</Text>
         {this._renderGraphSummary()}
-        <View style={shared.separator} />
+        <View style={theme.separator} />
         {this._renderShowGraphNodes()}
-        <View style={shared.separator} />
+        <View style={theme.separator} />
         {this._renderShowLogs()}
-        <View style={shared.separator} />
+        <View style={theme.separator} />
         {this._renderShowAbout()}
       </View>
     );

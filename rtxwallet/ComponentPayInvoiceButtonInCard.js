@@ -11,7 +11,7 @@ import {
 
 import Button from "react-native-button";
 import withLnd from "./withLnd.js";
-import shared from "./SharedStyles.js";
+import { styles as theme } from "react-native-theme";
 import { BoldText } from "./ComponentShared.js";
 
 class ComponentPayInvoiceButtonInCard extends Component {
@@ -101,7 +101,7 @@ class ComponentPayInvoiceButtonInCard extends Component {
     if (!error) return;
     return (
       <View>
-        <Text style={shared.errorText}>
+        <Text style={theme.errorText}>
           Error: {JSON.stringify(this.state.error)}
         </Text>
       </View>
@@ -114,7 +114,7 @@ class ComponentPayInvoiceButtonInCard extends Component {
     return (
       <View>
         <Button
-          style={[shared.inCardButton]}
+          style={[theme.inCardButton]}
           onPress={async () => {
             try {
               const qr = await this.props.scanQrCode();
@@ -132,7 +132,7 @@ class ComponentPayInvoiceButtonInCard extends Component {
           By QR code
         </Button>
         <Button
-          style={[shared.inCardButton]}
+          style={[theme.inCardButton]}
           onPress={() => {
             this._initState();
             this.setState({ payingWithInvoice: !this.state.payingWithInvoice });
@@ -150,14 +150,14 @@ class ComponentPayInvoiceButtonInCard extends Component {
     return (
       <View>
         <TextInput
-          style={shared.textInput}
+          style={theme.textInput}
           underlineColorAndroid="transparent"
           placeholder="Lightning invoice"
           value={this.state.invoice}
           onChangeText={invoice => this.setState({ invoice })}
         />
         <Button
-          style={[shared.inCardButton]}
+          style={[theme.inCardButton]}
           onPress={() => {
             this.setState({ error: "", payreq: undefined });
             this.decodePayreq(this.state.invoice);
@@ -175,8 +175,8 @@ class ComponentPayInvoiceButtonInCard extends Component {
     return (
       <View>
         <Button
-          style={[shared.inCardButton, shared.greenButton]}
-          styleDisabled={shared.disabledButton}
+          style={[theme.inCardButton, theme.greenButton]}
+          styleDisabled={theme.disabledButton}
           disabled={this.state.working}
           onPress={async () => {
             if (this.state.working) return;
@@ -218,7 +218,7 @@ class ComponentPayInvoiceButtonInCard extends Component {
     return (
       <View>
         <Button
-          style={[shared.inCardButton]}
+          style={[theme.inCardButton]}
           onPress={() => {
             this._initState();
             this.setState({
@@ -239,7 +239,7 @@ class ComponentPayInvoiceButtonInCard extends Component {
                 this._initState();
                 this.setState({ paying: false });
               }}
-              style={[shared.inCardButton, shared.cancelButton]}
+              style={[theme.inCardButton, theme.cancelButton]}
             >
               Cancel payment
             </Button>
@@ -251,7 +251,7 @@ class ComponentPayInvoiceButtonInCard extends Component {
                 this._initState();
                 this.setState({ paying: false });
               }}
-              style={[shared.inCardButton]}
+              style={[theme.inCardButton]}
             >
               Done
             </Button>

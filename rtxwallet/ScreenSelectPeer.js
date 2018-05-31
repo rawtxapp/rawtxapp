@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { FlatList, StyleSheet, View, Text } from "react-native";
 import withLnd from "./withLnd.js";
 import Button from "react-native-button";
-import shared from "./SharedStyles.js";
+import { styles as theme } from "react-native-theme";
 import { RenderNodeInfoItem } from "./ComponentShared";
 
 class ScreenSelectPeer extends Component {
@@ -46,20 +46,20 @@ class ScreenSelectPeer extends Component {
       <View style={styles.nodeItem}>
         {!!n.alias && (
           <Text>
-            <Text style={shared.boldText}>alias:</Text>
+            <Text style={theme.boldText}>alias:</Text>
             {n.alias}
           </Text>
         )}
         <Text>
-          <Text style={shared.boldText}>pubkey:</Text>
+          <Text style={theme.boldText}>pubkey:</Text>
           {n.pub_key}
         </Text>
         <Text>
-          <Text style={shared.boldText}>last updated:</Text>
+          <Text style={theme.boldText}>last updated:</Text>
           {lastUpdate.toDateString() || "No last_update found for node."}
         </Text>
         <Button
-          style={[shared.smallButton, shared.textAlignLeft]}
+          style={[theme.smallButton, theme.textAlignLeft]}
           onPress={() => this.props.selectPeer(n)}
         >
           Open channel to peer
@@ -70,7 +70,7 @@ class ScreenSelectPeer extends Component {
 
   render() {
     return (
-      <View style={shared.flexOne}>
+      <View style={theme.flexOne}>
         <View style={styles.scrollContainer}>
           <FlatList
             data={this.state.nodeInfos}
@@ -78,8 +78,8 @@ class ScreenSelectPeer extends Component {
             keyExtractor={this._keyExtractor}
           />
         </View>
-        <View style={[styles.actionContainer, shared.centerPrimaryAxis]}>
-          <Button onPress={this.props.onCancel} style={shared.cancelButton}>
+        <View style={[styles.actionContainer, theme.centerPrimaryAxis]}>
+          <Button onPress={this.props.onCancel} style={theme.cancelButton}>
             Cancel
           </Button>
         </View>

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { AsyncStorage, StyleSheet, Text, View } from "react-native";
-import shared from "./SharedStyles";
+import { styles as theme } from "react-native-theme";
 import Button from "react-native-button";
 
 export default class ComponentWelcome extends Component {
@@ -25,12 +25,12 @@ export default class ComponentWelcome extends Component {
   render() {
     if (this.state.showed) return <View />;
     return (
-      <View style={shared.container}>
-        <Text style={shared.accountHeader}>
+      <View style={theme.container}>
+        <Text style={theme.accountHeader}>
           Welcome to rawtx lightning wallet!
         </Text>
         <Text>
-          Please give the app <Text style={shared.boldText}>15-30 mins</Text> to
+          Please give the app <Text style={theme.boldText}>15-30 mins</Text> to
           sync and bootstrap, you can come back to check it in a while, it will
           work even if you put it in background!
         </Text>
@@ -38,7 +38,7 @@ export default class ComponentWelcome extends Component {
           Please show what lightning is capable of to your friends and family!
         </Text>
         <Button
-          style={[shared.inCardButton]}
+          style={[theme.inCardButton]}
           onPress={() => {
             this.setState({ showed: true });
             try {

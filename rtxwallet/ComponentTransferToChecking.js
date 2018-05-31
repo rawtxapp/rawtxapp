@@ -8,7 +8,7 @@ import {
   TextInput
 } from "react-native";
 
-import shared from "./SharedStyles.js";
+import { styles as theme } from "react-native-theme";
 import Button from "react-native-button";
 import withLnd from "./withLnd.js";
 import ScreenSelectPeer from "./ScreenSelectPeer.js";
@@ -54,21 +54,21 @@ class ComponentTransferToChecking extends Component {
           {this.state.scannedPeerCode && this.state.scannedPeerCode}
         </Text>
 
-        <View style={shared.flexRow}>
+        <View style={theme.flexRow}>
           <TextInput
-            style={[shared.textInput, shared.flexThree]}
+            style={[theme.textInput, theme.flexThree]}
             underlineColorAndroid="transparent"
             placeholder="Amount"
             value={this.state.amount}
             onChangeText={text => this.setState({ amount: text })}
           />
-          <View style={[shared.flexOne, shared.centerPrimaryAxis]}>
+          <View style={[theme.flexOne, theme.centerPrimaryAxis]}>
             <Text>{this.props.getDisplayUnit()}</Text>
           </View>
         </View>
         <Button
-          style={shared.inCardButton}
-          styleDisabled={shared.disabledButton}
+          style={theme.inCardButton}
+          styleDisabled={theme.disabledButton}
           disabled={this.state.working}
           onPress={() => {
             if (this.state.working) return;
@@ -107,7 +107,7 @@ class ComponentTransferToChecking extends Component {
           Create channel
         </Button>
         {this.state.working && <ActivityIndicator />}
-        <Text style={shared.warningText}>
+        <Text style={theme.warningText}>
           If opening a channel fails with timeout, it's possible that it's still
           being created in the background, wait a little bit to see if pending
           open channel increased in "Checking account" card above!
@@ -120,7 +120,7 @@ class ComponentTransferToChecking extends Component {
     if (this.state.error) {
       return (
         <View>
-          <Text style={shared.errorText}>{this.state.error}</Text>
+          <Text style={theme.errorText}>{this.state.error}</Text>
         </View>
       );
     } else if (this.state.success) {
@@ -138,7 +138,7 @@ class ComponentTransferToChecking extends Component {
       <View>
         <Button
           onPress={() => this.setState({ selectingPeer: true })}
-          style={shared.inCardButton}
+          style={theme.inCardButton}
         >
           Open channel to an existing peer
         </Button>
@@ -159,7 +159,7 @@ class ComponentTransferToChecking extends Component {
               this.setState({ error });
             }
           }}
-          style={shared.inCardButton}
+          style={theme.inCardButton}
         >
           Create new channel to a peer by QR code
         </Button>
@@ -173,8 +173,8 @@ class ComponentTransferToChecking extends Component {
             this.resetState();
           }}
           style={[
-            shared.inCardButton,
-            !this.state.success && shared.cancelButton
+            theme.inCardButton,
+            !this.state.success && theme.cancelButton
           ]}
         >
           {this.state.success ? "Done" : "Cancel transfer"}
@@ -209,7 +209,7 @@ class ComponentTransferToChecking extends Component {
     return (
       <View>
         <Button
-          style={[shared.inCardButton]}
+          style={[theme.inCardButton]}
           onPress={() => {
             this.setState({
               transferring: !this.state.transferring

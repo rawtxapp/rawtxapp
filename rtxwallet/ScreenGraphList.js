@@ -9,7 +9,7 @@ import {
   View
 } from "react-native";
 import withLnd from "./withLnd";
-import shared from "./SharedStyles";
+import { styles as theme } from "react-native-theme";
 import Button from "react-native-button";
 import {
   orderNodesByLastUpdate,
@@ -45,30 +45,30 @@ class ScreenGraphList extends Component {
     return (
       <View style={styles.nodeItem}>
         <Text>
-          <Text style={shared.boldText}>alias:</Text>
+          <Text style={theme.boldText}>alias:</Text>
           {n.alias}
         </Text>
         <Text selectable>
-          <Text style={shared.boldText}>pubkey:</Text>
+          <Text style={theme.boldText}>pubkey:</Text>
           {n.pub_key}
         </Text>
         <Text>
-          <Text style={shared.boldText}>last updated:</Text>
+          <Text style={theme.boldText}>last updated:</Text>
           {lastUpdate.toDateString() || "No last_update found for node."}
         </Text>
         <Text>
-          <Text style={shared.boldText}>#in channel count:</Text>
+          <Text style={theme.boldText}>#in channel count:</Text>
           {n.in_count}
           {"  "}
-          <Text style={shared.boldText}>#out channel count:</Text>
+          <Text style={theme.boldText}>#out channel count:</Text>
           {n.out_count}
         </Text>
         <Text>
-          <Text style={shared.boldText}>#in capacity:</Text>
+          <Text style={theme.boldText}>#in capacity:</Text>
           {n.in_capacity}
         </Text>
         <Button
-          style={[shared.smallButton, shared.textAlignLeft]}
+          style={[theme.smallButton, theme.textAlignLeft]}
           onPress={async () => {
             try {
               if (!n.addresses || (n.addresses && n.addresses.length == 0)) {
@@ -105,7 +105,7 @@ class ScreenGraphList extends Component {
     return (
       <View style={styles.filterContainer}>
         <TextInput
-          style={[shared.textInput]}
+          style={[theme.textInput]}
           underlineColorAndroid="transparent"
           placeholder="Filter nodes (pubkey and alias)"
           value={this.state.filter_to}
@@ -138,12 +138,12 @@ class ScreenGraphList extends Component {
 
   render() {
     return (
-      <View style={[shared.containerStyleOnly, shared.flexOne]}>
+      <View style={[theme.containerStyleOnly, theme.flexOne]}>
         {this._renderFilterInput()}
         <View style={styles.scrollContainer}>{this._renderFlatList()}</View>
-        <View style={[styles.actionContainer, shared.centerPrimaryAxis]}>
+        <View style={[styles.actionContainer, theme.centerPrimaryAxis]}>
           <Button
-            style={[shared.inCardButton, shared.cancelButton]}
+            style={[theme.inCardButton, theme.cancelButton]}
             onPress={this.props.onCancel}
           >
             Cancel

@@ -17,7 +17,7 @@ import { LOGO_COLOR } from "./Colors.js";
 import { timeout } from "./Utils.js";
 
 import Button from "react-native-button";
-import shared from "./SharedStyles.js";
+import { styles as theme } from "react-native-theme";
 
 import ComponentPayInvoiceButtonInCard from "./ComponentPayInvoiceButtonInCard.js";
 import ComponentTransferToChecking from "./ComponentTransferToChecking.js";
@@ -49,8 +49,8 @@ class SyncingBlock extends Component {
       statusStyle = syncingStyles.unsynced;
     }
     return (
-      <View style={shared.container}>
-        <Text style={[shared.accountHeader, statusStyle]}>{status}</Text>
+      <View style={theme.container}>
+        <Text style={[theme.accountHeader, statusStyle]}>{status}</Text>
       </View>
     );
   }
@@ -121,7 +121,7 @@ class CheckingAccount extends Component {
     return (
       <View>
         <Text>
-          <Text style={shared.boldText}>Channels:</Text>
+          <Text style={theme.boldText}>Channels:</Text>
           {active}
           {hasPending && (
             <Text>
@@ -153,8 +153,8 @@ class CheckingAccount extends Component {
     const hasOpenLimbo = hasOpen || hasLimbo;
     return (
       <View>
-        <Text style={shared.baseText}>
-          <Text style={shared.boldText}>Balance:</Text>{" "}
+        <Text style={theme.baseText}>
+          <Text style={theme.boldText}>Balance:</Text>{" "}
           {this.props.displaySatoshi(
             (this.state.balance && this.state.balance.balance) || "0"
           )}
@@ -217,10 +217,10 @@ class CheckingAccount extends Component {
 
   render() {
     return (
-      <View style={shared.container}>
-        <Text style={shared.accountHeader}>
+      <View style={theme.container}>
+        <Text style={theme.accountHeader}>
           Checking account{" "}
-          <Text style={shared.smallerHeader}>(funds on channels)</Text>
+          <Text style={theme.smallerHeader}>(funds on channels)</Text>
         </Text>
         {this._renderBalances()}
         {this._renderChannelCount()}
@@ -261,11 +261,11 @@ class CheckingAccount extends Component {
           </Button>
         </View>
         {this._renderFaucet()}
-        <View style={shared.separator} />
+        <View style={theme.separator} />
         <ComponentPayInvoiceButtonInCard />
-        <View style={shared.separator} />
+        <View style={theme.separator} />
         <ComponentReceive />
-        <View style={shared.separator} />
+        <View style={theme.separator} />
         <ComponentTransferToSavings />
         {this._renderShowPayments()}
         {this._renderShowInvoices()}
@@ -307,8 +307,8 @@ class SavingsAccount extends Component {
       0;
     return (
       <View>
-        <Text style={shared.baseText}>
-          <Text style={shared.boldText}>Balance:</Text>{" "}
+        <Text style={theme.baseText}>
+          <Text style={theme.boldText}>Balance:</Text>{" "}
           {this.props.displaySatoshi(
             (this.state.balance && this.state.balance.confirmed_balance) || "0"
           )}
@@ -322,7 +322,7 @@ class SavingsAccount extends Component {
         {this.state.pendingChannel &&
           this.state.pendingChannel.pending_open_channels &&
           this.state.pendingChannel.pending_open_channels.length > 0 && (
-            <Text style={shared.warningText}>
+            <Text style={theme.warningText}>
               Your balance could be lower than expected during channel opening,
               will be accurate after channel is open!
             </Text>
@@ -333,16 +333,16 @@ class SavingsAccount extends Component {
 
   render() {
     return (
-      <View style={shared.container}>
-        <Text style={shared.accountHeader}>
+      <View style={theme.container}>
+        <Text style={theme.accountHeader}>
           Savings account{" "}
-          <Text style={shared.smallerHeader}>(funds on blockchain)</Text>
+          <Text style={theme.smallerHeader}>(funds on blockchain)</Text>
         </Text>
 
         {this._renderBalances()}
-        <View style={shared.separator} />
+        <View style={theme.separator} />
         <Button
-          style={[shared.inCardButton]}
+          style={[theme.inCardButton]}
           onPress={async () => {
             try {
               const newaddress = await this.props.lndApi.newaddress();
@@ -357,13 +357,13 @@ class SavingsAccount extends Component {
         </Button>
         {this.state.showingGeneratedAddress && (
           <View>
-            <Text style={shared.selectableText} selectable>
+            <Text style={theme.selectableText} selectable>
               {this.state.generatedAddress}
             </Text>
 
             <Text>Faucet for receiving testnet coins:</Text>
             <Button
-              style={[shared.smallButton]}
+              style={[theme.smallButton]}
               onPress={() => {
                 Linking.openURL("https://testnet.coinfaucet.eu/en/");
               }}
@@ -372,7 +372,7 @@ class SavingsAccount extends Component {
             </Button>
 
             <Button
-              style={[shared.inCardButton]}
+              style={[theme.inCardButton]}
               onPress={() => {
                 this.setState({ showingGeneratedAddress: false });
               }}
@@ -382,9 +382,9 @@ class SavingsAccount extends Component {
           </View>
         )}
 
-        <View style={shared.separator} />
+        <View style={theme.separator} />
         <Button
-          style={[shared.inCardButton]}
+          style={[theme.inCardButton]}
           onPress={async () => {
             this.setState({
               showingSending: !this.state.showingSending,
@@ -400,14 +400,14 @@ class SavingsAccount extends Component {
         {this.state.showingSending && (
           <View>
             <TextInput
-              style={[shared.textInput]}
+              style={[theme.textInput]}
               underlineColorAndroid="transparent"
               placeholder="Destination address"
               value={this.state.destinationAddress}
               onChangeText={text => this.setState({ destinationAddress: text })}
             />
             <TextInput
-              style={[shared.textInput]}
+              style={[theme.textInput]}
               underlineColorAndroid="transparent"
               placeholder="Amount (in satoshis)"
               value={this.state.paymentSat}
@@ -416,9 +416,9 @@ class SavingsAccount extends Component {
             />
 
             <Button
-              style={[shared.inCardButton]}
+              style={[theme.inCardButton]}
               disabled={this.state.sendingPayment}
-              styleDisabled={shared.disabledButton}
+              styleDisabled={theme.disabledButton}
               onPress={async () => {
                 try {
                   this.setState({ sendingPayment: true });
@@ -455,14 +455,14 @@ class SavingsAccount extends Component {
               Send
             </Button>
             {this.state.paymentError && (
-              <Text style={shared.errorText} selectable>
+              <Text style={theme.errorText} selectable>
                 {this.state.paymentError}
               </Text>
             )}
             {this.state.paymentTx && (
               <View>
-                <Text style={shared.boldText}>Transaction id:</Text>
-                <Text style={shared.selectableText} selectable>
+                <Text style={theme.boldText}>Transaction id:</Text>
+                <Text style={theme.selectableText} selectable>
                   {this.state.paymentTx}
                 </Text>
               </View>
@@ -470,7 +470,7 @@ class SavingsAccount extends Component {
           </View>
         )}
 
-        <View style={shared.separator} />
+        <View style={theme.separator} />
         <ComponentTransferToChecking />
       </View>
     );
@@ -517,7 +517,7 @@ class ScreenWallet extends Component {
     let footer = (
       <View>
         <Button
-          style={[shared.container, styles.closeWalletButton]}
+          style={[theme.container, styles.closeWalletButton]}
           onPress={async () => {
             this.setState({ working: true }, async () => {
               await this.props.stopLndFromWallet(this.state.wallet);

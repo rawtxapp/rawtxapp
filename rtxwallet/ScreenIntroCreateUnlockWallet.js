@@ -23,7 +23,7 @@ import RadioForm, {
   RadioButtonInput,
   RadioButtonLabel
 } from "react-native-simple-radio-button";
-import shared from "./SharedStyles";
+import { styles as theme } from "react-native-theme";
 
 import LndConsumer from "./ContextLnd.js";
 import { withLnd } from "./withLnd.js";
@@ -143,7 +143,7 @@ class QuickCreateWallet extends Component {
             )}
             {!!this.state.error && (
               <View style={unlockWalletStyles.contentContainer}>
-                <Text style={shared.errorText}>Error: {this.state.error}</Text>
+                <Text style={theme.errorText}>Error: {this.state.error}</Text>
               </View>
             )}
             {!!this.state.success && (
@@ -506,7 +506,7 @@ class CreateWallet extends Component {
                 value={this.state.neutrinoConnect}
                 onChangeText={text => this.setState({ neutrinoConnect: text })}
               />
-              <Text style={shared.warningText}>
+              <Text style={theme.warningText}>
                 Adding extra known peers will help you sync faster. You can add
                 more peers separated by a comma(,).
               </Text>

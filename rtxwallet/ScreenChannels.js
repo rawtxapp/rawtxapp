@@ -8,7 +8,7 @@ import {
   TextInput
 } from "react-native";
 
-import shared from "./SharedStyles.js";
+import { styles as theme } from "react-native-theme";
 import Button from "react-native-button";
 import withLnd from "./withLnd.js";
 
@@ -38,34 +38,34 @@ class ScreenChannels extends Component {
     return (
       <View key={ix} style={styles.nodeItem}>
         <Text selectable>
-          <Text style={shared.boldText}>Channel id: </Text>
+          <Text style={theme.boldText}>Channel id: </Text>
           {c.chan_id}
         </Text>
 
         <Text selectable>
-          <Text style={shared.boldText}>Capacity: </Text>
+          <Text style={theme.boldText}>Capacity: </Text>
           {c.capacity}
         </Text>
 
         <Text selectable>
-          <Text style={shared.boldText}>Local balance: </Text>
+          <Text style={theme.boldText}>Local balance: </Text>
           {c.local_balance}
         </Text>
 
         <Text selectable>
-          <Text style={shared.boldText}>Remote balance: </Text>
+          <Text style={theme.boldText}>Remote balance: </Text>
           {c.remote_balance}
         </Text>
 
         <Text selectable>
-          <Text style={shared.boldText}>Is active: </Text>
+          <Text style={theme.boldText}>Is active: </Text>
           {c.active ? "yes" : "no"}
         </Text>
 
         <Button
-          style={[shared.smallButton, shared.textAlignLeft]}
+          style={[theme.smallButton, theme.textAlignLeft]}
           disabled={this.state[closeChannelDisableKey]}
-          styleDisabled={shared.disabledButton}
+          styleDisabled={theme.disabledButton}
           onPress={async () => {
             this.setState({ [closeChannelDisableKey]: true });
             try {
@@ -88,10 +88,10 @@ class ScreenChannels extends Component {
           Close channel
         </Button>
         {this.state[errorKey] && (
-          <Text style={shared.errorText}>{this.state[errorKey]}</Text>
+          <Text style={theme.errorText}>{this.state[errorKey]}</Text>
         )}
         {this.state[successKey] && (
-          <Text style={shared.successText}>{this.state[successKey]}</Text>
+          <Text style={theme.successText}>{this.state[successKey]}</Text>
         )}
       </View>
     );
@@ -114,14 +114,14 @@ class ScreenChannels extends Component {
 
   render() {
     return (
-      <View style={[shared.containerStyleOnly, shared.flexOne]}>
+      <View style={[theme.containerStyleOnly, theme.flexOne]}>
         <View style={styles.scrollContainer}>
           <ScrollView contentContainerStyle={styles.scrollStyle}>
             {this._renderChannelList()}
           </ScrollView>
         </View>
-        <View style={[styles.actionContainer, shared.centerPrimaryAxis]}>
-          <Button style={[shared.inCardButton]} onPress={this.props.onDone}>
+        <View style={[styles.actionContainer, theme.centerPrimaryAxis]}>
+          <Button style={[theme.inCardButton]} onPress={this.props.onDone}>
             Done
           </Button>
         </View>

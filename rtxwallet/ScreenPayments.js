@@ -10,7 +10,7 @@ import {
   View
 } from "react-native";
 import withLnd from "./withLnd";
-import shared from "./SharedStyles";
+import { styles as theme } from "react-native-theme";
 import Button from "react-native-button";
 import {
   orderNodesByLastUpdate,
@@ -48,25 +48,25 @@ class ScreenPayments extends Component {
     return (
       <View style={[styles.nodeItem, this.props.theme.actionContainer]}>
         <Text selectable style={this.props.theme.actionContainerText}>
-          <Text style={shared.boldText}>
+          <Text style={theme.boldText}>
             Paid {this.props.displaySatoshi(n.value)}
           </Text>
         </Text>
         <Text selectable style={this.props.theme.actionContainerText}>
-          <Text style={shared.boldText}>on </Text>
+          <Text style={theme.boldText}>on </Text>
           {creationDate.toDateString() + " " + creationDate.toTimeString() ||
             "No creation date found."}
         </Text>
         <Text style={this.props.theme.actionContainerText}>
-          <Text style={shared.boldText}>fee:</Text>
+          <Text style={theme.boldText}>fee:</Text>
           {n.fee || 0}
         </Text>
         <Text style={this.props.theme.actionContainerText}>
-          <Text style={shared.boldText}>path length:</Text>
+          <Text style={theme.boldText}>path length:</Text>
           {n.path.length}
         </Text>
         <Text selectable style={this.props.theme.actionContainerText}>
-          <Text style={shared.boldText}>payment hash:</Text>
+          <Text style={theme.boldText}>payment hash:</Text>
           {n.payment_hash}
         </Text>
       </View>

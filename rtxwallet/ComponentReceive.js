@@ -7,7 +7,7 @@ import {
   TextInput
 } from "react-native";
 
-import shared from "./SharedStyles.js";
+import { styles as theme } from "react-native-theme";
 import Button from "react-native-button";
 import withLnd from "./withLnd.js";
 import QRCode from "react-native-qrcode";
@@ -35,14 +35,14 @@ class ComponentReceive extends Component {
     return (
       <View>
         <TextInput
-          style={[shared.textInput]}
+          style={[theme.textInput]}
           underlineColorAndroid="transparent"
           placeholder="Description (info payer will see)"
           value={this.state.memo}
           onChangeText={text => this.setState({ memo: text })}
         />
         <TextInput
-          style={[shared.textInput]}
+          style={[theme.textInput]}
           underlineColorAndroid="transparent"
           placeholder="Amount (in satoshis)"
           value={this.state.amt_sat}
@@ -50,7 +50,7 @@ class ComponentReceive extends Component {
           onChangeText={text => this.setState({ amt_sat: text })}
         />
         <Button
-          style={[shared.inCardButton]}
+          style={[theme.inCardButton]}
           onPress={() => {
             this.setState(
               { working: true, error: "", payment_request: "" },
@@ -80,7 +80,7 @@ class ComponentReceive extends Component {
           Create invoice
         </Button>
         {this.state.working && <ActivityIndicator />}
-        <Text style={shared.errorText}>{this.state.error}</Text>
+        <Text style={theme.errorText}>{this.state.error}</Text>
       </View>
     );
   };
@@ -92,14 +92,14 @@ class ComponentReceive extends Component {
     if (!lastInfo) {
       return (
         <View>
-          <Text style={shared.errorText}>Couldn't get your pubkey!</Text>
+          <Text style={theme.errorText}>Couldn't get your pubkey!</Text>
         </View>
       );
     }
     return (
       <View>
         <Text>Your pubkey:</Text>
-        <Text selectable style={shared.textInput}>
+        <Text selectable style={theme.textInput}>
           {lastInfo}
         </Text>
       </View>
@@ -110,11 +110,11 @@ class ComponentReceive extends Component {
     if (!this.state.payment_request) return;
     return (
       <View>
-        <Text style={shared.headerText}>
+        <Text style={theme.headerText}>
           The invoice you need to send to payer
         </Text>
         <Text>Payment request:</Text>
-        <Text selectable style={shared.textInput}>
+        <Text selectable style={theme.textInput}>
           {this.state.payment_request}
         </Text>
         <View style={styles.qrCodeContainer}>
@@ -131,18 +131,18 @@ class ComponentReceive extends Component {
     if (!this.state.payment_request) return;
     return (
       <View>
-        <Text style={shared.warningText}>
+        <Text style={theme.warningText}>
           In order for the payer to find your pubkey, you need to have an IP
           address, on mobile phones, it's difficult to determine an IP address.
         </Text>
-        <Text style={shared.warningText}>
+        <Text style={theme.warningText}>
           So, you need to either connect to them directly, or connect to a node
           in the lightning network graph and if they connect to the same node,
           they will be able to find your pubkey and open a connection to you in
           order to pay. This is a short term solution, as the network matures
           and the software gets better, you won't have to worry about this.
         </Text>
-        <Text style={shared.warningText}>
+        <Text style={theme.warningText}>
           You can connect to a node by looking through lightning node under
           "Wallet Operations" below.
         </Text>
@@ -154,7 +154,7 @@ class ComponentReceive extends Component {
     return (
       <View>
         <Button
-          style={[shared.inCardButton]}
+          style={[theme.inCardButton]}
           onPress={() => {
             this.setState({
               receiving: !this.state.receiving,

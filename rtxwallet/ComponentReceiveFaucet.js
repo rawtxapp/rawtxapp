@@ -9,7 +9,7 @@ import {
   TextInput
 } from "react-native";
 
-import shared from "./SharedStyles.js";
+import { styles as theme } from "react-native-theme";
 import Button from "react-native-button";
 import withLnd from "./withLnd.js";
 
@@ -47,14 +47,14 @@ class ComponentReceiveFaucet extends Component {
     if (!lastInfo) {
       return (
         <View>
-          <Text style={shared.errorText}>Couldn't get your pubkey!</Text>
+          <Text style={theme.errorText}>Couldn't get your pubkey!</Text>
         </View>
       );
     }
     return (
       <View>
         <Text>Your pubkey:</Text>
-        <Text selectable style={shared.textInput}>
+        <Text selectable style={theme.textInput}>
           {lastInfo}
         </Text>
       </View>
@@ -67,11 +67,11 @@ class ComponentReceiveFaucet extends Component {
       return (
         <View>
           <Text>Faucet's address:</Text>
-          <Text selectable style={shared.textInput}>
+          <Text selectable style={theme.textInput}>
             {this.state.faucetPubkey}
           </Text>
           <Button
-            style={[shared.smallButton]}
+            style={[theme.smallButton]}
             onPress={async () => {
               this.setState({ error: "", success: "" });
               try {
@@ -100,14 +100,14 @@ class ComponentReceiveFaucet extends Component {
           >
             Connect
           </Button>
-          <Text style={shared.successText}>{this.state.success}</Text>
-          <Text style={shared.errorText}>{this.state.error}</Text>
+          <Text style={theme.successText}>{this.state.success}</Text>
+          <Text style={theme.errorText}>{this.state.error}</Text>
         </View>
       );
     } else {
       return (
         <View>
-          <Text style={shared.warningText}>Couldn't find faucet's pubkey.</Text>
+          <Text style={theme.warningText}>Couldn't find faucet's pubkey.</Text>
         </View>
       );
     }
@@ -118,7 +118,7 @@ class ComponentReceiveFaucet extends Component {
     return (
       <View>
         <Button
-          style={[shared.smallButton]}
+          style={[theme.smallButton]}
           onPress={() => {
             Linking.openURL("https://faucet.lightning.community/");
           }}
@@ -155,11 +155,11 @@ class ComponentReceiveFaucet extends Component {
     }
     return (
       <View>
-        <View style={shared.separator} />
+        <View style={theme.separator} />
         <Button
           style={[
-            shared.inCardButton,
-            !this.state.started && shared.successTextColorOnly
+            theme.inCardButton,
+            !this.state.started && theme.successTextColorOnly
           ]}
           onPress={() => {
             this.setAlreadyStarted();

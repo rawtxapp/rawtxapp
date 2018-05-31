@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Modal, StyleSheet, View, Text, TextInput } from "react-native";
 
-import shared from "./SharedStyles.js";
+import { styles as theme } from "react-native-theme";
 import Button from "react-native-button";
 import withLnd from "./withLnd.js";
 import ScreenChannels from "./ScreenChannels.js";
@@ -19,12 +19,12 @@ class ComponentTransferToSavings extends Component {
     if (!this.state.transferring) return;
     return (
       <View>
-        <Text style={shared.warningText}>
+        <Text style={theme.warningText}>
           To transfer funds to saving account, you need to close channels:
         </Text>
         <Button
           onPress={() => this.setState({ selectingChannel: true })}
-          style={shared.inCardButton}
+          style={theme.inCardButton}
         >
           Select channels to close
         </Button>
@@ -49,7 +49,7 @@ class ComponentTransferToSavings extends Component {
     return (
       <View>
         <Button
-          style={[shared.inCardButton]}
+          style={[theme.inCardButton]}
           onPress={async () => {
             this.setState({
               transferring: !this.state.transferring

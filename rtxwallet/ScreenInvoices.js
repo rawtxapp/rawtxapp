@@ -10,7 +10,7 @@ import {
   View
 } from "react-native";
 import withLnd from "./withLnd";
-import shared from "./SharedStyles";
+import { styles as theme } from "react-native-theme";
 import Button from "react-native-button";
 import {
   orderNodesByLastUpdate,
@@ -68,29 +68,29 @@ class ScreenInvoices extends Component {
       <View style={[styles.nodeItem, this.props.theme.actionContainer]}>
         {!!n.memo && (
           <Text selectable style={this.props.theme.actionContainerText}>
-            <Text style={shared.boldText}>memo:</Text>
+            <Text style={theme.boldText}>memo:</Text>
             {n.memo}
           </Text>
         )}
         <Text style={this.props.theme.actionContainerText}>
-          <Text style={shared.boldText}>value:</Text>
+          <Text style={theme.boldText}>value:</Text>
           {this.props.displaySatoshi(n.value) || 0}
         </Text>
         <Text selectable style={this.props.theme.actionContainerText}>
-          <Text style={shared.boldText}>creation date:</Text>
+          <Text style={theme.boldText}>creation date:</Text>
           {creationDate.toDateString() + " " + creationDate.toTimeString() ||
             "No creation date found."}
         </Text>
         {n.settled && (
           <Text selectable style={this.props.theme.actionContainerText}>
-            <Text style={shared.boldText}>settle date:</Text>
+            <Text style={theme.boldText}>settle date:</Text>
             {settleDate.toDateString() + " " + settleDate.toTimeString() ||
               "No settle date found."}
           </Text>
         )}
         {n.private && (
           <Text selectable style={this.props.theme.actionContainerText}>
-            <Text style={shared.boldText}>private</Text>
+            <Text style={theme.boldText}>private</Text>
           </Text>
         )}
       </View>
