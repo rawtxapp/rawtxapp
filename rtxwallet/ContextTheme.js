@@ -116,6 +116,16 @@ const defaultTheme = StyleSheet.create({
   }
 });
 
+const buttonBase = {
+  backgroundColor: themeColor,
+  borderRadius: 10,
+  color: "white",
+  padding: 10,
+  margin: 5,
+  borderWidth: 2,
+  borderColor: themeColor
+};
+
 theme.add({
   container: {
     borderRadius: 10,
@@ -183,13 +193,6 @@ theme.add({
   explanationText: {
     fontSize: 14
   },
-  textInput: {
-    backgroundColor: "white",
-    borderRadius: 10,
-    margin: 10,
-    flex: 1,
-    padding: 10
-  },
   selectableText: {
     borderRadius: 10,
     borderWidth: 2,
@@ -199,12 +202,16 @@ theme.add({
     fontSize: 14
   },
   textInput: {
+    backgroundColor: "white",
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: LOGO_COLOR,
     margin: 10,
     padding: 10,
-    fontSize: 14
+    fontSize: 14,
+    borderColor: "#9E9E9E"
+  },
+  textInputSuccess: {
+    borderColor: "#43A047"
   },
   baseText: {
     fontSize: 14
@@ -242,5 +249,26 @@ theme.add({
   },
   successTextColorOnly: {
     color: "green"
+  },
+  actionButton: {
+    ...buttonBase
+  },
+  activeActionButton: {
+    ...buttonBase,
+    color: themeColor,
+    backgroundColor: "white",
+    borderColor: themeColor
+  },
+  errorActionButton: {
+    ...buttonBase,
+    color: "#F44336",
+    backgroundColor: "white",
+    borderColor: "#F44336"
+  },
+  successActionButton: {
+    ...buttonBase,
+    color: "#4CAF50",
+    backgroundColor: "white",
+    borderColor: "#4CAF50"
   }
 });

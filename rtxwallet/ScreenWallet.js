@@ -19,7 +19,6 @@ import { timeout } from "./Utils.js";
 import Button from "react-native-button";
 import { styles as theme } from "react-native-theme";
 
-import ComponentPayInvoiceButtonInCard from "./ComponentPayInvoiceButtonInCard.js";
 import ComponentTransferToChecking from "./ComponentTransferToChecking.js";
 import ComponentWalletOperations from "./ComponentWalletOperations.js";
 import ComponentTransferToSavings from "./ComponentTransferToSavings.js";
@@ -31,6 +30,7 @@ import ComponentWhereSpend from "./ComponentWhereSpend.js";
 import ComponentWelcome from "./ComponentWelcome";
 import ComponentActionSheet from "./ComponentActionSheet";
 import ComponentAskFeedback from "./ComponentAskFeedback";
+import ScreenPayInvoice from "./ScreenPayInvoice.js";
 
 class SyncingBlock extends Component {
   render() {
@@ -59,7 +59,11 @@ class SyncingBlock extends Component {
 class CheckingAccount extends Component {
   constructor(props) {
     super(props);
-    this.state = { showingPayments: false, showingInvoices: false };
+    this.state = {
+      showingPayments: false,
+      showingInvoices: false,
+      showingPayInvoice: false
+    };
   }
 
   componentDidMount() {
@@ -200,6 +204,21 @@ class CheckingAccount extends Component {
     );
   };
 
+  _renderPayInvoice = () => {
+    const closeModal = () => this.setState({ showingPayInvoice: false });
+    return (
+      <ComponentActionSheet
+        visible={this.state.showingPayInvoice}
+        onRequestClose={closeModal}
+        animationType="slide"
+        buttonText="Done"
+        title="Pay invoice"
+      >
+        <ScreenPayInvoice onCancel={closeModal} />
+      </ComponentActionSheet>
+    );
+  };
+
   _renderShowInvoices = () => {
     const closeModal = () => this.setState({ showingInvoices: false });
     return (
@@ -224,6 +243,25 @@ class CheckingAccount extends Component {
         </Text>
         {this._renderBalances()}
         {this._renderChannelCount()}
+        <View style={{ flexDirection: "row" }}>
+          <Button
+            containerStyle={{
+              borderRadius: 10,
+              backgroundColor: LOGO_COLOR,
+              flex: 1,
+              margin: 5,
+              padding: 5
+            }}
+            style={{ color: "white" }}
+            onPress={() => {
+              this.setState({
+                showingPayInvoice: true
+              });
+            }}
+          >
+            Pay
+          </Button>
+        </View>
         <View style={{ flexDirection: "row" }}>
           <Button
             containerStyle={{
@@ -262,13 +300,12 @@ class CheckingAccount extends Component {
         </View>
         {this._renderFaucet()}
         <View style={theme.separator} />
-        <ComponentPayInvoiceButtonInCard />
-        <View style={theme.separator} />
         <ComponentReceive />
         <View style={theme.separator} />
         <ComponentTransferToSavings />
         {this._renderShowPayments()}
         {this._renderShowInvoices()}
+        {this._renderPayInvoice()}
       </View>
     );
   }
