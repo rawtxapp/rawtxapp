@@ -207,9 +207,10 @@ const styles = StyleSheet.create({
     flexDirection: "row"
   },
   rowName: {
-    flex: 1,
+    flex: 0,
     justifyContent: "center",
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    flexShrink: 1
   },
   rowNameText: {
     fontSize: 20
