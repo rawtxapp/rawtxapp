@@ -22,7 +22,6 @@ import { styles as theme } from "react-native-theme";
 import ComponentTransferToChecking from "./ComponentTransferToChecking.js";
 import ComponentWalletOperations from "./ComponentWalletOperations.js";
 import ComponentTransferToSavings from "./ComponentTransferToSavings.js";
-import ComponentReceive from "./ComponentReceive.js";
 import ComponentReceiveFaucet from "./ComponentReceiveFaucet.js";
 import ScreenPayments from "./ScreenPayments.js";
 import ScreenInvoices from "./ScreenInvoices";
@@ -31,6 +30,7 @@ import ComponentWelcome from "./ComponentWelcome";
 import ComponentActionSheet from "./ComponentActionSheet";
 import ComponentAskFeedback from "./ComponentAskFeedback";
 import ScreenPayInvoice from "./ScreenPayInvoice.js";
+import ScreenReceiveInvoice from "./ScreenReceiveInvoice.js";
 
 class SyncingBlock extends Component {
   render() {
@@ -62,7 +62,8 @@ class CheckingAccount extends Component {
     this.state = {
       showingPayments: false,
       showingInvoices: false,
-      showingPayInvoice: false
+      showingPayInvoice: false,
+      showingReceiveInvoice: false
     };
   }
 
@@ -219,6 +220,21 @@ class CheckingAccount extends Component {
     );
   };
 
+  _renderReceiveInvoice = () => {
+    const closeModal = () => this.setState({ showingReceiveInvoice: false });
+    return (
+      <ComponentActionSheet
+        visible={this.state.showingReceiveInvoice}
+        onRequestClose={closeModal}
+        animationType="slide"
+        buttonText="Done"
+        title="Receive"
+      >
+        <ScreenReceiveInvoice onCancel={closeModal} />
+      </ComponentActionSheet>
+    );
+  };
+
   _renderShowInvoices = () => {
     const closeModal = () => this.setState({ showingInvoices: false });
     return (
@@ -261,6 +277,23 @@ class CheckingAccount extends Component {
           >
             Pay
           </Button>
+          <Button
+            containerStyle={{
+              borderRadius: 10,
+              backgroundColor: LOGO_COLOR,
+              flex: 1,
+              margin: 5,
+              padding: 5
+            }}
+            style={{ color: "white" }}
+            onPress={() => {
+              this.setState({
+                showingReceiveInvoice: true
+              });
+            }}
+          >
+            Receive
+          </Button>
         </View>
         <View style={{ flexDirection: "row" }}>
           <Button
@@ -300,12 +333,11 @@ class CheckingAccount extends Component {
         </View>
         {this._renderFaucet()}
         <View style={theme.separator} />
-        <ComponentReceive />
-        <View style={theme.separator} />
         <ComponentTransferToSavings />
         {this._renderShowPayments()}
         {this._renderShowInvoices()}
         {this._renderPayInvoice()}
+        {this._renderReceiveInvoice()}
       </View>
     );
   }
