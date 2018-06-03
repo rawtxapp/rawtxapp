@@ -21,7 +21,6 @@ import { styles as theme } from "react-native-theme";
 
 import ComponentTransferToChecking from "./ComponentTransferToChecking.js";
 import ComponentWalletOperations from "./ComponentWalletOperations.js";
-import ComponentTransferToSavings from "./ComponentTransferToSavings.js";
 import ComponentReceiveFaucet from "./ComponentReceiveFaucet.js";
 import ScreenPayments from "./ScreenPayments.js";
 import ScreenInvoices from "./ScreenInvoices";
@@ -31,6 +30,7 @@ import ComponentActionSheet from "./ComponentActionSheet";
 import ComponentAskFeedback from "./ComponentAskFeedback";
 import ScreenPayInvoice from "./ScreenPayInvoice.js";
 import ScreenReceiveInvoice from "./ScreenReceiveInvoice.js";
+import ScreenChannels from "./ScreenChannels.js";
 
 class SyncingBlock extends Component {
   render() {
@@ -191,6 +191,7 @@ class CheckingAccount extends Component {
   };
 
   _renderShowPayments = () => {
+    if (!this.state.showingPayments) return;
     const closeModal = () => this.setState({ showingPayments: false });
     return (
       <ComponentActionSheet
@@ -206,6 +207,7 @@ class CheckingAccount extends Component {
   };
 
   _renderPayInvoice = () => {
+    if (!this.state.showingPayInvoice) return;
     const closeModal = () => this.setState({ showingPayInvoice: false });
     return (
       <ComponentActionSheet
@@ -221,6 +223,7 @@ class CheckingAccount extends Component {
   };
 
   _renderReceiveInvoice = () => {
+    if (!this.state.showingReceiveInvoice) return;
     const closeModal = () => this.setState({ showingReceiveInvoice: false });
     return (
       <ComponentActionSheet
@@ -236,6 +239,7 @@ class CheckingAccount extends Component {
   };
 
   _renderShowInvoices = () => {
+    if (!this.state.showingInvoices) return;
     const closeModal = () => this.setState({ showingInvoices: false });
     return (
       <ComponentActionSheet
@@ -246,6 +250,22 @@ class CheckingAccount extends Component {
         title="Invoices"
       >
         <ScreenInvoices onCancel={closeModal} />
+      </ComponentActionSheet>
+    );
+  };
+
+  _renderChannels = () => {
+    if (!this.state.showingChannels) return;
+    const closeModal = () => this.setState({ showingChannels: false });
+    return (
+      <ComponentActionSheet
+        visible={!!this.state.showingChannels}
+        onRequestClose={closeModal}
+        animationType="slide"
+        buttonText="Done"
+        title="Channels"
+      >
+        <ScreenChannels onCancel={closeModal} />
       </ComponentActionSheet>
     );
   };
@@ -261,14 +281,8 @@ class CheckingAccount extends Component {
         {this._renderChannelCount()}
         <View style={{ flexDirection: "row" }}>
           <Button
-            containerStyle={{
-              borderRadius: 10,
-              backgroundColor: LOGO_COLOR,
-              flex: 1,
-              margin: 5,
-              padding: 5
-            }}
-            style={{ color: "white" }}
+            containerStyle={theme.smallActionButton}
+            style={theme.smallActionButtonText}
             onPress={() => {
               this.setState({
                 showingPayInvoice: true
@@ -278,14 +292,8 @@ class CheckingAccount extends Component {
             Pay
           </Button>
           <Button
-            containerStyle={{
-              borderRadius: 10,
-              backgroundColor: LOGO_COLOR,
-              flex: 1,
-              margin: 5,
-              padding: 5
-            }}
-            style={{ color: "white" }}
+            containerStyle={theme.smallActionButton}
+            style={theme.smallActionButtonText}
             onPress={() => {
               this.setState({
                 showingReceiveInvoice: true
@@ -297,14 +305,8 @@ class CheckingAccount extends Component {
         </View>
         <View style={{ flexDirection: "row" }}>
           <Button
-            containerStyle={{
-              borderRadius: 10,
-              backgroundColor: LOGO_COLOR,
-              flex: 1,
-              margin: 5,
-              padding: 5
-            }}
-            style={{ color: "white" }}
+            containerStyle={theme.smallActionButton}
+            style={theme.smallActionButtonText}
             onPress={() => {
               this.setState({
                 showingPayments: true
@@ -314,14 +316,8 @@ class CheckingAccount extends Component {
             Show payments
           </Button>
           <Button
-            containerStyle={{
-              borderRadius: 10,
-              backgroundColor: LOGO_COLOR,
-              flex: 1,
-              margin: 5,
-              padding: 5
-            }}
-            style={{ color: "white" }}
+            containerStyle={theme.smallActionButton}
+            style={theme.smallActionButtonText}
             onPress={() => {
               this.setState({
                 showingInvoices: true
@@ -331,13 +327,25 @@ class CheckingAccount extends Component {
             Show invoices
           </Button>
         </View>
+        <View style={{ flexDirection: "row" }}>
+          <Button
+            containerStyle={theme.smallActionButton}
+            style={theme.smallActionButtonText}
+            onPress={() => {
+              this.setState({
+                showingChannels: true
+              });
+            }}
+          >
+            Channels
+          </Button>
+        </View>
         {this._renderFaucet()}
-        <View style={theme.separator} />
-        <ComponentTransferToSavings />
         {this._renderShowPayments()}
         {this._renderShowInvoices()}
         {this._renderPayInvoice()}
         {this._renderReceiveInvoice()}
+        {this._renderChannels()}
       </View>
     );
   }

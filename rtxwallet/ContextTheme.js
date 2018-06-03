@@ -116,12 +116,17 @@ const defaultTheme = StyleSheet.create({
   }
 });
 
-const buttonBase = {
+// TODO: Find a better name.
+const buttonBaseBase = {
   backgroundColor: themeColor,
   borderRadius: 10,
-  color: "white",
   padding: 10,
-  margin: 5,
+  margin: 5
+};
+
+const buttonBase = {
+  ...buttonBaseBase,
+  color: "white",
   borderWidth: 2,
   borderColor: themeColor
 };
@@ -252,6 +257,14 @@ theme.add({
   },
   actionButton: {
     ...buttonBase
+  },
+  smallActionButton: {
+    ...buttonBaseBase,
+    padding: 5,
+    flex: 1
+  },
+  smallActionButtonText: {
+    color: "white"
   },
   activeActionButton: {
     ...buttonBase,
