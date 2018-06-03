@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import {
   Modal,
-  ScrollView,
+  FlatList,
   StyleSheet,
   View,
   Text,
@@ -11,6 +11,8 @@ import {
 import { styles as theme } from "react-native-theme";
 import Button from "react-native-button";
 import withLnd from "./withLnd.js";
+import withTheme from "./withTheme.js";
+import ComponentChannelItem from "./ComponentChannelItem";
 
 class ScreenChannels extends Component {
   constructor(props) {
@@ -97,53 +99,33 @@ class ScreenChannels extends Component {
     );
   };
 
-  _renderChannelList = () => {
-    if (!this.state.channels || this.state.channels.length == 0) {
-      return (
-        <View>
-          <Text>No channels.</Text>
-        </View>
-      );
-    }
-    return (
-      <View>
-        {this.state.channels.map((c, i) => this._renderChannelItem(c, i))}
-      </View>
-    );
-  };
+  _keyExtractor = (c, ix) => c.chan_id;
 
   render() {
     return (
-      <View style={[theme.containerStyleOnly, theme.flexOne]}>
-        <View style={styles.scrollContainer}>
-          <ScrollView contentContainerStyle={styles.scrollStyle}>
-            {this._renderChannelList()}
-          </ScrollView>
-        </View>
-        <View style={[styles.actionContainer, theme.centerPrimaryAxis]}>
-          <Button style={[theme.inCardButton]} onPress={this.props.onDone}>
-            Done
-          </Button>
-        </View>
+      <View>
+        <FlatList
+          data={this.state.channels}
+          renderItem={({ item: channel }) => (
+            <ComponentChannelItem channel={channel} />
+          )}
+          keyExtractor={this._keyExtractor}
+          ListEmptyComponent={<Text>There are no channels.</Text>}
+          ItemSeparatorComponent={() => (
+            <View style={this.props.theme.separator} />
+          )}
+        />
       </View>
     );
   }
 }
 
-export default withLnd(ScreenChannels);
+export default withTheme(withLnd(ScreenChannels));
 
 const styles = StyleSheet.create({
   nodeItem: {
     padding: 10,
     borderBottomWidth: 1,
     borderColor: "#BDBDBD"
-  },
-  scrollContainer: {
-    flex: 9
-  },
-  actionContainer: {
-    flex: 1,
-    borderTopWidth: 1,
-    borderColor: "gray"
   }
 });
