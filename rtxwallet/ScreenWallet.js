@@ -191,7 +191,6 @@ class CheckingAccount extends Component {
   };
 
   _renderShowPayments = () => {
-    if (!this.state.showingPayments) return;
     const closeModal = () => this.setState({ showingPayments: false });
     return (
       <ComponentActionSheet
@@ -207,7 +206,6 @@ class CheckingAccount extends Component {
   };
 
   _renderPayInvoice = () => {
-    if (!this.state.showingPayInvoice) return;
     const closeModal = () => this.setState({ showingPayInvoice: false });
     return (
       <ComponentActionSheet
@@ -223,7 +221,6 @@ class CheckingAccount extends Component {
   };
 
   _renderReceiveInvoice = () => {
-    if (!this.state.showingReceiveInvoice) return;
     const closeModal = () => this.setState({ showingReceiveInvoice: false });
     return (
       <ComponentActionSheet
@@ -239,7 +236,6 @@ class CheckingAccount extends Component {
   };
 
   _renderShowInvoices = () => {
-    if (!this.state.showingInvoices) return;
     const closeModal = () => this.setState({ showingInvoices: false });
     return (
       <ComponentActionSheet
@@ -255,7 +251,6 @@ class CheckingAccount extends Component {
   };
 
   _renderChannels = () => {
-    if (!this.state.showingChannels) return;
     const closeModal = () => this.setState({ showingChannels: false });
     return (
       <ComponentActionSheet

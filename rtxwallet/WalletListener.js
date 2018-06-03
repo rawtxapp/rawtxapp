@@ -7,32 +7,37 @@ export default class WalletListener {
     this.watching_ = false;
     this.lastResponse = {};
     this.failedRest = {};
+    // Sometimes if a call takes long time we could end up in a situation
+    // where the next call is made before the 1st one is finished.
+    // This keeps track of methods currently running and skips
+    // a rpc call if there's already one in progress.
+    this.runningMethod = {};
     this.restLnd = restLnd;
 
     // Adds internal function for watchers
     // Example watchgetInfo, will call getInfo repeatedly and emit events.
     const watchers = [
-      { method: "GetInfo", api: restLnd.getInfo, interval: 2000 },
+      { method: "GetInfo", api: restLnd.getInfo, interval: 3000 },
       {
         method: "BalanceChannels",
         api: restLnd.balanceChannels,
-        interval: 1000
+        interval: 2000
       },
       {
         method: "BalanceBlockchain",
         api: restLnd.balanceBlockchain,
-        interval: 1000
+        interval: 2000
       },
-      { method: "GraphInfo", api: restLnd.graphInfo, interval: 3000 },
+      { method: "GraphInfo", api: restLnd.graphInfo, interval: 30000 },
       {
         method: "PendingChannels",
         api: restLnd.pendingChannels,
-        interval: 2000
+        interval: 3000
       },
       {
         method: "Channels",
         api: restLnd.channels,
-        interval: 2000
+        interval: 5000
       }
     ];
     for (let i = 0; i < watchers.length; i++) {
@@ -40,8 +45,29 @@ export default class WalletListener {
       this["watch" + watcher.method] = async () => {
         const method = watcher.method;
         try {
+          if (this.runningMethod[method]) {
+            console.log("not calling running method: " + method);
+            return;
+          }
+          this.runningMethod[method] = true;
           const res = await watcher.api();
+          this.runningMethod[method] = false;
           this.resetFail(method);
+          // If we just emit all the new responses even when there's no change,
+          // it will create a lot of re-renders of react components, so
+          // compare with existing response before emitting the events.
+          const lastResponse = this.getLastResponse(method);
+          if (
+            lastResponse &&
+            JSON.stringify(lastResponse) == JSON.stringify(res)
+          ) {
+            // JSON.stringify check is essentially a hack, but it works
+            // because the server will always response with the same format back.
+            // If we reach here, it means the responses didn't change, so shortcircuit
+            // the update.
+            console.log("Skipping WalletListener emit!");
+            return;
+          }
           this.updateLastResponse(method, res);
           this.eventListener.emit(method, res);
         } catch (error) {
@@ -107,6 +133,7 @@ export default class WalletListener {
     this.failedRest[method] = {
       error
     };
+    this.runningMethod[method] = false;
     this.failedRest[method]["count"] = this.failedRest[method].count + 1 || 1;
   };
 
