@@ -31,6 +31,7 @@ import ComponentAskFeedback from "./ComponentAskFeedback";
 import ScreenPayInvoice from "./ScreenPayInvoice.js";
 import ScreenReceiveInvoice from "./ScreenReceiveInvoice.js";
 import ScreenChannels from "./ScreenChannels.js";
+import ScreenReceiveBlockchain from "./ScreenReceiveBlockchain.js";
 
 class SyncingBlock extends Component {
   render() {
@@ -398,6 +399,21 @@ class SavingsAccount extends Component {
     );
   };
 
+  _renderReceive = () => {
+    const closeModal = () => this.setState({ showingReceive: false });
+    return (
+      <ComponentActionSheet
+        visible={!!this.state.showingReceive}
+        onRequestClose={closeModal}
+        animationType="slide"
+        buttonText="Done"
+        title="Receive"
+      >
+        <ScreenReceiveBlockchain onCancel={closeModal} />
+      </ComponentActionSheet>
+    );
+  };
+
   render() {
     return (
       <View style={theme.container}>
@@ -407,47 +423,19 @@ class SavingsAccount extends Component {
         </Text>
 
         {this._renderBalances()}
-        <View style={theme.separator} />
-        <Button
-          style={[theme.inCardButton]}
-          onPress={async () => {
-            try {
-              const newaddress = await this.props.lndApi.newaddress();
+        <View style={{ flexDirection: "row" }}>
+          <Button
+            containerStyle={theme.smallActionButton}
+            style={theme.smallActionButtonText}
+            onPress={() => {
               this.setState({
-                generatedAddress: newaddress["address"],
-                showingGeneratedAddress: !this.state.showingGeneratedAddress
+                showingReceive: true
               });
-            } catch (err) {}
-          }}
-        >
-          Generate address to receive
-        </Button>
-        {this.state.showingGeneratedAddress && (
-          <View>
-            <Text style={theme.selectableText} selectable>
-              {this.state.generatedAddress}
-            </Text>
-
-            <Text>Faucet for receiving testnet coins:</Text>
-            <Button
-              style={[theme.smallButton]}
-              onPress={() => {
-                Linking.openURL("https://testnet.coinfaucet.eu/en/");
-              }}
-            >
-              https://testnet.coinfaucet.eu/en/
-            </Button>
-
-            <Button
-              style={[theme.inCardButton]}
-              onPress={() => {
-                this.setState({ showingGeneratedAddress: false });
-              }}
-            >
-              Dismiss
-            </Button>
-          </View>
-        )}
+            }}
+          >
+            Receive
+          </Button>
+        </View>
 
         <View style={theme.separator} />
         <Button
@@ -539,6 +527,7 @@ class SavingsAccount extends Component {
 
         <View style={theme.separator} />
         <ComponentTransferToChecking />
+        {this._renderReceive()}
       </View>
     );
   }
