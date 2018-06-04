@@ -18,3 +18,7 @@ adb logcat | grep 'RtxJava\|LndService\|zygote64\|ActivityManager\|ReactNative'
 react-native pointers:
 Networking module:
 src/main/java/com/facebook/react/modules/network/NetworkingModule.java
+
+
+react-native hot reload fix/hack:
+https://github.com/facebook/react-native/issues/18899

@@ -253,7 +253,10 @@ theme.add({
     color: "green"
   },
   successTextColorOnly: {
-    color: "green"
+    color: "#4CAF50"
+  },
+  errorTextColorOnly: {
+    color: "#F44336"
   },
   actionButton: {
     ...buttonBase
@@ -278,10 +281,34 @@ theme.add({
     backgroundColor: "white",
     borderColor: "#F44336"
   },
+  errorActionButtonFull: {
+    ...buttonBase,
+    color: "white",
+    backgroundColor: "#F44336",
+    borderColor: "#F44336"
+  },
   successActionButton: {
     ...buttonBase,
     color: "#4CAF50",
     backgroundColor: "white",
     borderColor: "#4CAF50"
+  },
+  channelStatusActiveContainer: {
+    ...buttonBaseBase,
+    backgroundColor: "white",
+    borderWidth: 2,
+    borderColor: "#4CAF50"
+  },
+  channelStatusInactiveContainer: {
+    ...buttonBaseBase,
+    backgroundColor: "white",
+    borderWidth: 2,
+    borderColor: "#F44336"
+  },
+  localBalanceBar: {
+    backgroundColor: "#4CAF50"
+  },
+  remoteBalanceBar: {
+    backgroundColor: "#FF9800"
   }
 });
