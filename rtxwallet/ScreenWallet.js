@@ -59,12 +59,7 @@ class SyncingBlock extends Component {
 class CheckingAccount extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      showingPayments: false,
-      showingInvoices: false,
-      showingPayInvoice: false,
-      showingReceiveInvoice: false
-    };
+    this.state = {};
   }
 
   componentDidMount() {
@@ -194,7 +189,7 @@ class CheckingAccount extends Component {
     const closeModal = () => this.setState({ showingPayments: false });
     return (
       <ComponentActionSheet
-        visible={this.state.showingPayments}
+        visible={!!this.state.showingPayments}
         onRequestClose={closeModal}
         animationType="slide"
         buttonText="Done"
@@ -209,7 +204,7 @@ class CheckingAccount extends Component {
     const closeModal = () => this.setState({ showingPayInvoice: false });
     return (
       <ComponentActionSheet
-        visible={this.state.showingPayInvoice}
+        visible={!!this.state.showingPayInvoice}
         onRequestClose={closeModal}
         animationType="slide"
         buttonText="Done"
@@ -224,7 +219,7 @@ class CheckingAccount extends Component {
     const closeModal = () => this.setState({ showingReceiveInvoice: false });
     return (
       <ComponentActionSheet
-        visible={this.state.showingReceiveInvoice}
+        visible={!!this.state.showingReceiveInvoice}
         onRequestClose={closeModal}
         animationType="slide"
         buttonText="Done"
@@ -239,7 +234,7 @@ class CheckingAccount extends Component {
     const closeModal = () => this.setState({ showingInvoices: false });
     return (
       <ComponentActionSheet
-        visible={this.state.showingInvoices}
+        visible={!!this.state.showingInvoices}
         onRequestClose={closeModal}
         animationType="slide"
         buttonText="Done"
