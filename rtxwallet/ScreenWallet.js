@@ -32,6 +32,7 @@ import ScreenPayInvoice from "./ScreenPayInvoice.js";
 import ScreenReceiveInvoice from "./ScreenReceiveInvoice.js";
 import ScreenChannels from "./ScreenChannels.js";
 import ScreenReceiveBlockchain from "./ScreenReceiveBlockchain.js";
+import ScreenSendBlockchain from "./ScreenSendBlockchain.js";
 
 class SyncingBlock extends Component {
   render() {
@@ -399,6 +400,21 @@ class SavingsAccount extends Component {
     );
   };
 
+  _renderSend = () => {
+    const closeModal = () => this.setState({ showingSend: false });
+    return (
+      <ComponentActionSheet
+        visible={!!this.state.showingSend}
+        onRequestClose={closeModal}
+        animationType="slide"
+        buttonText="Done"
+        title="Send"
+      >
+        <ScreenSendBlockchain onCancel={closeModal} />
+      </ComponentActionSheet>
+    );
+  };
+
   _renderReceive = () => {
     const closeModal = () => this.setState({ showingReceive: false });
     return (
@@ -429,6 +445,17 @@ class SavingsAccount extends Component {
             style={theme.smallActionButtonText}
             onPress={() => {
               this.setState({
+                showingSend: true
+              });
+            }}
+          >
+            Send
+          </Button>
+          <Button
+            containerStyle={theme.smallActionButton}
+            style={theme.smallActionButtonText}
+            onPress={() => {
+              this.setState({
                 showingReceive: true
               });
             }}
@@ -438,96 +465,9 @@ class SavingsAccount extends Component {
         </View>
 
         <View style={theme.separator} />
-        <Button
-          style={[theme.inCardButton]}
-          onPress={async () => {
-            this.setState({
-              showingSending: !this.state.showingSending,
-              destinationAddress: "",
-              paymentSat: "",
-              paymentTx: undefined,
-              paymentError: undefined
-            });
-          }}
-        >
-          Send on blockchain
-        </Button>
-        {this.state.showingSending && (
-          <View>
-            <TextInput
-              style={[theme.textInput]}
-              underlineColorAndroid="transparent"
-              placeholder="Destination address"
-              value={this.state.destinationAddress}
-              onChangeText={text => this.setState({ destinationAddress: text })}
-            />
-            <TextInput
-              style={[theme.textInput]}
-              underlineColorAndroid="transparent"
-              placeholder="Amount (in satoshis)"
-              value={this.state.paymentSat}
-              keyboardType="numeric"
-              onChangeText={text => this.setState({ paymentSat: text })}
-            />
-
-            <Button
-              style={[theme.inCardButton]}
-              disabled={this.state.sendingPayment}
-              styleDisabled={theme.disabledButton}
-              onPress={async () => {
-                try {
-                  this.setState({ sendingPayment: true });
-                  const payment = await this.props.lndApi.sendTransactionBlockchain(
-                    this.state.destinationAddress,
-                    this.state.paymentSat
-                  );
-                  if (payment.txid) {
-                    this.setState({ paymentTx: payment.txid });
-                  } else if (
-                    payment.error &&
-                    payment.error.includes("already have transaction")
-                  ) {
-                    let paymentTx;
-                    if (payment.error.startsWith("Transaction")) {
-                      paymentTx = payment.error.split(" ").filter(String)[1];
-                    }
-                    this.setState({
-                      paymentTx: paymentTx
-                        ? paymentTx
-                        : "Your payment should be sent!"
-                    });
-                  } else if (payment.error) {
-                    this.setState({ paymentError: payment.error });
-                  } else {
-                    this.setState({ paymentError: "Couldn't send coins!" });
-                  }
-                } catch (e) {
-                  this.setState({ paymentError: JSON.stringify(e) });
-                }
-                this.setState({ sendingPayment: false });
-              }}
-            >
-              Send
-            </Button>
-            {this.state.paymentError && (
-              <Text style={theme.errorText} selectable>
-                {this.state.paymentError}
-              </Text>
-            )}
-            {this.state.paymentTx && (
-              <View>
-                <Text style={theme.boldText}>Transaction id:</Text>
-                <Text style={theme.selectableText} selectable>
-                  {this.state.paymentTx}
-                </Text>
-              </View>
-            )}
-          </View>
-        )}
-
-        <View style={theme.separator} />
         <ComponentTransferToChecking />
         {this._renderReceive()}
+        {this._renderSend()}
       </View>
     );
   }
