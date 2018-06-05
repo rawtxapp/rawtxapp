@@ -305,7 +305,7 @@ class CheckingAccount extends Component {
               });
             }}
           >
-            Show payments
+            Payments
           </Button>
           <Button
             containerStyle={theme.smallActionButton}
@@ -316,7 +316,7 @@ class CheckingAccount extends Component {
               });
             }}
           >
-            Show invoices
+            Invoices
           </Button>
         </View>
         <View style={{ flexDirection: "row" }}>
