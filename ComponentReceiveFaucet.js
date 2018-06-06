@@ -36,8 +36,8 @@ class ComponentReceiveFaucet extends Component {
     }
   };
 
-  setAlreadyStarted = () => {
-    AsyncStorage.setItem("@ComponentReceiveFaucet:started", "started");
+  setAlreadyStarted = async () => {
+    await AsyncStorage.setItem("@ComponentReceiveFaucet:started", "started");
   };
 
   _renderPubkey = () => {
@@ -119,7 +119,8 @@ class ComponentReceiveFaucet extends Component {
       <View>
         <Button
           style={[theme.smallButton]}
-          onPress={() => {
+          onPress={async () => {
+            await this.setAlreadyStarted();
             Linking.openURL("https://faucet.lightning.community/");
           }}
         >
@@ -162,7 +163,6 @@ class ComponentReceiveFaucet extends Component {
             !this.state.started && theme.successTextColorOnly
           ]}
           onPress={() => {
-            this.setAlreadyStarted();
             this.setState({
               receiving: !this.state.receiving
             });
