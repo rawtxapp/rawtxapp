@@ -125,10 +125,10 @@ class CheckingAccount extends Component {
     return (
       <View>
         <Text>
-          <Text style={theme.boldText}>Channels:</Text>
-          {active}
+          <Text style={[theme.infoLabel]}>Channels </Text>
+          <Text style={theme.infoValue}>{active}</Text>
           {hasPending && (
-            <Text>
+            <Text style={theme.infoValue}>
               {" "}
               ({inactive > 0
                 ? "inactive: " +
@@ -158,21 +158,23 @@ class CheckingAccount extends Component {
     return (
       <View>
         <Text style={theme.baseText}>
-          <Text style={theme.boldText}>Balance:</Text>{" "}
-          {this.props.displaySatoshi(
-            (this.state.balance && this.state.balance.balance) || "0"
-          )}
-          {hasOpenLimbo && (
-            <Text>
-              {" "}
-              ({hasOpen
-                ? "pending: +" +
-                  this.props.displaySatoshi(pendingOpen) +
-                  (hasLimbo ? ", " : "")
-                : ""}
-              {hasLimbo ? "limbo: " + this.props.displaySatoshi(limbo) : ""})
-            </Text>
-          )}
+          <Text style={[theme.infoLabel]}>Balance </Text>
+          <Text style={theme.infoValue}>
+            {this.props.displaySatoshi(
+              (this.state.balance && this.state.balance.balance) || "0"
+            )}
+            {hasOpenLimbo && (
+              <Text>
+                {" "}
+                ({hasOpen
+                  ? "pending: +" +
+                    this.props.displaySatoshi(pendingOpen) +
+                    (hasLimbo ? ", " : "")
+                  : ""}
+                {hasLimbo ? "limbo: " + this.props.displaySatoshi(limbo) : ""})
+              </Text>
+            )}
+          </Text>
         </Text>
       </View>
     );
@@ -379,16 +381,19 @@ class SavingsAccount extends Component {
     return (
       <View>
         <Text style={theme.baseText}>
-          <Text style={theme.boldText}>Balance:</Text>{" "}
-          {this.props.displaySatoshi(
-            (this.state.balance && this.state.balance.confirmed_balance) || "0"
-          )}
-          {unconfirmed > 0 && (
-            <Text>
-              {" "}
-              (unconfirmed: {this.props.displaySatoshi(unconfirmed)})
-            </Text>
-          )}
+          <Text style={theme.infoLabel}>Balance </Text>
+          <Text style={theme.infoValue}>
+            {this.props.displaySatoshi(
+              (this.state.balance && this.state.balance.confirmed_balance) ||
+                "0"
+            )}
+            {unconfirmed > 0 && (
+              <Text>
+                {" "}
+                (unconfirmed: {this.props.displaySatoshi(unconfirmed)})
+              </Text>
+            )}
+          </Text>
         </Text>
         {this.state.pendingChannel &&
           this.state.pendingChannel.pending_open_channels &&

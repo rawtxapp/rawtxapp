@@ -97,51 +97,51 @@ class ComponentWalletOperations extends Component {
     if (!this.state.graphInfo) return;
     return (
       <View>
-        <Text style={theme.boldText}>Lightning network graph info</Text>
+        <Text style={theme.infoLabel}>Lightning network graph info</Text>
 
-        <Text>
-          <Text style={theme.boldText}>Average out degree: </Text>
+        <Text style={theme.infoValue}>
+          <Text style={theme.smallInfoLabel}>Average out degree: </Text>
           {Math.round(this.state.graphInfo.avg_out_degree * 1000) / 1000}
         </Text>
 
-        <Text>
-          <Text style={theme.boldText}>Max out degree: </Text>
+        <Text style={theme.infoValue}>
+          <Text style={theme.smallInfoLabel}>Max out degree: </Text>
           {this.state.graphInfo.max_out_degree}
         </Text>
 
-        <Text>
-          <Text style={theme.boldText}>Number of nodes: </Text>
+        <Text style={theme.infoValue}>
+          <Text style={theme.smallInfoLabel}>Number of nodes: </Text>
           {this.state.graphInfo.num_nodes}
         </Text>
 
-        <Text>
-          <Text style={theme.boldText}>Number of channels: </Text>
+        <Text style={theme.infoValue}>
+          <Text style={theme.smallInfoLabel}>Number of channels: </Text>
           {this.state.graphInfo.num_channels}
         </Text>
 
-        <Text>
-          <Text style={theme.boldText}>Total network capacity: </Text>
+        <Text style={theme.infoValue}>
+          <Text style={theme.smallInfoLabel}>Total network capacity: </Text>
           {this.props.displaySatoshi(
             this.state.graphInfo.total_network_capacity
           )}
         </Text>
 
-        <Text>
-          <Text style={theme.boldText}>Average channel size: </Text>
+        <Text style={theme.infoValue}>
+          <Text style={theme.smallInfoLabel}>Average channel size: </Text>
           {this.props.displaySatoshi(
             Math.round(this.state.graphInfo.avg_channel_size)
           )}
         </Text>
 
-        <Text>
-          <Text style={theme.boldText}>Min channel size: </Text>
+        <Text style={theme.infoValue}>
+          <Text style={theme.smallInfoLabel}>Min channel size: </Text>
           {this.props.displaySatoshi(
             Math.round(this.state.graphInfo.min_channel_size)
           )}
         </Text>
 
-        <Text>
-          <Text style={theme.boldText}>Max channel size: </Text>
+        <Text style={theme.infoValue}>
+          <Text style={theme.smallInfoLabel}>Max channel size: </Text>
           {this.props.displaySatoshi(
             Math.round(this.state.graphInfo.max_channel_size)
           )}

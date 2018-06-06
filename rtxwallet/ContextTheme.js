@@ -118,7 +118,7 @@ const defaultTheme = StyleSheet.create({
 
 // TODO: Find a better name.
 const buttonBaseBase = {
-  backgroundColor: themeColor,
+  backgroundColor: "#29B6F6",
   borderRadius: 10,
   padding: 10,
   margin: 5
@@ -184,16 +184,6 @@ theme.add({
   },
   centerSecondaryAxis: {
     alignItems: "center"
-  },
-  accountHeader: {
-    fontSize: 16,
-    color: LOGO_COLOR,
-    fontWeight: "bold"
-  },
-  smallerHeader: {
-    fontSize: 14,
-    color: LOGO_COLOR,
-    fontWeight: "bold"
   },
   headerText: {
     fontSize: 16,
@@ -314,5 +304,27 @@ theme.add({
   },
   remoteBalanceBar: {
     backgroundColor: "#FF9800"
+  },
+  infoLabel: {
+    fontSize: 20,
+    color: "#37474F"
+  },
+  smallInfoLabel: {
+    fontSize: 18,
+    color: "#37474F"
+  },
+  infoValue: {
+    fontSize: 16,
+    color: "#37474F"
+  },
+  accountHeader: {
+    fontSize: 20,
+    color: "#37474F",
+    fontWeight: "bold"
+  },
+  smallerHeader: {
+    fontSize: 14,
+    color: "#37474F",
+    fontWeight: "bold"
   }
 });
