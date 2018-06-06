@@ -6,6 +6,7 @@ import { LOGO_COLOR } from "./Colors.js";
 import LndConsumer from "./ContextLnd.js";
 import { withLnd } from "./withLnd.js";
 import CheckBox from "react-native-check-box";
+import { styles as theme } from "react-native-theme";
 
 class ScreenGenSeed extends Component {
   constructor(props) {
@@ -71,12 +72,14 @@ class ScreenGenSeed extends Component {
         "I understand the risks, I won't blame lightning technology or rawtx app when I lose my funds!";
       content = (
         <View style={styles.container}>
-          <Text style={styles.text}>You're creating a wallet on mainnet!</Text>
-          <Text style={styles.text}>
+          <Text style={theme.smallInfoLabel}>
+            You're creating a wallet on mainnet!
+          </Text>
+          <Text style={theme.smallInfoLabel}>
             Please confirm that you really want to open a mainnet wallet by
             entering the following in the text input (case sensitive):
           </Text>
-          <Text style={styles.text}>{confirmText}</Text>
+          <Text style={theme.smallInfoLabel}>{confirmText}</Text>
           <View style={styles.textContainer}>
             <TextInput
               underlineColorAndroid="transparent"
@@ -118,7 +121,7 @@ class ScreenGenSeed extends Component {
     } else if (this.state.settingPassword) {
       content = (
         <View style={styles.container}>
-          <Text style={styles.text}>Please set a password:</Text>
+          <Text style={theme.smallInfoLabel}>Please set a password:</Text>
           <View style={styles.textContainer}>
             <TextInput
               multiline={false}
@@ -148,13 +151,13 @@ class ScreenGenSeed extends Component {
           </View>
           <View>
             <CheckBox
-              rightTextStyle={{ color: "white" }}
+              rightTextStyle={theme.infoValue}
               onClick={() =>
                 this.setState({ useKeychain: !this.state.useKeychain })
               }
               isChecked={this.state.useKeychain}
               rightText="Remember password"
-              checkBoxColor="white"
+              checkBoxColor="#37474F"
             />
           </View>
           <View>
@@ -216,7 +219,9 @@ class ScreenGenSeed extends Component {
     } else if (this.state.confirming) {
       content = (
         <View style={styles.container}>
-          <Text style={styles.text}>Please reenter your seed to confirm:</Text>
+          <Text style={theme.smallInfoLabel}>
+            Please reenter your seed to confirm:
+          </Text>
           <View style={styles.textContainer}>
             <TextInput
               multiline={true}
@@ -289,9 +294,11 @@ class ScreenGenSeed extends Component {
     } else if (this.state.cipher && this.state.cipher.length > 0) {
       content = (
         <View style={styles.container}>
-          <Text style={styles.text}>The following is your seed:</Text>
-          <Text style={styles.text}>{this.state.cipher.join(" ")}</Text>
-          <Text style={styles.subinfo}>
+          <Text style={theme.smallInfoLabel}>The following is your seed:</Text>
+          <Text style={theme.smallInfoLabel}>
+            {this.state.cipher.join(" ")}
+          </Text>
+          <Text style={[theme.infoValue, styles.subinfo]}>
             This seed is very important, please note it somewhere, it will be
             used to recover your funds in case something goes wrong.
           </Text>
@@ -336,7 +343,9 @@ class ScreenGenSeed extends Component {
         </View>
       );
     }
-    return <View style={styles.container}>{content}</View>;
+    return (
+      <View style={[styles.container, theme.appBackground]}>{content}</View>
+    );
   }
 }
 
@@ -345,7 +354,6 @@ export default withLnd(ScreenGenSeed);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: LOGO_COLOR,
     padding: 10,
     justifyContent: "center"
   },
@@ -356,7 +364,6 @@ const styles = StyleSheet.create({
   },
   subinfo: {
     fontSize: 14,
-    color: "white",
     margin: 20
   },
   buttonContainer: {
