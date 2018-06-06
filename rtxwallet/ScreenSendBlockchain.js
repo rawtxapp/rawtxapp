@@ -102,6 +102,9 @@ class ScreenSendBlockchain extends Component {
   };
 
   _renderInput = () => {
+    const setAddress = address => {
+      this.setState({ address, error: "" });
+    };
     return (
       <View>
         <View style={styles.addressContainer}>
@@ -110,13 +113,13 @@ class ScreenSendBlockchain extends Component {
             underlineColorAndroid="transparent"
             placeholder="Destination address"
             value={this.state.address}
-            onChangeText={text => this.setState({ address: text, error: "" })}
+            onChangeText={setAddress}
           />
           {!!this.state.pastable && (
             <Button
               style={theme.actionButton}
               onPress={() => {
-                this.setState({ address: this.state.pastable, error: "" });
+                setAddress(this.state.pastable);
               }}
             >
               Paste
@@ -128,7 +131,7 @@ class ScreenSendBlockchain extends Component {
               onPress={async () => {
                 const qr = await this.props.scanQrCode();
                 if (qr) {
-                  this.setState({ address: qr, error: "" });
+                  setAddress(qr);
                 }
               }}
             >

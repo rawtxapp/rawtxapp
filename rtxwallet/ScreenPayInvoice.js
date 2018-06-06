@@ -29,7 +29,6 @@ class ScreenPayInvoice extends Component {
   }
 
   componentWillUpdate(nextProps, nextState) {
-    console.log(nextState);
     if (
       (this.state.payreq &&
         nextState.payreq &&

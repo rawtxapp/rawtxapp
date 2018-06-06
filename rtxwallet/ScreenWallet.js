@@ -33,6 +33,7 @@ import ScreenReceiveInvoice from "./ScreenReceiveInvoice.js";
 import ScreenChannels from "./ScreenChannels.js";
 import ScreenReceiveBlockchain from "./ScreenReceiveBlockchain.js";
 import ScreenSendBlockchain from "./ScreenSendBlockchain.js";
+import ScreenCreateChannel from "./ScreenCreateChannel.js";
 
 class SyncingBlock extends Component {
   render() {
@@ -430,6 +431,21 @@ class SavingsAccount extends Component {
     );
   };
 
+  _renderTransfer = () => {
+    const closeModal = () => this.setState({ showingTransfer: false });
+    return (
+      <ComponentActionSheet
+        visible={!!this.state.showingTransfer}
+        onRequestClose={closeModal}
+        animationType="slide"
+        buttonText="Done"
+        title="New channel"
+      >
+        <ScreenCreateChannel onCancel={closeModal} />
+      </ComponentActionSheet>
+    );
+  };
+
   render() {
     return (
       <View style={theme.container}>
@@ -463,11 +479,23 @@ class SavingsAccount extends Component {
             Receive
           </Button>
         </View>
+        <View style={{ flexDirection: "row" }}>
+          <Button
+            containerStyle={theme.smallActionButton}
+            style={theme.smallActionButtonText}
+            onPress={() => {
+              this.setState({
+                showingTransfer: true
+              });
+            }}
+          >
+            New channel
+          </Button>
+        </View>
 
-        <View style={theme.separator} />
-        <ComponentTransferToChecking />
         {this._renderReceive()}
         {this._renderSend()}
+        {this._renderTransfer()}
       </View>
     );
   }
