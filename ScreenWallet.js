@@ -36,14 +36,30 @@ import ScreenSendBlockchain from "./ScreenSendBlockchain.js";
 import ScreenCreateChannel from "./ScreenCreateChannel.js";
 import withTheme from "./withTheme.js";
 
-class SyncingBlock extends Component {
+class BaseSyncingBlock extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+  componentDidMount() {
+    this.graphInfoListener_ = this.props.walletListener.listenToGraphInfo(
+      graphInfo => this.setState({ graphInfo })
+    );
+  }
+
+  componentWillUnmount() {
+    this.graphInfoListener_.remove();
+  }
+
   render() {
     const { getinfo } = this.props;
     let status;
     let statusStyle;
+    let blockchainSynced = false;
     if (getinfo && getinfo["synced_to_chain"]) {
       status = "Synced to the chain!";
       statusStyle = syncingStyles.syncedText;
+      blockchainSynced = true;
     } else {
       status = "Syncing to the chain (some operations won't work)";
       if (getinfo && getinfo["block_height"]) {
@@ -52,13 +68,30 @@ class SyncingBlock extends Component {
       status += "...";
       statusStyle = syncingStyles.unsynced;
     }
+    let lightningSynced = false;
+    if (
+      this.state.graphInfo &&
+      this.state.graphInfo.num_nodes &&
+      parseInt(this.state.graphInfo.num_nodes) > 500
+    ) {
+      lightningSynced = true;
+    }
     return (
       <View style={theme.container}>
         <Text style={[theme.accountHeader, statusStyle]}>{status}</Text>
+        {blockchainSynced &&
+          !lightningSynced && (
+            <Text style={[theme.accountHeader, syncingStyles.unsynced]}>
+              Syncing with lightning network (lightning operations won't
+              work)...
+            </Text>
+          )}
       </View>
     );
   }
 }
+
+const SyncingBlock = withLnd(BaseSyncingBlock);
 
 class CheckingAccount extends Component {
   constructor(props) {
