@@ -41,48 +41,36 @@ class ScreenAbout extends Component {
     return (
       <View style={styles.container}>
         <ScrollView>
-          <Text style={styles.paragraph}>
-            <Text style={theme.boldText}>rawtx</Text> - v0.1 - lightning network
-            wallet, copyrighted:
+          <View style={styles.paragraph}>
+            <Text style={theme.boldText}>rawtx v0.1</Text>
             <Text style={theme.boldText}>Copyright (C) 2018 rawtx</Text>
-          </Text>
-          <View style={styles.spacer} />
-          <Text style={styles.paragraph}>
-            <Text style={theme.boldText}>lnd</Text> - v0.4.1 - commit:
-            9017d18f14d9cb07256dfa9c2927cb6d6431dbeb
-          </Text>
-          <View style={styles.spacer} />
-          <Text style={styles.paragraph}>
-            <Text>
-              This app runs lnd(<Text style={theme.boldText} selectable>
-                https://github.com/lightningnetwork/lnd
-              </Text>) under the hood, it's copyrighted:
-            </Text>
+          </View>
+          <View style={styles.paragraph}>
+            <Text style={theme.boldText}>lnd v0.4.2</Text>
             <Text style={theme.boldText}>
               Copyright (C) 2015-2018 The Lightning Network Developers
             </Text>
-          </Text>
-          <View style={styles.spacer} />
-          <Text style={theme.paragraph}>
-            <Text style={theme.boldText}>Support:</Text>
-            you can reach us at{" "}
+          </View>
+
+          <View style={theme.paragraph}>
+            <Text style={theme.boldText}>Support</Text>
+            <Text style={theme.boldText} selectable>
+              https://rawtx.com
+            </Text>
+            <Text style={theme.boldText}>support@rawtx.com</Text>
             <Text style={theme.boldText} selectable>
               twitter.com/rawtxapp
-            </Text>, reddit:{" "}
+            </Text>
             <Text style={theme.boldText} selectable>
-              /u/rawtxapp
-            </Text>{" "}
-            or on{" "}
+              reddit.com/u/rawtxapp
+            </Text>
             <Text style={theme.boldText} selectable>
-              lightningcommunity.slack.com
-            </Text>{" "}
-            under rawtxapp username. Our email address is{" "}
-            <Text style={theme.boldText}>rawtxapp@gmail.com</Text>. The support
-            you will receive will be as fast as the payments you will make on
-            this app :) Our webpage is still wip, will be available at
-            https://rawtx.com.
-          </Text>
+              slack: @rawtx on lightningcommunity.slack.com
+            </Text>
+          </View>
+
           <View style={styles.spacer} />
+
           <Text style={theme.paragraph}>
             If you're interested in talking to the lnd server that's running on
             your phone, here are the certs and macaroons:
@@ -122,5 +110,8 @@ const styles = StyleSheet.create({
   },
   spacer: {
     height: 20
+  },
+  paragraph: {
+    marginVertical: 10
   }
 });
