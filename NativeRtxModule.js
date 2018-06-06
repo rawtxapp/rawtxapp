@@ -66,8 +66,19 @@ const encodeBase64 = async function(str) {
   return await Rtx.encodeBase64(str);
 };
 
+const sleep = ms => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
+
 const scanQrCode = async function() {
-  return await Rtx.scanQrCode();
+  let result = await Rtx.scanQrCode();
+  // TODO: this is a super ugly hack.
+  // animation when coming out of qr code scanning view
+  // can create layout bugs (LayoutAnimation on android has
+  // issues). for now, just sleep a little bit to give
+  // time for the original layout to come back.
+  await sleep(500);
+  return result;
 };
 
 const getMacaroonHex = async function(macaroonFile) {
