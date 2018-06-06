@@ -1,6 +1,6 @@
 import React, { Component, createContext } from "react";
 import { Animated, StyleSheet, View } from "react-native";
-import { LIGHT_BLUE_500, LOGO_COLOR } from "./Colors";
+import { LIGHT_BLUE_500, LOGO_COLOR, LIGHT_BLUE_200 } from "./Colors";
 import theme from "react-native-theme";
 
 const Theme = createContext({});
@@ -36,10 +36,10 @@ class ThemeProvider extends Component {
       <Theme.Provider
         value={{
           theme: defaultTheme,
-          statusBar: "#0091EA",
-          statusBarDark: "#616161",
+          statusBar: "#78909C",
+          statusBarDark: "#263238",
           dimBackground: this.dimBackground,
-          logoOnBackgroundColor: "white"
+          logoOnBackgroundColor: "#37474F"
         }}
       >
         {this.props.children}
@@ -109,10 +109,10 @@ const defaultTheme = StyleSheet.create({
   },
   actionContainerText: {},
   appBackground: {
-    backgroundColor: themeColor
+    backgroundColor: "#ECEFF1"
   },
   textOnBackground: {
-    color: "white"
+    color: "#37474F"
   }
 });
 
@@ -132,13 +132,17 @@ const buttonBase = {
 };
 
 theme.add({
+  appBackground: {
+    backgroundColor: "#ECEFF1"
+  },
   container: {
     borderRadius: 10,
     backgroundColor: "white",
     padding: 10,
     margin: 10,
     marginLeft: 20,
-    marginRight: 20
+    marginRight: 20,
+    elevation: 1
   },
   containerStyleOnly: {
     borderRadius: 10,

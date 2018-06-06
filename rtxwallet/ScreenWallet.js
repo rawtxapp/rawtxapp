@@ -34,6 +34,7 @@ import ScreenChannels from "./ScreenChannels.js";
 import ScreenReceiveBlockchain from "./ScreenReceiveBlockchain.js";
 import ScreenSendBlockchain from "./ScreenSendBlockchain.js";
 import ScreenCreateChannel from "./ScreenCreateChannel.js";
+import withTheme from "./withTheme.js";
 
 class SyncingBlock extends Component {
   render() {
@@ -590,10 +591,11 @@ class ScreenWallet extends Component {
     }
 
     return (
-      <ScrollView style={styles.container}>
+      <ScrollView style={[styles.container, theme.appBackground]}>
         <View style={styles.logoContainer}>
           <Image
             source={require("./assets/intro-logo.png")}
+            tintColor={this.props.logoOnBackgroundColor}
             style={{
               width: undefined,
               height: 80
@@ -606,14 +608,12 @@ class ScreenWallet extends Component {
     );
   }
 }
-
 ReactMixin(ScreenWallet.prototype, TimerMixin);
-export default withLnd(ScreenWallet);
+export default withTheme(withLnd(ScreenWallet));
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: LOGO_COLOR
+    flex: 1
   },
   logoContainer: {
     flex: 1
