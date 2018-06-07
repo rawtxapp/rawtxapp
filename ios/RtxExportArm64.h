@@ -21,7 +21,6 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 
 #ifdef SWIG
 %newobject InitLnd;
-%newobject LndMain;
 #endif
 
 #line 1 "cgo-generated-wrapper"

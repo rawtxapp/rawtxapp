@@ -1330,7 +1330,7 @@
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = X8RP9TDXX8;
 				ENABLE_BITCODE = NO;
-				FRAMEWORK_SEARCH_PATHS = /Users/user/Code/rawtx/ios;
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/rtxnative";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-keychain/RNKeychainManager",
@@ -1354,7 +1354,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = X8RP9TDXX8;
 				ENABLE_BITCODE = NO;
-				FRAMEWORK_SEARCH_PATHS = /Users/user/Code/rawtx/ios;
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/rtxnative";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-keychain/RNKeychainManager",
