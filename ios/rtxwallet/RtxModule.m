@@ -10,8 +10,13 @@
 #import "RtxModule.h"
 #import <React/RCTLog.h>
 #import <errno.h>
-// #import <Rtx_export/Rtx_export.h>
+
+#ifdef __aarch64__
 #import "RtxExportArm64.h"
+#else
+#import "../rtxnative/Rtx_export.framework/Headers/Rtx_export.h"
+#endif
+
 #import "QRCodeReaderViewController.h"
 #import "AppDelegate.h"
 
