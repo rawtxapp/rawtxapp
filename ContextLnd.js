@@ -171,11 +171,13 @@ const writeLndConf = async function(wallet) {
     peers += (peers.length == 0 ? "" : "\n") + "neutrino.addpeer=" + peer;
   }
   let profile = "";
+  let debuglevel = "error";
   if (__DEV__) {
     profile = "profile=6060";
+    debuglevel = "info";
   }
   const conf = `[Application Options]
-debuglevel=info
+debuglevel=${debuglevel}
 maxpendingchannels=10
 maxlogfiles=3
 maxlogfilesize=10
