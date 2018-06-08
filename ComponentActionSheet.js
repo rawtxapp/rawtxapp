@@ -16,42 +16,10 @@ import {
   View
 } from "react-native";
 import withTheme from "./withTheme";
+import Button from "react-native-button";
+import { styles as theme } from "react-native-theme";
 
 var window = Dimensions.get("window");
-
-class ButtonBase extends Component {
-  render() {
-    return (
-      <TouchableOpacity
-        style={[this.props.theme.actionButton, buttonStyles.button]}
-        onPress={this.props.onPress}
-      >
-        <Text
-          style={[this.props.theme.actionButtonText, buttonStyles.buttonText]}
-        >
-          {this.props.text}
-        </Text>
-      </TouchableOpacity>
-    );
-  }
-}
-
-const Button = withTheme(ButtonBase);
-
-const buttonStyles = StyleSheet.create({
-  buttonText: {
-    alignSelf: "center",
-    fontSize: 18
-  },
-  button: {
-    height: 36,
-    justifyContent: "center",
-    alignSelf: "center",
-    padding: 10,
-    paddingHorizontal: 20,
-    borderRadius: 6
-  }
-});
 
 class FadeInView extends Component {
   constructor(props) {
@@ -161,7 +129,12 @@ class ActionModal extends Component {
               this.props.theme.modal
             ]}
           >
-            <Button onPress={close} text={this.props.buttonText || "Cancel"} />
+            <Button
+              onPress={close}
+              style={[theme.actionButton, styles.actionButton]}
+            >
+              {this.props.buttonText || "Done"}
+            </Button>
           </View>
         </View>
       </Modal>
@@ -179,6 +152,10 @@ const styles = StyleSheet.create({
   closeButton: {
     width: 20,
     height: 20
+  },
+  actionButton: {
+    padding: 5,
+    margin: 5
   },
   modalSpacer: {
     flex: 1,
@@ -221,7 +198,7 @@ const styles = StyleSheet.create({
     bottom: 0
   },
   actionContainer: {
-    padding: 10
+    padding: 5
   },
   sideBorder: {
     borderLeftWidth: 3 * StyleSheet.hairlineWidth,
