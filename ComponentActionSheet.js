@@ -131,13 +131,13 @@ class ActionModal extends Component {
         )}
         <View style={styles.modalContainer}>
           <TouchableOpacity onPress={close} style={styles.backdropContainer} />
-          <View style={{ flex: 1, justifyContent: "flex-end", paddingTop: 60 }}>
+          <View style={styles.modalSpacer}>
             <View style={[styles.modalTopContainer, this.props.theme.modal]}>
               <View style={styles.xContainer}>
                 <TouchableOpacity onPress={close}>
                   <Image
                     source={require("./assets/close.png")}
-                    style={{ width: 20, height: 20 }}
+                    style={styles.closeButton}
                   />
                 </TouchableOpacity>
               </View>
@@ -175,6 +175,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "red"
+  },
+  closeButton: {
+    width: 20,
+    height: 20
+  },
+  modalSpacer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    paddingTop: 60
   },
   modalContainer: {
     flex: 1,

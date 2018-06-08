@@ -6,6 +6,7 @@ import Button from "react-native-button";
 import ScreenGraphList from "./ScreenGraphList";
 import ScreenLog from "./ScreenLog";
 import ScreenAbout from "./ScreenAbout";
+import ComponentActionSheet from "./ComponentActionSheet";
 
 class ComponentWalletOperations extends Component {
   constructor(props) {
@@ -38,13 +39,15 @@ class ComponentWalletOperations extends Component {
           Show network graph nodes
         </Button>
 
-        <Modal
+        <ComponentActionSheet
           visible={this.state.showingGraphNodes}
           onRequestClose={cancelOp}
           animationType="slide"
+          title="Graph list"
+          buttonText="Done"
         >
-          <ScreenGraphList onCancel={cancelOp} />
-        </Modal>
+          <ScreenGraphList />
+        </ComponentActionSheet>
       </View>
     );
   }
@@ -84,13 +87,15 @@ class ComponentWalletOperations extends Component {
           About
         </Button>
 
-        <Modal
+        <ComponentActionSheet
           visible={this.state.showingAbout}
           onRequestClose={cancelOp}
           animationType="slide"
+          title="About"
+          buttonText="Done"
         >
-          <ScreenAbout onCancel={cancelOp} />
-        </Modal>
+          <ScreenAbout />
+        </ComponentActionSheet>
       </View>
     );
   }

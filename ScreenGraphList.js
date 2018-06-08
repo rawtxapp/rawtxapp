@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {
   ActivityIndicator,
+  Dimensions,
   FlatList,
   ScrollView,
   StyleSheet,
@@ -16,6 +17,8 @@ import {
   updateNodesInAndOutCounts,
   orderNodesByRtxScore
 } from "./Utils";
+
+const { height } = Dimensions.get("screen");
 
 class ScreenGraphList extends Component {
   constructor(props) {
@@ -128,27 +131,21 @@ class ScreenGraphList extends Component {
           (n.alias && n.alias.includes(this.state.filter_to)))
     );
     return (
-      <FlatList
-        data={filtered}
-        renderItem={this._renderGraphNode}
-        keyExtractor={this._keyExtractor}
-      />
+      <View style={styles.listContainer}>
+        <FlatList
+          data={filtered}
+          renderItem={this._renderGraphNode}
+          keyExtractor={this._keyExtractor}
+        />
+      </View>
     );
   };
 
   render() {
     return (
-      <View style={[theme.containerStyleOnly, theme.flexOne]}>
+      <View>
         {this._renderFilterInput()}
-        <View style={styles.scrollContainer}>{this._renderFlatList()}</View>
-        <View style={[styles.actionContainer, theme.centerPrimaryAxis]}>
-          <Button
-            style={[theme.inCardButton, theme.cancelButton]}
-            onPress={this.props.onCancel}
-          >
-            Cancel
-          </Button>
-        </View>
+        {this._renderFlatList()}
       </View>
     );
   }
@@ -157,22 +154,16 @@ class ScreenGraphList extends Component {
 export default withLnd(ScreenGraphList);
 
 const styles = StyleSheet.create({
+  listContainer: {
+    maxHeight: height * 0.7
+  },
   nodeItem: {
     padding: 10,
     borderBottomWidth: 1,
     borderColor: "#BDBDBD"
   },
   filterContainer: {
-    flex: 1,
     borderBottomWidth: 1,
-    borderColor: "gray"
-  },
-  scrollContainer: {
-    flex: 9
-  },
-  actionContainer: {
-    flex: 1,
-    borderTopWidth: 1,
     borderColor: "gray"
   }
 });
