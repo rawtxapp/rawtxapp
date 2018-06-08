@@ -641,10 +641,10 @@ class ScreenWallet extends Component {
         <View style={styles.logoContainer}>
           <Image
             source={require("./assets/intro-logo.png")}
-            tintColor={this.props.logoOnBackgroundColor}
             style={{
               width: undefined,
-              height: 80
+              height: 80,
+              tintColor: this.props.logoOnBackgroundColor
             }}
             resizeMode="contain"
           />

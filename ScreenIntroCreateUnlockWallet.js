@@ -648,9 +648,9 @@ class ScreenIntroCreateUnlockWallet extends Component {
                   width: undefined,
                   height: 150,
                   flex: 1,
-                  resizeMode: "contain"
+                  resizeMode: "contain",
+                  tintColor: this.props.logoOnBackgroundColor
                 }}
-                tintColor={this.props.logoOnBackgroundColor}
               />
             </View>
           </TouchableWithoutFeedback>
