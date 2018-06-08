@@ -587,7 +587,8 @@ class ScreenWallet extends Component {
     let footer = (
       <View>
         <Button
-          style={[theme.container, styles.closeWalletButton]}
+          style={[styles.closeWalletButton]}
+          containerStyle={theme.container}
           onPress={async () => {
             this.setState({ working: true }, async () => {
               await this.props.stopLndFromWallet(this.state.wallet);

@@ -784,7 +784,12 @@ const buttonStyles = StyleSheet.create({
     margin: 10,
     width: "90%",
     alignSelf: "center",
-    elevation: 1
+    elevation: 1,
+    shadowOpacity: 0.0015 + 0.18,
+    shadowRadius: 0.54,
+    shadowOffset: {
+      height: 0.6
+    }
   },
   actionText: {
     fontSize: 16,
