@@ -122,7 +122,8 @@ const buttonBaseBase = {
   backgroundColor: "#29B6F6",
   borderRadius: 10,
   padding: 10,
-  margin: 5
+  margin: 5,
+  overflow: "hidden"
 };
 
 const buttonBase = {
