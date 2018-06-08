@@ -563,6 +563,13 @@ class ScreenWallet extends Component {
         this.setState({ getinfo });
       }
     );
+    // TODO: remove this when queryroutes is shipped in an lnd release.
+    // This node supports the experimental queryroutes feature, will help
+    // syncing with the lightning graph faster.
+    this.props.lndApi.addPeers(
+      "02e53fcf06df8242cb36d1cb802146895307aeeb20b31622672601a9efa6eaacc8",
+      "lnd-testnet.rawtx.com"
+    );
   }
 
   componentWillUnmount() {
