@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Modal, StyleSheet, Text, View } from "react-native";
+import { Modal, Platform, StyleSheet, Text, View } from "react-native";
 import withLnd from "./withLnd";
 import { styles as theme } from "react-native-theme";
 import Button from "react-native-button";
@@ -50,9 +50,11 @@ class ComponentWalletOperations extends Component {
   }
 
   _renderShowLogs() {
+    if (Platform.OS == "ios") return;
     const cancelOp = () => this.setState({ showingLogs: false });
     return (
       <View>
+        <View style={theme.separator} />
         <Button
           style={[theme.inCardButton]}
           onPress={() => this.setState({ showingLogs: true })}
@@ -157,7 +159,6 @@ class ComponentWalletOperations extends Component {
         {this._renderGraphSummary()}
         <View style={theme.separator} />
         {this._renderShowGraphNodes()}
-        <View style={theme.separator} />
         {this._renderShowLogs()}
         <View style={theme.separator} />
         {this._renderShowAbout()}
