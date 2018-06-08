@@ -1,4 +1,5 @@
 // docs: https://github.com/facebook/react-native/blob/235b16d93287061a09c4624e612b5dc4f960ce47/Libraries/vendor/emitter/EventEmitter.js
+import { Platform } from "react-native";
 import EventEmitter from "EventEmitter";
 
 export default class WalletListener {
@@ -14,30 +15,49 @@ export default class WalletListener {
     this.runningMethod = {};
     this.restLnd = restLnd;
 
+    // TODO:
+    // On iOS, we have to run the UI to be able to run lnd,
+    // which means that while it's syncing, etc, the UI is constantly polling
+    // lnd which is wasting a lot of battery/overheating.
+    // Until we switch to streaming, slow down polling in iOS at the expense
+    // of the UI getting slightly out of sync with lnd.
+    let pollingMultiplier = 1;
+    if (Platform.OS == "ios") {
+      pollingMultiplier = 2.5;
+    }
+
     // Adds internal function for watchers
     // Example watchgetInfo, will call getInfo repeatedly and emit events.
     const watchers = [
-      { method: "GetInfo", api: restLnd.getInfo, interval: 3000 },
+      {
+        method: "GetInfo",
+        api: restLnd.getInfo,
+        interval: 3000 * pollingMultiplier
+      },
       {
         method: "BalanceChannels",
         api: restLnd.balanceChannels,
-        interval: 2000
+        interval: 2000 * pollingMultiplier
       },
       {
         method: "BalanceBlockchain",
         api: restLnd.balanceBlockchain,
-        interval: 2000
+        interval: 2000 * pollingMultiplier
       },
-      { method: "GraphInfo", api: restLnd.graphInfo, interval: 30000 },
+      {
+        method: "GraphInfo",
+        api: restLnd.graphInfo,
+        interval: 30000 * pollingMultiplier
+      },
       {
         method: "PendingChannels",
         api: restLnd.pendingChannels,
-        interval: 3000
+        interval: 3000 * pollingMultiplier
       },
       {
         method: "Channels",
         api: restLnd.channels,
-        interval: 5000
+        interval: 5000 * pollingMultiplier
       }
     ];
     for (let i = 0; i < watchers.length; i++) {
