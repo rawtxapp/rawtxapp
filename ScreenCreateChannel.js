@@ -102,6 +102,9 @@ class ScreenPayInvoice extends Component {
     return (
       <View>
         <Text style={[theme.successText, styles.success]}>Connected!</Text>
+        <Text style={[theme.successText, styles.success]}>
+          Please enter at least 250000 satoshis to make sure the channel opens.
+        </Text>
         <TextInput
           style={[theme.textInput]}
           underlineColorAndroid="transparent"
