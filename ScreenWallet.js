@@ -599,6 +599,17 @@ class ScreenWallet extends Component {
           onPress={async () => {
             this.setState({ working: true }, async () => {
               await this.props.stopLndFromWallet(this.state.wallet);
+              if (Platform.OS == "ios") {
+                // because lnd process isn't isolated on ios, after "closing"
+                // the wallet, there is still lnd process related things
+                // lingering in the background. For now, when the wallet
+                // is closed, just display a wallet closed screen and the user
+                // can click home button which will close the app and shut it
+                // down completely and they can reopen another wallet by reopening
+                // the app, less than ideal, should be fixed.
+                this.setState({ iosWalletClosed: true });
+                return;
+              }
               this.props.navigation.navigate("WalletCreate");
             });
           }}
@@ -608,25 +619,20 @@ class ScreenWallet extends Component {
       </View>
     );
 
-    if (!this.state.wallet || !this.state.getinfo || this.state.working) {
+    if (this.state.iosWalletClosed) {
+      content = (
+        <View style={theme.container}>
+          <Text style={theme.accountHeader}>Wallet closed!</Text>
+        </View>
+      );
+    } else if (
+      !this.state.wallet ||
+      !this.state.getinfo ||
+      this.state.working
+    ) {
       content = (
         <View>
           <ActivityIndicator color={this.props.spinnerOnBackgroundColor} />
-        </View>
-      );
-    } else if (false) {
-      content = (
-        <View>
-          <Text>{JSON.stringify(this.state.wallet)}</Text>
-          <Text>{JSON.stringify(this.state.getinfo)}</Text>
-          <Button
-            onPress={async () => {
-              await this.props.stopLndFromWallet(this.state.wallet);
-              this.props.navigation.navigate("WalletCreate");
-            }}
-          >
-            Close wallet
-          </Button>
         </View>
       );
     } else {
