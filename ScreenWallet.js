@@ -4,6 +4,7 @@ import {
   Image,
   Linking,
   Modal,
+  Platform,
   ScrollView,
   StyleSheet,
   View,
@@ -34,7 +35,13 @@ import ScreenChannels from "./ScreenChannels.js";
 import ScreenReceiveBlockchain from "./ScreenReceiveBlockchain.js";
 import ScreenSendBlockchain from "./ScreenSendBlockchain.js";
 import ScreenCreateChannel from "./ScreenCreateChannel.js";
+import WalletShutdownBackground from "./WalletShutdownBackground.js";
 import withTheme from "./withTheme.js";
+
+let backgroundShutdown = <View />;
+if (Platform.OS === "ios") {
+  backgroundShutdown = <WalletShutdownBackground />;
+}
 
 class BaseSyncingBlock extends Component {
   constructor(props) {
@@ -630,6 +637,7 @@ class ScreenWallet extends Component {
 
     return (
       <ScrollView style={[styles.container, theme.appBackground]}>
+        {backgroundShutdown}
         <View style={styles.logoContainer}>
           <Image
             source={require("./assets/intro-logo.png")}
