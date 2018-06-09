@@ -161,19 +161,12 @@ RCT_EXPORT_METHOD(fetch:(NSDictionary *)request
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
   NSString *urlPath = [request valueForKey:@"url"];
-#ifdef DEBUG
-  RCTLogInfo(@"fetching %@", urlPath);
-#endif
-  
   
   NSURLSessionConfiguration *defaultConfigObject = [NSURLSessionConfiguration defaultSessionConfiguration];
   [defaultConfigObject setRequestCachePolicy:NSURLRequestReloadIgnoringCacheData];
   [defaultConfigObject setURLCache:nil];
   NSDictionary *headers =[request objectForKey:@"headers"];
   if (headers != nil) {
-#ifdef DEBUG
-    RCTLogInfo(@"headers: %@", headers);
-#endif
     [defaultConfigObject setHTTPAdditionalHeaders:headers];
   }
   NSURLSession *session =[NSURLSession sessionWithConfiguration:defaultConfigObject delegate:self delegateQueue:[NSOperationQueue mainQueue]];
@@ -183,10 +176,6 @@ RCT_EXPORT_METHOD(fetch:(NSDictionary *)request
       reject(@"fetch_failed", @"Couldn't fetch!", error);
     } else if(response != nil) {
       NSString *bodyString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-#ifdef DEBUG
-      RCTLogInfo(@"Received response for url %@ : %@", urlPath, response);
-      RCTLogInfo(@"Received data: %@", bodyString);
-#endif
       NSDictionary *jsResponse = [[NSDictionary alloc] initWithObjectsAndKeys:bodyString, @"bodyString", nil];
       resolve(jsResponse);
     }
@@ -200,27 +189,11 @@ RCT_EXPORT_METHOD(fetch:(NSDictionary *)request
   } else if ([[method lowercaseString] isEqualToString:@"post"]){
     NSData *data = nil;
     NSString *body = [request valueForKey:@"jsonBody"];
-#ifdef DEBUG
-    RCTLogInfo(@"posting body: %@", body);
-#endif
     data = [body dataUsingEncoding:NSUTF8StringEncoding];
     [urlRequest setHTTPMethod:@"POST"];
     task = [session uploadTaskWithRequest:urlRequest fromData:data completionHandler:completionHandler];
   }
   [task resume];
-//
-//  [[[NSURLConnection alloc] init] testDel];
-//  RCTLogInfo(@"err: %@", error);
-//  if([response statusCode] != 200) {
-//    RCTLogInfo(@"No-200-status %@", (long)[response statusCode]);
-//  }
-//
-//  NSString *responseStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-//  RCTLogInfo(@"received: %@",responseStr);
-//  NSDictionary * dict = [NSDictionary alloc];
-//  [dict setValue:responseStr forKey:@"bodyString"];
-//
-//  resolve(dict);
 }
 
 RCT_EXPORT_METHOD(encodeBase64:(NSString *)toConvert
