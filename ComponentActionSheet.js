@@ -20,13 +20,19 @@ import withTheme from "./withTheme";
 import Button from "react-native-button";
 import { styles as theme } from "react-native-theme";
 import KeyboardSpacer from "react-native-keyboard-spacer";
+import withLnd from "./withLnd";
 
 var window = Dimensions.get("window");
 
 class ActionModal extends Component {
+  state = {};
   componentWillReceiveProps(newProps) {
     if (newProps.visible) {
       this.props.dimBackground(true);
+      this.props.setActionSheetMethods(
+        callback => this.setState({ hidden: true }, callback),
+        callback => this.setState({ hidden: false }, callback)
+      );
     }
   }
 
@@ -34,64 +40,69 @@ class ActionModal extends Component {
     const close = () => {
       this.props.onRequestClose();
       this.props.dimBackground(false);
+      this.props.clearActionSheetMethods();
     };
+    const visible = this.props.visible && !this.state.hidden;
     return (
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={this.props.visible}
-        onRequestClose={close}
-      >
-        {this.props.visible && (
-          <StatusBar backgroundColor={this.props.statusBarDark} />
-        )}
-        <View style={styles.modalContainer}>
-          <TouchableOpacity onPress={close} style={styles.backdropContainer} />
-          <View style={styles.modalSpacer}>
-            <View style={[styles.modalTopContainer, this.props.theme.modal]}>
-              <View style={styles.xContainer}>
-                <TouchableOpacity onPress={close}>
-                  <Image
-                    source={require("./assets/close.png")}
-                    style={styles.closeButton}
-                  />
-                </TouchableOpacity>
+      <View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={visible}
+          onRequestClose={close}
+        >
+          {visible && <StatusBar backgroundColor={this.props.statusBarDark} />}
+          <View style={styles.modalContainer}>
+            <TouchableOpacity
+              onPress={close}
+              style={styles.backdropContainer}
+            />
+            <View style={styles.modalSpacer}>
+              <View style={[styles.modalTopContainer, this.props.theme.modal]}>
+                <View style={styles.xContainer}>
+                  <TouchableOpacity onPress={close}>
+                    <Image
+                      source={require("./assets/close.png")}
+                      style={styles.closeButton}
+                    />
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.titleContainer}>
+                  <Text style={[styles.title, this.props.theme.modalTitle]}>
+                    {this.props.title}
+                  </Text>
+                </View>
+                <View style={styles.rightActionContainer} />
               </View>
-              <View style={styles.titleContainer}>
-                <Text style={[styles.title, this.props.theme.modalTitle]}>
-                  {this.props.title}
-                </Text>
+              <View style={this.props.theme.separator} />
+              <View style={[this.props.theme.modal, styles.sideBorder]}>
+                {this.props.children}
+                {Platform.OS == "ios" && <KeyboardSpacer />}
               </View>
-              <View style={styles.rightActionContainer} />
             </View>
             <View style={this.props.theme.separator} />
-            <View style={[this.props.theme.modal, styles.sideBorder]}>
-              {this.props.children}
-              {Platform.OS == "ios" && <KeyboardSpacer />}
+            <View
+              style={[
+                styles.actionContainer,
+                styles.sideBorder,
+                this.props.theme.modal
+              ]}
+            >
+              <Button
+                onPress={close}
+                style={[theme.actionButton, styles.actionButton]}
+              >
+                {this.props.buttonText || "Done"}
+              </Button>
             </View>
           </View>
-          <View style={this.props.theme.separator} />
-          <View
-            style={[
-              styles.actionContainer,
-              styles.sideBorder,
-              this.props.theme.modal
-            ]}
-          >
-            <Button
-              onPress={close}
-              style={[theme.actionButton, styles.actionButton]}
-            >
-              {this.props.buttonText || "Done"}
-            </Button>
-          </View>
-        </View>
-      </Modal>
+        </Modal>
+      </View>
     );
   }
 }
 
-export default withTheme(ActionModal);
+export default withLnd(withTheme(ActionModal));
 
 const styles = StyleSheet.create({
   container: {

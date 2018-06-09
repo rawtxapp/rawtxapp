@@ -27,22 +27,7 @@ class ScreenPayInvoice extends Component {
     Clipboard.getString().then(
       str => str && str.length > 0 && this.setState({ pastable: str })
     );
-    this.checkRawtxNode();
   }
-
-  checkRawtxNode = async () => {
-    try {
-      // TODO: super ugly, don't hardcode.
-      const rawtxPubkey =
-        "02e53fcf06df8242cb36d1cb802146895307aeeb20b31622672601a9efa6eaacc8";
-      const res = await this.props.lndApi.getNodeInfo(rawtxPubkey);
-      if (res.node && res.node.pub_key == rawtxPubkey) {
-        this.setState({ foundRawtxNode: true });
-      }
-    } catch (err) {}
-  };
-
-  componentWillUpdate(nextProps, nextState) {}
 
   _renderPay = () => {
     if (!this.state.amount) return;
@@ -131,34 +116,10 @@ class ScreenPayInvoice extends Component {
     );
   };
 
-  _renderConnectRawtx = () => {
-    if (this.state.connectedToPeer) return;
-    if (!this.state.foundRawtxNode) return;
-    return (
-      <View>
-        <Button
-          style={theme.actionButton}
-          onPress={() =>
-            this.setState({
-              connectedToPeer:
-                "02e53fcf06df8242cb36d1cb802146895307aeeb20b31622672601a9efa6eaacc8@lnd-testnet.rawtx.com"
-            })
-          }
-        >
-          Open channel with rawtx
-        </Button>
-        {!!this.state.rawtxError && (
-          <Text style={theme.errorText}>{this.state.rawtxError}</Text>
-        )}
-      </View>
-    );
-  };
-
   render() {
     return (
       <View>
         {this._renderPeerConnect()}
-        {this._renderConnectRawtx()}
         {this._renderInput()}
         {this._renderPay()}
       </View>

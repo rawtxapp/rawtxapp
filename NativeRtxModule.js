@@ -1,5 +1,6 @@
 import { DeviceEventEmitter, NativeModules } from "react-native";
 import LndApi from "./RestLnd.js";
+import { sleep } from "./Utils";
 
 const Rtx = NativeModules.RtxModule;
 
@@ -64,10 +65,6 @@ const isLndProcessRunning = async function() {
 
 const encodeBase64 = async function(str) {
   return await Rtx.encodeBase64(str);
-};
-
-const sleep = ms => {
-  return new Promise(resolve => setTimeout(resolve, ms));
 };
 
 const scanQrCode = async function() {

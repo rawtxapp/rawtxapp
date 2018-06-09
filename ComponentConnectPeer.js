@@ -26,6 +26,13 @@ class ScreenPayInvoice extends Component {
     Clipboard.getString().then(
       str => str && str.length > 0 && this.setState({ pastable: str })
     );
+    this.qrListener_ = this.props.qrCodeEvents.once("qrCodeScanned", qr => {
+      this.setState({ peer: qr, error: "" });
+    });
+  }
+
+  componentWillUnmount() {
+    this.qrListener_.remove();
   }
 
   _renderConnect = () => {

@@ -233,3 +233,7 @@ export const sortBySettleDateDescending = payments => {
     return parseInt(b.settle_date) - parseInt(a.settle_date);
   });
 };
+
+export const sleep = ms => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};

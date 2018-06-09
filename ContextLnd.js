@@ -1,4 +1,6 @@
 import React, { Component, createContext } from "react";
+import { Platform } from "react-native";
+import EventEmitter from "EventEmitter";
 
 const LndContext = createContext({
   startLnd: () => {},
@@ -22,6 +24,7 @@ import LndApi from "./RestLnd.js";
 import WalletListener from "./WalletListener";
 import { findNodesInGraph } from "./Utils.js";
 import WalletKeychain from "./WalletKeychain.js";
+import { sleep } from "./Utils";
 
 const WALLET_CONF_FILE = "wallet.conf";
 const DEFAULT_NEUTRINO_CONNECT = "faucet.lightning.community,rbtcdt.rawtx.com";
@@ -241,7 +244,11 @@ const initWallet = async function(wallet, cipher, password) {};
 class LndProvider extends Component {
   constructor(props) {
     super(props);
-    this.state = { walletConf: {}, displayUnit: "satoshi" };
+    this.state = {
+      walletConf: {},
+      displayUnit: "satoshi",
+      qrCodeEvents: new EventEmitter()
+    };
   }
 
   componentDidMount() {
@@ -323,6 +330,16 @@ class LndProvider extends Component {
     this.initialInvoiceHandled = true;
   };
 
+  setActionSheetMethods = (hideActionSheet, showActionSheet) => {
+    this.hideActionSheet = hideActionSheet;
+    this.showActionSheet = showActionSheet;
+  };
+
+  clearActionSheetMethods = () => {
+    this.hideActionSheet = null;
+    this.showActionSheet = null;
+  };
+
   // this method also makes sure LndApi has the right admin.macaroon.
   _getRunningWallet = async () => {
     const w = await getRunningWallet();
@@ -337,6 +354,36 @@ class LndProvider extends Component {
       } catch (e) {}
     }
     return w;
+  };
+
+  scanQrCode = () => {
+    if (Platform.OS == "ios") {
+      // On iOS, qr scanner works as a modal, showing 2 modals is
+      // strange, so we hide the actionsheet,show qr code, show
+      // actionsheet again.
+      return async () => {
+        if (this.hideActionSheet && this.showActionSheet) {
+          return new Promise((resolve, _) => {
+            this.hideActionSheet(async () => {
+              const qr = await scanQrCode();
+              const forShowingActionSheet = new Promise((resolve, _) => {
+                this.showActionSheet(() => {
+                  resolve();
+                });
+              });
+              await forShowingActionSheet;
+              // hack to give modal children enough time to finish with animation
+              await sleep(200);
+              this.state.qrCodeEvents.emit("qrCodeScanned", qr);
+            });
+          });
+        } else {
+          return await scanQrCode();
+        }
+      };
+    } else {
+      return scanQrCode;
+    }
   };
 
   render() {
@@ -370,7 +417,7 @@ class LndProvider extends Component {
           encodeBase64,
           stopLndFromWallet,
           displaySatoshi: this.displaySatoshi,
-          scanQrCode,
+          scanQrCode: this.scanQrCode(),
           walletListener: this.state.walletListener,
           isInitialInvoiceHandled: this.isInitialInvoiceHandled,
           setInitialInvoiceHandled: this.setInitialInvoiceHandled,
@@ -378,7 +425,11 @@ class LndProvider extends Component {
           getWalletFile,
           getWalletMacaroon,
           walletKeychain: this.state.keychain,
-          updateWalletConf: updateWalletConfState
+          updateWalletConf: updateWalletConfState,
+
+          setActionSheetMethods: this.setActionSheetMethods,
+          clearActionSheetMethods: this.clearActionSheetMethods,
+          qrCodeEvents: this.state.qrCodeEvents
         }}
       >
         {this.props.children}
