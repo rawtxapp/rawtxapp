@@ -8,6 +8,7 @@ import {
   LayoutAnimation,
   Linking,
   Modal,
+  Platform,
   StatusBar,
   StyleSheet,
   Text,
@@ -18,6 +19,7 @@ import {
 import withTheme from "./withTheme";
 import Button from "react-native-button";
 import { styles as theme } from "react-native-theme";
+import KeyboardSpacer from "react-native-keyboard-spacer";
 
 var window = Dimensions.get("window");
 
@@ -65,6 +67,7 @@ class ActionModal extends Component {
             <View style={this.props.theme.separator} />
             <View style={[this.props.theme.modal, styles.sideBorder]}>
               {this.props.children}
+              {Platform.OS == "ios" && <KeyboardSpacer />}
             </View>
           </View>
           <View style={this.props.theme.separator} />
