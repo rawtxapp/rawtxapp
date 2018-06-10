@@ -11,7 +11,7 @@
 #import <React/RCTLog.h>
 #import <errno.h>
 
-#ifdef __aarch64__
+#ifdef __aarch64__ || __x86_64__
 #import "RtxExportArm64.h"
 #else
 #import "../rtxnative/Rtx_export.framework/Headers/Rtx_export.h"
