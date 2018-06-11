@@ -20,7 +20,6 @@ import { timeout } from "./Utils.js";
 import Button from "react-native-button";
 import { styles as theme } from "react-native-theme";
 
-import ComponentTransferToChecking from "./ComponentTransferToChecking.js";
 import ComponentWalletOperations from "./ComponentWalletOperations.js";
 import ComponentReceiveFaucet from "./ComponentReceiveFaucet.js";
 import ScreenPayments from "./ScreenPayments.js";
