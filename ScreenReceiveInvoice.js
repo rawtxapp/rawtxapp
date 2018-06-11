@@ -174,7 +174,7 @@ class ScreenReceiveInvoice extends Component {
         </View>
         <View style={styles.qrCodeContainer}>
           <QRCode
-            value={"lightning:" + this.state.payment_request}
+            value={"lightning:" + this.state.payment_request.toUpperCase()}
             size={qrWidth}
           />
         </View>
