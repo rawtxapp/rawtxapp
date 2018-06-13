@@ -1,0 +1,218 @@
+diff --git a/.gitignore b/.gitignore
+index 02c6e465..26fd98c6 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -51,3 +51,4 @@ profile.tmp
+ .DS_Store
+ 
+ main*
++rtx_export*
+diff --git a/lnd.go b/lnd.go
+index edae743a..024ce78f 100644
+--- a/lnd.go
++++ b/lnd.go
+@@ -637,6 +637,7 @@ func lndMain() error {
+ 	// the interrupt handler.
+ 	<-shutdownChannel
+ 	ltndLog.Info("Shutdown complete")
++	shutdownSuccessChannel <- true
+ 	return nil
+ }
+ 
+@@ -721,10 +722,9 @@ func genCertPair(certFile, keyFile string) error {
+ 	}
+ 
+ 	// Collect the host's names into a slice.
+-	host, err := os.Hostname()
+-	if err != nil {
+-		return err
+-	}
++	// Android doesn't allow accessing /proc/sys
++	// which is used by the os.Hostname call.
++	host := "localhost"
+ 	dnsNames := []string{host}
+ 	if host != "localhost" {
+ 		dnsNames = append(dnsNames, "localhost")
+@@ -1028,5 +1028,9 @@ func waitForWalletPassword(grpcEndpoints, restEndpoints []string,
+ 
+ 	case <-shutdownChannel:
+ 		return nil, fmt.Errorf("shutting down")
++
++	case <-shutdownRequestChannel:
++		shutdownSuccessChannel <- true
++		return nil, fmt.Errorf("shutting down")
+ 	}
+ }
+diff --git a/rtx_config.go b/rtx_config.go
+new file mode 100644
+index 00000000..1d649c73
+--- /dev/null
++++ b/rtx_config.go
+@@ -0,0 +1,124 @@
++package main
++
++/*
++#ifdef SWIG
++%newobject InitLnd;
++#endif
++*/
++import "C"
++import (
++	"fmt"
++	"os"
++	"path/filepath"
++
++	"github.com/lightningnetwork/lnd/channeldb"
++)
++
++var (
++	channelDB              *channeldb.DB
++	shutdownSuccessChannel          = make(chan bool)
++	fout                   *os.File = nil
++	ferr                   *os.File = nil
++)
++
++type Shutdown struct{}
++
++//InitLnd initializes lnd, lndHomeDir is coming from host app.
++// lndHomeDir could be for example in android /data/user/0/com.rtxwallet/files.
++//export InitLnd
++func InitLnd(lndHomeDir *C.char) *C.char {
++	lndHomeDirString := C.GoString(lndHomeDir)
++	err := initLnd(lndHomeDirString)
++	if err != nil {
++		shutdownStdout()
++		return C.CString(err.Error())
++	}
++	return C.CString("")
++}
++
++//export SetStdout
++func SetStdout(lndHomeDir *C.char) {
++	setStdout(C.GoString(lndHomeDir))
++}
++
++//export StopLnd
++func StopLnd() bool {
++	shutdownRequestChannel <- struct{}{}
++	success := <-shutdownSuccessChannel
++	shutdownStdout()
++	return success
++}
++
++//export TestPanic
++func TestPanic() {
++	panic("Testing panic!")
++}
++
++//export StartLnd
++func StartLnd() *C.char {
++	defer func() {
++		if x := recover(); x != nil {
++			ltndLog.Errorf("run time panic: %v", x)
++		}
++	}()
++	err := lndMain()
++	if err != nil {
++		return C.CString(err.Error())
++	}
++	return C.CString("")
++}
++
++func setStdout(lndHomeDir string) {
++	fileout := filepath.Join(lndHomeDir, "stdout")
++	fout, _ = os.Create(fileout)
++	os.Stdout = fout
++
++	fileerr := filepath.Join(lndHomeDir, "stdout")
++	ferr, _ = os.Create(fileerr)
++	os.Stderr = ferr
++}
++
++func shutdownStdout() {
++	if fout != nil {
++		fout.Close()
++	}
++	if ferr != nil {
++		ferr.Close()
++	}
++}
++
++func initLnd(lndHomeDir string) error {
++	setDefaultVars(lndHomeDir)
++
++	lndCfg, err := loadConfig()
++	if err != nil {
++		fmt.Println(err)
++		return err
++	}
++	cfg = lndCfg
++	return nil
++}
++
++func setDefaultVars(lndHomeDir string) {
++	if lndHomeDir == "" {
++		// If lndHomeDir is null, just leave the defaults as is.
++		return
++	}
++	defaultLndDir = lndHomeDir
++	defaultConfigFile = filepath.Join(defaultLndDir, defaultConfigFilename)
++	defaultDataDir = filepath.Join(defaultLndDir, defaultDataDirname)
++	defaultTLSCertPath = filepath.Join(defaultLndDir, defaultTLSCertFilename)
++	defaultTLSKeyPath = filepath.Join(defaultLndDir, defaultTLSKeyFilename)
++	defaultAdminMacPath = filepath.Join(defaultLndDir, defaultAdminMacFilename)
++	defaultReadMacPath = filepath.Join(defaultLndDir, defaultReadMacFilename)
++	defaultLogDir = filepath.Join(defaultLndDir, defaultLogDirname)
++
++	defaultBtcdDir = filepath.Join(lndHomeDir, "btcd", "default")
++	defaultBtcdRPCCertFile = filepath.Join(defaultBtcdDir, "rpc.cert")
++
++	defaultLtcdDir = filepath.Join(lndHomeDir, "ltcd", "default")
++	defaultLtcdRPCCertFile = filepath.Join(defaultLtcdDir, "rpc.cert")
++
++	defaultBitcoindDir = filepath.Join(lndHomeDir, "bitcoin", "default")
++	defaultLitecoindDir = filepath.Join(lndHomeDir, "litecoin", "default")
++}
+diff --git a/rtx_utils.go b/rtx_utils.go
+new file mode 100644
+index 00000000..bea942a4
+--- /dev/null
++++ b/rtx_utils.go
+@@ -0,0 +1,37 @@
++package main
++
++// ***NOTE***
++// This file isn't actually useful because the
++// methods exposed by this file aren't actually used.
++// (maybe using getlndversion makes sense...).
++// But it's a good example of exposing different
++// kinds of functions (%newobject + C.char, etc.).
++
++/*
++#include <stdlib.h>
++
++#ifdef SWIG
++%newobject GetEnv;
++%newobject GetLndVersion;
++#endif
++
++*/
++import "C"
++import (
++	"os"
++)
++
++//export GetEnv
++func GetEnv(v *C.char) *C.char {
++	return C.CString(os.Getenv(C.GoString(v)))
++}
++
++//export SetEnv
++func SetEnv(key *C.char, val *C.char) {
++	os.Setenv(C.GoString(key), C.GoString(val))
++}
++
++//export GetLndVersion
++func GetLndVersion() *C.char {
++	return C.CString(version())
++}
