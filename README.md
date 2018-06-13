@@ -7,7 +7,7 @@ Here's what it looks like:
 <img src="https://rawtx.com/assets/android-app-screenshot.png" height="400">
 
 You can get it from [Play Store on Android](https://play.google.com/store/apps/details?id=com.rtxwallet)
-or [App Store for iOS](include_link).
+or [App Store for iOS](https://itunes.apple.com/us/app/rawtx-lightning-wallet/id1397117908?ls=1&mt=8).
 
 If you're interested in compiling it from scratch, would like to know how it works or looking
 to contribute, please keep reading.
@@ -137,7 +137,8 @@ Some TODOs/features:
 * satoshi, mbtc, US$ units for balances,
 * settings,
 * dark theme,
-* a specific activity just for handling **lightning:** links.
+* a specific activity just for handling **lightning:** links,
+* translations.
 
 ### In-depth overview of the code
 Coming soon.
