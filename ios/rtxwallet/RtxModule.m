@@ -1,11 +1,3 @@
-//
-//  RtxModule.m
-//  rtxwallet
-//
-//  Created by User on 5/8/18.
-//  Copyright © 2018 Facebook. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
 #import "RtxModule.h"
 #import <React/RCTLog.h>
