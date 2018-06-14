@@ -63,6 +63,8 @@ problematic**. Unnecessary because we run lnd as a daemon, therefore we don't ne
 access to it's internals and problematic because not everything is exportable
 to mobile (ex: if it comes across a big integer, it doesn't have an equivalent
 on JVM, it will fail with unsupported type).
+**Please note:** lightninglabs team is working on a version of lnd that works
+well with gomobile we will update this when it's ready.
 
 
 ## Building from source
