@@ -88,8 +88,8 @@ class BaseSyncingBlock extends Component {
         {blockchainSynced &&
           !lightningSynced && (
             <Text style={[theme.accountHeader, syncingStyles.unsynced]}>
-              Syncing with lightning peers (lightning payments might not work,
-              but opening channels should work fine)...
+              Syncing with lightning peers (lightning operations won't work for
+              now)...
             </Text>
           )}
       </View>
