@@ -19,7 +19,10 @@ import withLnd from "./withLnd";
 class ScreenPayInvoice extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { payreq: props.payreq };
+    if (props.payreq) {
+      this._decodePayreq(props.payreq);
+    }
   }
 
   componentWillMount() {
