@@ -7,6 +7,7 @@
 import React, { Component } from "react";
 import {
   Button,
+  Linking,
   NativeModules,
   Platform,
   StyleSheet,
@@ -24,6 +25,7 @@ import ScreenIntroCreateUnlockWallet from "./ScreenIntroCreateUnlockWallet.js";
 import ScreenGenSeed from "./ScreenGenSeed.js";
 import { LndProvider } from "./ContextLnd.js";
 import ThemeConsumer, { ThemeProvider } from "./ContextTheme";
+import ScreenLightningLink from "./ScreenLightningLink.js";
 
 if (Platform.OS === "android") {
   UIManager.setLayoutAnimationEnabledExperimental &&
@@ -40,6 +42,24 @@ const RootSwitch = SwitchNavigator(
 );
 
 export default class App extends Component<Props> {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
+  componentDidMount() {
+    Linking.getInitialURL()
+      .then(url => {
+        console.log("Opened with initial link ", url);
+        if (url && url.toLowerCase().startsWith("lightning:")) {
+          this.setState({ lightningLink: url });
+        } else {
+          this.setState({ mode: "normal" });
+        }
+      })
+      .catch(() => this.setState({ mode: "normal" }));
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -51,7 +71,10 @@ export default class App extends Component<Props> {
           </ThemeConsumer>
 
           <LndProvider>
-            <RootSwitch />
+            {this.state.mode == "normal" && <RootSwitch />}
+            {!!this.state.lightningLink && (
+              <ScreenLightningLink link={this.state.lightningLink} />
+            )}
           </LndProvider>
         </ThemeProvider>
       </View>
