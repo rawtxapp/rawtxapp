@@ -1,13 +1,15 @@
 package com.rtxwallet;
 
 import android.app.Application;
+import android.os.Build;
+import android.webkit.WebView;
 
 import com.facebook.react.ReactApplication;
-import com.oblador.keychain.KeychainPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
+import com.oblador.keychain.KeychainPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -44,6 +46,12 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
+
+    // Code taken from java/com/facebook/react/views/webview/ReactWebViewManager.java
+    // For some reason, it doesn't run in the base class.
+    if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      WebView.setWebContentsDebuggingEnabled(true);
+    }
 
     Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
       @Override
