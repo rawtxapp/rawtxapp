@@ -392,5 +392,11 @@ theme.add({
     margin: -10,
     padding: 10,
     borderColor: "#37474F"
+  },
+  statusBarBackground: {
+    backgroundColor: "#78909C"
+  },
+  statusBarText: {
+    color: "white"
   }
 });
