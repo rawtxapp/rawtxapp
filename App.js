@@ -1,6 +1,4 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
  * @flow
  */
 
@@ -41,8 +39,14 @@ const RootSwitch = SwitchNavigator(
   { initialRouteName: "WalletCreate" }
 );
 
-export default class App extends Component<Props> {
-  constructor(props) {
+type Props = {};
+type State = {
+  lightningLink?: string,
+  mode?: string
+};
+
+export default class App extends Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {};
   }
