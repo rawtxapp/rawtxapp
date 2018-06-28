@@ -24,6 +24,7 @@ import ScreenGenSeed from "./ScreenGenSeed.js";
 import { LndProvider } from "./ContextLnd.js";
 import ThemeConsumer, { ThemeProvider } from "./ContextTheme";
 import ScreenLightningLink from "./ScreenLightningLink.js";
+import ScreenIntro from "./ScreenIntro.js";
 
 if (Platform.OS === "android") {
   UIManager.setLayoutAnimationEnabledExperimental &&
@@ -34,9 +35,10 @@ const RootSwitch = SwitchNavigator(
   {
     WalletCreate: { screen: ScreenIntroCreateUnlockWallet },
     GenSeed: { screen: ScreenGenSeed },
-    Wallet: { screen: ScreenWallet }
+    Wallet: { screen: ScreenWallet },
+    Intro: { screen: ScreenIntro }
   },
-  { initialRouteName: "WalletCreate" }
+  { initialRouteName: "Intro" }
 );
 
 type Props = {};
