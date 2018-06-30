@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "cp vendor/attachWebsocketServer.js node_modules/react-native/local-cli/server/util/"
   },
   "dependencies": {
     "babel-plugin-transform-remove-console": "^6.9.0",
