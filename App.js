@@ -72,7 +72,11 @@ export default class App extends Component<Props, State> {
         <ThemeProvider>
           <ThemeConsumer>
             {({ statusBar }) => (
-              <StatusBar backgroundColor={statusBar} animated={true} />
+              <StatusBar
+                backgroundColor="rgba(255, 255, 255, 0)"
+                translucent={true}
+                animated={true}
+              />
             )}
           </ThemeConsumer>
 
@@ -90,7 +94,6 @@ export default class App extends Component<Props, State> {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingTop: Platform.OS == "ios" ? 20 : 0
+    flex: 1
   }
 });
