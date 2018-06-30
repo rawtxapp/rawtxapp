@@ -17,6 +17,7 @@
     "react-native-check-box": "^2.1.0",
     "react-native-keyboard-spacer": "^0.4.1",
     "react-native-keychain": "github:rawtxapp/react-native-keychain",
+    "react-native-linear-gradient": "^2.4.0",
     "react-native-qrcode": "^0.2.6",
     "react-native-simple-radio-button": "^2.7.1",
     "react-native-theme": "^0.1.8",
