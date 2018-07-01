@@ -4,42 +4,35 @@
 
 import React, { Component } from "react";
 import {
-  Button,
   Linking,
-  NativeModules,
   Platform,
-  StyleSheet,
   StatusBar,
-  Text,
-  View,
-  UIManager
+  StyleSheet,
+  UIManager,
+  View
 } from "react-native";
-
-import { SwitchNavigator } from "react-navigation";
-
-import ScreenLog from "./ScreenLog.js";
-import ScreenWallet from "./ScreenWallet.js";
-import ScreenIntroCreateUnlockWallet from "./ScreenIntroCreateUnlockWallet.js";
-import ScreenGenSeed from "./ScreenGenSeed.js";
+import { FluidNavigator } from "react-navigation-fluid-transitions";
 import { LndProvider } from "./ContextLnd.js";
 import ThemeConsumer, { ThemeProvider } from "./ContextTheme";
-import ScreenLightningLink from "./ScreenLightningLink.js";
+import ScreenGenSeed from "./ScreenGenSeed.js";
 import ScreenIntro from "./ScreenIntro.js";
+import ScreenIntroCreateUnlockWallet from "./ScreenIntroCreateUnlockWallet.js";
+import ScreenLightningLink from "./ScreenLightningLink.js";
+import ScreenWallet from "./ScreenWallet.js";
+import ScreenUnlock from "./ScreenUnlock.js";
 
 if (Platform.OS === "android") {
   UIManager.setLayoutAnimationEnabledExperimental &&
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const RootSwitch = SwitchNavigator(
-  {
-    WalletCreate: { screen: ScreenIntroCreateUnlockWallet },
-    GenSeed: { screen: ScreenGenSeed },
-    Wallet: { screen: ScreenWallet },
-    Intro: { screen: ScreenIntro }
-  },
-  { initialRouteName: "Intro" }
-);
+const RootSwitch = FluidNavigator({
+  Intro: { screen: ScreenIntro },
+  WalletCreate: { screen: ScreenIntroCreateUnlockWallet },
+  GenSeed: { screen: ScreenGenSeed },
+  Wallet: { screen: ScreenWallet },
+  Unlock: { screen: ScreenUnlock }
+});
 
 type Props = {};
 type State = {
