@@ -1,12 +1,13 @@
 /* @flow */
 
 import React, { Component } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import withTheme from "./withTheme";
+import { styles as theme } from "react-native-theme";
+
 import { Transition } from "react-navigation-fluid-transitions";
 import ComponentLogo from "./ComponentLogo";
-import { styles as theme } from "react-native-theme";
 
 type Props = {
   logoOnBackgroundColor?: string,
@@ -22,50 +23,22 @@ class ScreenIntro extends Component<Props, State> {
         colors={this.props.unlockGradient}
         style={styles.sheetCard}
       >
-        <TouchableOpacity
-          onPress={() => this.props.navigation.navigate("Unlock")}
-          style={styles.touchable}
-        >
-          <View style={styles.actionContainer}>
-            <View style={styles.actionText}>
-              <Transition shared="action">
-                <Text style={styles.sheetCardAction}>Unlock</Text>
-              </Transition>
-            </View>
-            <View style={styles.actionIcon}>
-              <Transition shared="icon">
-                <Image
-                  source={require("./assets/feather/unlock.png")}
-                  style={{ width: 30, height: 30, tintColor: "white" }}
-                />
-              </Transition>
-            </View>
+        <View style={styles.actionContainer}>
+          <View style={styles.actionIcon}>
+            <Transition shared="icon">
+              <Image
+                source={require("./assets/feather/unlock.png")}
+                style={{ width: 30, height: 30, tintColor: "white" }}
+              />
+            </Transition>
           </View>
-        </TouchableOpacity>
-      </LinearGradient>
-    );
-  };
-  _renderLogo = () => {
-    return (
-      <View>
-        <Image
-          source={require("./assets/intro-logo.png")}
-          style={theme.logoImage}
-        />
-      </View>
-    );
-  };
-
-  _renderLogoContainer = () => {
-    return (
-      <View style={styles.logoContainer}>
-        {this._renderLogo()}
-        <View style={styles.container}>
-          <Text style={[styles.slogan, this.props.theme.textOnBackground]}>
-            lightning network wallet
-          </Text>
+          <View style={styles.actionText}>
+            <Transition shared="action">
+              <Text style={styles.sheetCardAction}>Unlock</Text>
+            </Transition>
+          </View>
         </View>
-      </View>
+      </LinearGradient>
     );
   };
 
@@ -76,7 +49,7 @@ class ScreenIntro extends Component<Props, State> {
           start={{ x: 0.0, y: 0 }}
           end={{ x: 1, y: 1.0 }}
           locations={[0, 0.5]}
-          colors={this.props.backgroundGradient}
+          colors={this.props.unlockBackgroundGradient}
           style={{
             position: "absolute",
             top: 0,
@@ -120,6 +93,8 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 10,
+    alignItems: "center",
+    justifyContent: "center",
     flex: 1
   },
   sheetCardAction: {
@@ -129,10 +104,5 @@ const styles = StyleSheet.create({
   actionText: {
     flex: 1,
     alignItems: "center"
-  },
-  touchable: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
   }
 });

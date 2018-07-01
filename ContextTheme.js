@@ -42,7 +42,8 @@ class ThemeProvider extends Component {
           logoOnBackgroundColor: "white",
           spinnerOnBackgroundColor: "#37474F",
           backgroundGradient: ["#083f67", "#3490b6"],
-          unlockGradient: ["#EB3349", "#F45C43"]
+          unlockGradient: ["#EB3349", "#F45C43"],
+          unlockBackgroundGradient: ["#3494E6", "#EC6EAD"]
         }}
       >
         {this.props.children}
@@ -337,5 +338,11 @@ theme.add({
     fontSize: 14,
     color: "#37474F",
     fontWeight: "bold"
+  },
+  logoImage: {
+    width: undefined,
+    height: 80,
+    resizeMode: "contain",
+    tintColor: "white"
   }
 });
