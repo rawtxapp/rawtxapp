@@ -17,12 +17,22 @@ type State = {};
 class ScreenIntro extends Component<Props, State> {
   _renderUnlock = () => {
     return (
-      <LinearGradient
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        colors={this.props.unlockGradient}
-        style={styles.sheetCard}
-      >
+      <View style={styles.sheetCard}>
+        <Transition shared="sheet">
+          <LinearGradient
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            colors={this.props.unlockGradient}
+            style={{
+              width: "100%",
+              height: "100%",
+              position: "absolute",
+
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20
+            }}
+          />
+        </Transition>
         <View style={styles.actionContainer}>
           <View style={styles.actionIcon}>
             <Transition shared="icon">
@@ -37,8 +47,16 @@ class ScreenIntro extends Component<Props, State> {
               <Text style={styles.sheetCardAction}>Unlock</Text>
             </Transition>
           </View>
+          <View style={styles.actionIcon}>
+            <Transition appear="scale">
+              <Image
+                source={require("./assets/feather/close-2.png")}
+                style={{ width: 30, height: 30, tintColor: "white" }}
+              />
+            </Transition>
+          </View>
         </View>
-      </LinearGradient>
+      </View>
     );
   };
 
@@ -78,7 +96,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   sheetContainer: {
-    flex: 1,
+    flex: 2,
     justifyContent: "flex-end",
     paddingTop: 40
   },
@@ -87,14 +105,12 @@ const styles = StyleSheet.create({
   },
   actionIcon: {
     flex: 1,
-    alignItems: "center"
+    alignItems: "center",
+    justifyContent: "center"
   },
   sheetCard: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 10,
-    alignItems: "center",
-    justifyContent: "center",
     flex: 1
   },
   sheetCardAction: {
