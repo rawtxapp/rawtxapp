@@ -39,8 +39,10 @@ class ThemeProvider extends Component {
           statusBar: "#78909C",
           statusBarDark: "#263238",
           dimBackground: this.dimBackground,
-          logoOnBackgroundColor: "#37474F",
-          spinnerOnBackgroundColor: "#37474F"
+          logoOnBackgroundColor: "white",
+          spinnerOnBackgroundColor: "#37474F",
+          backgroundGradient: ["#083f67", "#3490b6"],
+          unlockGradient: ["#EB3349", "#F45C43"]
         }}
       >
         {this.props.children}
@@ -113,7 +115,7 @@ const defaultTheme = StyleSheet.create({
     backgroundColor: "#ECEFF1"
   },
   textOnBackground: {
-    color: "#37474F"
+    color: "white"
   }
 });
 
