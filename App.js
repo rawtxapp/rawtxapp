@@ -26,13 +26,16 @@ if (Platform.OS === "android") {
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const RootSwitch = FluidNavigator({
-  Intro: { screen: ScreenIntro },
-  WalletCreate: { screen: ScreenIntroCreateUnlockWallet },
-  GenSeed: { screen: ScreenGenSeed },
-  Wallet: { screen: ScreenWallet },
-  Unlock: { screen: ScreenUnlock }
-});
+const RootSwitch = FluidNavigator(
+  {
+    Intro: { screen: ScreenIntro },
+    WalletCreate: { screen: ScreenIntroCreateUnlockWallet },
+    GenSeed: { screen: ScreenGenSeed },
+    Wallet: { screen: ScreenWallet },
+    Unlock: { screen: ScreenUnlock }
+  },
+  { transitionConfig: { duration: 500 } }
+);
 
 type Props = {};
 type State = {
