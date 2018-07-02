@@ -82,19 +82,19 @@ class ScreenIntro extends Component<Props, State> {
   render() {
     return (
       <View style={styles.linearGradient}>
-        <LinearGradient
-          start={{ x: 0.0, y: 0 }}
-          end={{ x: 1, y: 1.0 }}
-          locations={[0, 0.5]}
-          colors={this.props.backgroundGradient}
-          style={{
-            position: "absolute",
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0
-          }}
-        />
+        <Transition shared="background">
+          <LinearGradient
+            start={{ x: 0.0, y: 0 }}
+            end={{ x: 1, y: 1.0 }}
+            locations={[0, 0.5]}
+            colors={this.props.backgroundGradient}
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%"
+            }}
+          />
+        </Transition>
         <View style={styles.container}>
           <ComponentLogo />
           <View style={styles.sheetContainer}>{this._renderUnlock()}</View>
