@@ -9,7 +9,7 @@
  * ssl support.
  */
 import { encodeBase64, fetch } from "./NativeRtxModule.js";
-import { timeout } from "./Utils.js";
+import { timeout, convertErrorToStr } from "./Utils.js";
 
 type LNDState = "seed" | "password" | "unlocked" | "unknown";
 class LndApi {
@@ -125,30 +125,34 @@ class LndApi {
 
   unlockwallet = async (password: string) => {
     this.log("unlocking wallet");
-    const result = await this.genericPostJson("unlockwallet", {
-      wallet_password: await encodeBase64(password)
-    });
-    if (result.error != "invalid passphrase for master public key") {
-      // wait until getinfo works or at most 30 seconds
-      for (let i = 0; i < 30; i++) {
-        try {
-          this.log("trying to getinfo");
-          await this.getInfo();
-          return {};
-        } catch (err) {
-          this.log("failed getinfo");
-          await timeout(1000);
+    try {
+      const result = await this.genericPostJson("unlockwallet", {
+        wallet_password: await encodeBase64(password)
+      });
+      if (result.error != "invalid passphrase for master public key") {
+        // wait until getinfo works or at most 30 seconds
+        for (let i = 0; i < 30; i++) {
+          try {
+            this.log("trying to getinfo");
+            await this.getInfo();
+            return {};
+          } catch (err) {
+            this.log("failed getinfo");
+            await timeout(1000);
+          }
         }
+        return {
+          error:
+            "It looks like we weren't able to open the wallet (" +
+            result.error +
+            "), if you see a notification on the top, try closing and" +
+            " reopening the app!"
+        };
+      } else {
+        return result;
       }
-      return {
-        error:
-          "It looks like we weren't able to open the wallet (" +
-          result.error +
-          "), if you see a notification on the top, try closing and" +
-          " reopening the app!"
-      };
-    } else {
-      return result;
+    } catch (err) {
+      return { error: convertErrorToStr(err) };
     }
   };
 
