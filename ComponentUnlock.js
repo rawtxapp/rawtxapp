@@ -126,10 +126,6 @@ class ComponentUnlock extends Component<Props, State> {
                         });
                       } else if (lndState == "password") {
                         this.setState({ unlocking: w });
-                        if (w.usesKeychain) {
-                          // Keep working spinner running.
-                          return;
-                        }
                       } else {
                         // TODO: handle seed + unlocked
                       }
@@ -153,10 +149,12 @@ class ComponentUnlock extends Component<Props, State> {
   };
 
   _renderUnlockingWithKeychain = () => {
-    <View>
-      <ActivityIndicator />
-      <Text>Unlocking with remembered password!</Text>
-    </View>;
+    return (
+      <View style={styles.unlockingContainer}>
+        <ActivityIndicator color="white" />
+        <Text style={styles.text}>Unlocking with remembered password!</Text>
+      </View>
+    );
   };
 
   _renderUnlocking = () => {
@@ -201,5 +199,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     flex: 1
+  },
+  unlockingContainer: {
+    alignItems: "center"
   }
 });
