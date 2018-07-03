@@ -1,3 +1,4 @@
+/* @flow */
 /**
  * LND rest client implementation.
  */
@@ -11,7 +12,16 @@ import { fetch, encodeBase64 } from "./NativeRtxModule.js";
 import { timeout } from "./Utils.js";
 
 class LndApi {
-  constructor(host = "localhost", port = "8080", pathPrefix = "/v1") {
+  host: string;
+  port: string;
+  pathPrefix: string;
+  TAG: string;
+  adminMacaroon: string;
+  constructor(
+    host: string = "localhost",
+    port: string = "8080",
+    pathPrefix: string = "/v1"
+  ) {
     this.host = host;
     this.port = port;
     this.pathPrefix = pathPrefix;
@@ -27,11 +37,11 @@ class LndApi {
     return headers;
   };
 
-  setAdminMacaroon = adminMacaroon => {
+  setAdminMacaroon = (adminMacaroon: string) => {
     this.adminMacaroon = adminMacaroon;
   };
 
-  url = (path, queryParams) => {
+  url = (path: string, queryParams: ?string) => {
     if (!path.startsWith("/")) {
       path = "/" + path;
     }
@@ -43,13 +53,13 @@ class LndApi {
     return finalPath;
   };
 
-  log = (...args) => {
+  log = (...args: any[]) => {
     if (__DEV__) {
       console.log(this.TAG, ...args);
     }
   };
 
-  genericGetJson = async urlIn => {
+  genericGetJson = async (urlIn: string) => {
     try {
       const url = this.url(urlIn);
       const response = await fetch({ url, headers: this.headers() });
@@ -61,7 +71,7 @@ class LndApi {
     }
   };
 
-  genericDeleteJson = async (urlIn, queryParams) => {
+  genericDeleteJson = async (urlIn: string, queryParams: string) => {
     try {
       const url = this.url(urlIn, queryParams);
       const response = await fetch({
@@ -77,7 +87,7 @@ class LndApi {
     }
   };
 
-  genericPostJson = async (urlIn, jsonIn) => {
+  genericPostJson = async (urlIn: string, jsonIn: Object) => {
     try {
       const url = this.url(urlIn);
       const response = await fetch({
@@ -104,7 +114,7 @@ class LndApi {
     return await this.genericGetJson("genseed");
   };
 
-  initwallet = async (cipher, password) => {
+  initwallet = async (cipher: string, password: string) => {
     this.log("initializing wallet");
     return await this.genericPostJson("initwallet", {
       wallet_password: await encodeBase64(password),
@@ -112,7 +122,7 @@ class LndApi {
     });
   };
 
-  unlockwallet = async password => {
+  unlockwallet = async (password: string) => {
     this.log("unlocking wallet");
     const result = await this.genericPostJson("unlockwallet", {
       wallet_password: await encodeBase64(password)
@@ -162,7 +172,7 @@ class LndApi {
     return await this.genericGetJson("peers");
   };
 
-  addPeers = async (pubkey, host, perm = true) => {
+  addPeers = async (pubkey: string, host: string, perm: boolean = true) => {
     this.log("adding peer: ", pubkey, host, perm);
     return await this.genericPostJson("peers", {
       addr: {
@@ -173,7 +183,7 @@ class LndApi {
     });
   };
 
-  addPeersAddr = async addr => {
+  addPeersAddr = async (addr: string) => {
     const splitted = addr.split("@").filter(String);
     if (splitted.length < 2) {
       throw new Error("Addresses doesn't have 2 components (pubkey+ip)!");
@@ -181,7 +191,7 @@ class LndApi {
     return await this.addPeers(splitted[0], splitted[1]);
   };
 
-  openChannel = async channelRequest => {
+  openChannel = async (channelRequest: Object) => {
     this.log("opening channel to: ", channelRequest.node_pubkey_string);
     if (channelRequest.node_pubkey_string.includes("@")) {
       channelRequest.node_pubkey_string = channelRequest.node_pubkey_string.split(
@@ -191,7 +201,7 @@ class LndApi {
     return await this.genericPostJson("channels", channelRequest);
   };
 
-  removeLightning_ = payreq => {
+  removeLightning_ = (payreq: string) => {
     const l = "lightning:";
     if (payreq.startsWith(l)) {
       return payreq.substring(l.length);
@@ -199,14 +209,14 @@ class LndApi {
     return payreq;
   };
 
-  decodepayreq = async payreq => {
+  decodepayreq = async (payreq: string) => {
     // TODO: make sure this doesn't open a loophole or security vulnerability
     // since payreq is coming from a potential attacker.
     this.log("decoding payreq: ", payreq);
     return await this.genericGetJson("payreq/" + this.removeLightning_(payreq));
   };
 
-  sendpaymentPayreq = async payreq => {
+  sendpaymentPayreq = async (payreq: string) => {
     this.log("paying payreq: ", payreq);
     return await this.genericPostJson("channels/transactions", {
       payment_request: this.removeLightning_(payreq)
@@ -234,7 +244,7 @@ class LndApi {
   };
 
   // chan_point format => tx_id:out_ix
-  closeChannel = async (chan_point, force_close = false) => {
+  closeChannel = async (chan_point: string, force_close: boolean = false) => {
     const split = chan_point.split(":");
     const chan_point_tx_id = split[0];
     const chan_point_out_ix = split[1];
@@ -246,7 +256,7 @@ class LndApi {
     );
   };
 
-  addInvoiceSimple = async (memo, amount_sat) => {
+  addInvoiceSimple = async (memo: string, amount_sat: string) => {
     this.log("adding simple invoice: ", memo, ", ", amount_sat);
     return await this.genericPostJson("invoices", {
       memo,
@@ -254,7 +264,7 @@ class LndApi {
     });
   };
 
-  getNodeInfo = async pub_key => {
+  getNodeInfo = async (pub_key: string) => {
     this.log("getting node info for ", pub_key);
     return await this.genericGetJson("graph/node/" + pub_key);
   };
@@ -269,7 +279,7 @@ class LndApi {
     return await this.genericGetJson("invoices");
   };
 
-  sendTransactionBlockchain = async (addr, amount) => {
+  sendTransactionBlockchain = async (addr: string, amount: string) => {
     this.log("sending btc (blockchain) to ", addr);
     return await this.genericPostJson("transactions", {
       addr,
