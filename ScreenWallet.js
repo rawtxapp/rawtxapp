@@ -609,7 +609,7 @@ class ScreenWallet extends Component {
                 this.setState({ iosWalletClosed: true });
                 return;
               }
-              this.props.navigation.navigate("WalletCreate");
+              this.props.navigation.navigate("Intro");
             });
           }}
         >
