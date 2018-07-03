@@ -344,5 +344,18 @@ theme.add({
     height: 80,
     resizeMode: "contain",
     tintColor: "white"
+  },
+  absoluteSheetCard: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20
+  },
+  absoluteFill: {
+    position: "absolute",
+    width: "100%",
+    height: "100%"
   }
 });

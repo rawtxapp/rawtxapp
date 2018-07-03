@@ -25,14 +25,7 @@ class ScreenIntro extends Component<Props, State> {
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             colors={this.props.unlockGradient}
-            style={{
-              width: "100%",
-              height: "100%",
-              position: "absolute",
-
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20
-            }}
+            style={theme.absoluteSheetCard}
           />
         </Transition>
         <TouchableOpacity
@@ -44,7 +37,7 @@ class ScreenIntro extends Component<Props, State> {
               <Transition shared="icon">
                 <Image
                   source={require("./assets/feather/unlock.png")}
-                  style={{ width: 30, height: 30, tintColor: "white" }}
+                  style={styles.icon}
                 />
               </Transition>
             </View>
@@ -68,11 +61,7 @@ class ScreenIntro extends Component<Props, State> {
             end={{ x: 1, y: 1.0 }}
             locations={[0, 0.5]}
             colors={this.props.backgroundGradient}
-            style={{
-              position: "absolute",
-              width: "100%",
-              height: "100%"
-            }}
+            style={theme.absoluteFill}
           />
         </Transition>
         <View style={styles.container}>
@@ -124,5 +113,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center"
+  },
+  icon: {
+    width: 30,
+    height: 30,
+    tintColor: "white"
   }
 });
