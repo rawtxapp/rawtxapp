@@ -10,7 +10,10 @@ import { styles as theme } from "react-native-theme";
 
 type Props = {
   logoOnBackgroundColor?: string,
-  theme: Object
+  theme: Object,
+  unlockGradient: string[],
+  navigation: Object,
+  backgroundGradient: string[]
 };
 type State = {};
 class ScreenIntro extends Component<Props, State> {
@@ -52,29 +55,6 @@ class ScreenIntro extends Component<Props, State> {
             </View>
           </View>
         </TouchableOpacity>
-      </View>
-    );
-  };
-  _renderLogo = () => {
-    return (
-      <View>
-        <Image
-          source={require("./assets/intro-logo.png")}
-          style={theme.logoImage}
-        />
-      </View>
-    );
-  };
-
-  _renderLogoContainer = () => {
-    return (
-      <View style={styles.logoContainer}>
-        {this._renderLogo()}
-        <View style={styles.container}>
-          <Text style={[styles.slogan, this.props.theme.textOnBackground]}>
-            lightning network wallet
-          </Text>
-        </View>
       </View>
     );
   };

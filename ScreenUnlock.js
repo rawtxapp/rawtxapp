@@ -1,20 +1,41 @@
 /* @flow */
 
 import React, { Component } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import withTheme from "./withTheme";
 import { styles as theme } from "react-native-theme";
 
 import { Transition } from "react-navigation-fluid-transitions";
 import ComponentLogo from "./ComponentLogo";
+import ComponentUnlock from "./ComponentUnlock";
 
 type Props = {
   logoOnBackgroundColor?: string,
-  theme: Object
+  theme: Object,
+  unlockGradient: Array<String>,
+  backgroundGradient: Array<String>,
+  navigation: Object
 };
 type State = {};
-class ScreenIntro extends Component<Props, State> {
+class ScreenUnlock extends Component<Props, State> {
+  _renderContent = () => {
+    return (
+      <Transition appear="bottom" delay>
+        <ScrollView style={styles.contentContainer}>
+          <ComponentUnlock navigation={this.props.navigation} />
+        </ScrollView>
+      </Transition>
+    );
+  };
+
   _renderUnlock = () => {
     return (
       <View style={styles.sheetCard}>
@@ -38,7 +59,7 @@ class ScreenIntro extends Component<Props, State> {
             <Transition shared="icon">
               <Image
                 source={require("./assets/feather/unlock.png")}
-                style={{ width: 30, height: 30, tintColor: "white" }}
+                style={styles.icon}
               />
             </Transition>
           </View>
@@ -48,14 +69,20 @@ class ScreenIntro extends Component<Props, State> {
             </Transition>
           </View>
           <View style={styles.actionIcon}>
-            <Transition appear="scale">
-              <Image
-                source={require("./assets/feather/close-2.png")}
-                style={{ width: 30, height: 30, tintColor: "white" }}
-              />
-            </Transition>
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate("Intro")}
+            >
+              <Transition appear="scale">
+                <Image
+                  source={require("./assets/feather/close-2.png")}
+                  style={styles.closeIcon}
+                />
+              </Transition>
+            </TouchableOpacity>
           </View>
         </View>
+
+        {this._renderContent()}
       </View>
     );
   };
@@ -85,7 +112,7 @@ class ScreenIntro extends Component<Props, State> {
   }
 }
 
-export default withTheme(ScreenIntro);
+export default withTheme(ScreenUnlock);
 
 const styles = StyleSheet.create({
   container: {
@@ -120,5 +147,18 @@ const styles = StyleSheet.create({
   actionText: {
     flex: 1,
     alignItems: "center"
+  },
+  icon: {
+    width: 30,
+    height: 30,
+    tintColor: "white"
+  },
+  closeIcon: {
+    width: 20,
+    height: 20,
+    tintColor: "white"
+  },
+  contentContainer: {
+    paddingHorizontal: 20
   }
 });
