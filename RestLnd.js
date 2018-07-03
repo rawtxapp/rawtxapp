@@ -8,9 +8,10 @@
  * additional ssl certs, so implement a different version with self signed 
  * ssl support.
  */
-import { fetch, encodeBase64 } from "./NativeRtxModule.js";
+import { encodeBase64, fetch } from "./NativeRtxModule.js";
 import { timeout } from "./Utils.js";
 
+type LNDState = "seed" | "password" | "unlocked" | "unknown";
 class LndApi {
   host: string;
   port: string;
@@ -286,6 +287,31 @@ class LndApi {
       amount
     });
   };
+
+  // Convenience method to determine the state of LND.
+  determineState = async (): Promise<LNDState> => {
+    this.log("determining lnd state");
+
+    // check if we are at genseed stage
+    try {
+      const seed = await this.genSeed();
+      if (seed.cipher_seed_mnemonic) {
+        return "seed";
+      } else if (seed.error.includes("already exists")) {
+        return "password";
+      }
+    } catch (err) {}
+
+    try {
+      const getinfo = await this.getInfo();
+      if (getinfo.identity_pubkey) {
+        return "unlocked";
+      }
+    } catch (err) {}
+
+    return "unknown";
+  };
 }
 
 export default new LndApi();
+export type { LndApi, LNDState };
