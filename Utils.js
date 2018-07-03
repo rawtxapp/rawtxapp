@@ -237,3 +237,19 @@ export const sortBySettleDateDescending = payments => {
 export const sleep = ms => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
+
+export const convertErrorToStr = (err: Object): string => {
+  if (typeof err == "string") {
+    return err;
+  } else if (
+    typeof err == "object" &&
+    err.message &&
+    typeof err.message == "string"
+  ) {
+    return err.message;
+  } else if (typeof err == "object") {
+    return JSON.stringify(err);
+  } else {
+    return String(err);
+  }
+};
