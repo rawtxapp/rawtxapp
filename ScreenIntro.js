@@ -72,6 +72,20 @@ class ScreenIntro extends Component<Props, State> {
     });
   };
 
+  hideAllCards = () => {
+    Animated.stagger(200, [
+      this.normalAnimCard(this.state.showRemoteAnim),
+      this.normalAnimCard(this.state.showCreateAnim),
+      this.normalAnimCard(this.state.showUnlockAnim)
+    ]).start(() => {
+      this.setState({
+        showingUnlock: false,
+        showingCreate: false,
+        showingRemote: false
+      });
+    });
+  };
+
   _renderCard = (
     onPress,
     icon,
@@ -116,9 +130,47 @@ class ScreenIntro extends Component<Props, State> {
               <View style={styles.actionIcon}>
                 <Image source={icon} style={styles.icon} />
               </View>
-              <View style={styles.actionText}>
+              <Animated.View
+                style={[
+                  styles.actionText,
+                  {
+                    marginRight: anim.interpolate({
+                      inputRange: [1, 2],
+                      outputRange: [50, 0]
+                    })
+                  }
+                ]}
+              >
                 <Text style={styles.sheetCardAction}>{action}</Text>
-              </View>
+              </Animated.View>
+              <TouchableWithoutFeedback onPress={this.hideAllCards}>
+                <Animated.View
+                  style={[
+                    styles.actionIcon,
+                    {
+                      flex: anim.interpolate({
+                        inputRange: [1, 2],
+                        outputRange: [0, 1]
+                      })
+                    }
+                  ]}
+                >
+                  <Animated.Image
+                    source={require("./assets/feather/close-2.png")}
+                    style={{
+                      width: anim.interpolate({
+                        inputRange: [1, 2],
+                        outputRange: [0, 20]
+                      }),
+                      height: anim.interpolate({
+                        inputRange: [1, 2],
+                        outputRange: [0, 20]
+                      }),
+                      tintColor: "white"
+                    }}
+                  />
+                </Animated.View>
+              </TouchableWithoutFeedback>
             </View>
           </Animated.View>
         </TouchableWithoutFeedback>
@@ -216,7 +268,8 @@ const styles = StyleSheet.create({
   actionIcon: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    overflow: "hidden"
   },
   sheetCard: {
     borderTopLeftRadius: 20,
@@ -234,7 +287,7 @@ const styles = StyleSheet.create({
   },
   actionText: {
     flex: 1,
-    alignItems: "flex-start"
+    alignItems: "center"
   },
   touchable: {
     alignItems: "center",
