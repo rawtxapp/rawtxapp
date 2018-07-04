@@ -1,12 +1,19 @@
 /* @flow */
 
 import React, { Component } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Animated,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View
+} from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import withTheme from "./withTheme";
-import { Transition } from "react-navigation-fluid-transitions";
 import ComponentLogo from "./ComponentLogo";
 import { styles as theme } from "react-native-theme";
+import ComponentUnlock from "./ComponentUnlock";
 
 type Props = {
   logoOnBackgroundColor?: string,
@@ -17,82 +24,164 @@ type Props = {
   navigation: Object,
   backgroundGradient: string[]
 };
-type State = {};
+type State = {
+  showUnlockAnim: Object,
+  showCreateAnim: Object,
+  showRemoteAnim: Object,
+  showingUnlock: boolean,
+  showingCreate: boolean,
+  showingRemote: boolean
+};
+
 class ScreenIntro extends Component<Props, State> {
-  _renderCard = (onPress, icon, action, ix, gradient) => {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showUnlockAnim: new Animated.Value(0),
+      showCreateAnim: new Animated.Value(0),
+      showRemoteAnim: new Animated.Value(0),
+
+      showingUnlock: false,
+      showingCreate: false,
+      showingRemote: false
+    };
+  }
+
+  componentDidMount() {
+    Animated.stagger(200, [
+      this.normalAnimCard(this.state.showUnlockAnim),
+      this.normalAnimCard(this.state.showCreateAnim),
+      this.normalAnimCard(this.state.showRemoteAnim)
+    ]).start();
+  }
+
+  fullAnimCard = a => Animated.timing(a, { toValue: 2, duration: 500 });
+  removeAnimCard = a => Animated.timing(a, { toValue: 0, duration: 500 });
+  normalAnimCard = a => Animated.timing(a, { toValue: 1, duration: 500 });
+
+  showOnlyCard = (s, a) => {
+    const r = this.state.showRemoteAnim,
+      c = this.state.showCreateAnim,
+      u = this.state.showUnlockAnim;
+    this.setState(s, () => {
+      Animated.stagger(200, [
+        a == r ? this.fullAnimCard(a) : this.removeAnimCard(r),
+        a == c ? this.fullAnimCard(a) : this.removeAnimCard(c),
+        a == u ? this.fullAnimCard(a) : this.removeAnimCard(u)
+      ]).start();
+    });
+  };
+
+  _renderCard = (
+    onPress,
+    icon,
+    action,
+    ix,
+    gradient,
+    anim,
+    showContent,
+    content
+  ) => {
     return (
-      <View style={[styles.sheetCard, ix && { height: 30 * ix + "%" }]}>
-        <Transition shared="sheet">
-          <LinearGradient
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            colors={gradient}
-            style={theme.absoluteSheetCard}
-          />
-        </Transition>
-        <TouchableOpacity onPress={onPress} style={styles.touchable}>
-          <View style={styles.actionContainer}>
-            <View style={styles.actionIcon}>
-              <Transition shared="icon">
+      <Animated.View
+        style={[
+          styles.sheetCard,
+          ix && {
+            height: anim.interpolate({
+              inputRange: [0, 1, 2],
+              outputRange: ["0%", 30 * ix + "%", "100%"]
+            })
+          }
+        ]}
+      >
+        <LinearGradient
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          colors={gradient}
+          style={theme.absoluteSheetCard}
+        />
+        <TouchableWithoutFeedback onPress={onPress}>
+          <Animated.View
+            style={[
+              styles.touchable,
+              {
+                height: anim.interpolate({
+                  inputRange: [1, 2],
+                  outputRange: [100 / ix + "%", "15%"]
+                })
+              }
+            ]}
+          >
+            <View style={styles.actionContainer}>
+              <View style={styles.actionIcon}>
                 <Image source={icon} style={styles.icon} />
-              </Transition>
-            </View>
-            <View style={styles.actionText}>
-              <Transition shared="action">
+              </View>
+              <View style={styles.actionText}>
                 <Text style={styles.sheetCardAction}>{action}</Text>
-              </Transition>
+              </View>
             </View>
-          </View>
-        </TouchableOpacity>
-        {ix > 1 && (
-          <View style={{ width: "100%", height: 100 - 100 / ix + "%" }} />
-        )}
-      </View>
+          </Animated.View>
+        </TouchableWithoutFeedback>
+        {showContent && content}
+      </Animated.View>
     );
   };
 
   _renderUnlock = () => {
     return this._renderCard(
-      () => this.props.navigation.navigate("Unlock"),
+      () => {
+        this.showOnlyCard({ showingUnlock: true }, this.state.showUnlockAnim);
+      },
       require("./assets/feather/unlock.png"),
       "Unlock",
       1,
-      this.props.unlockGradient
+      this.props.unlockGradient,
+      this.state.showUnlockAnim,
+      this.state.showingUnlock,
+      <ComponentUnlock navigation={this.props.navigation} />
     );
   };
 
   _renderCreate = () => {
     return this._renderCard(
-      () => this.props.navigation.navigate("Create"),
+      () => {
+        this.showOnlyCard({ showingCreate: true }, this.state.showCreateAnim);
+      },
       require("./assets/feather/add.png"),
       "Create",
       2,
-      this.props.createGradient
+      this.props.createGradient,
+      this.state.showCreateAnim,
+      this.state.showingCreate,
+      <Text>Test2</Text>
     );
   };
 
   _renderRemote = () => {
     return this._renderCard(
-      () => this.props.navigation.navigate("Remote"),
+      () => {
+        this.showOnlyCard({ showingRemote: true }, this.state.showRemoteAnim);
+      },
       require("./assets/feather/monitor-1.png"),
       "Remote",
       3,
-      this.props.remoteGradient
+      this.props.remoteGradient,
+      this.state.showRemoteAnim,
+      this.state.showingRemote,
+      <Text>Test3</Text>
     );
   };
 
   render() {
     return (
       <View style={styles.linearGradient}>
-        <Transition shared="background">
-          <LinearGradient
-            start={{ x: 0.0, y: 0 }}
-            end={{ x: 1, y: 1.0 }}
-            locations={[0, 0.5]}
-            colors={this.props.backgroundGradient}
-            style={theme.absoluteFill}
-          />
-        </Transition>
+        <LinearGradient
+          start={{ x: 0.0, y: 0 }}
+          end={{ x: 1, y: 0.5 }}
+          locations={[0, 1]}
+          colors={this.props.backgroundGradient}
+          style={theme.absoluteFill}
+        />
         <View style={styles.container}>
           <ComponentLogo />
           <View style={styles.sheetContainer}>
@@ -136,7 +225,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     left: 0,
-    right: 0
+    right: 0,
+    overflow: "hidden"
   },
   sheetCardAction: {
     fontSize: 36,
@@ -147,9 +237,9 @@ const styles = StyleSheet.create({
     alignItems: "flex-start"
   },
   touchable: {
-    flex: 1,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    width: "100%"
   },
   icon: {
     width: 30,

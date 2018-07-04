@@ -22,7 +22,6 @@
     "react-native-simple-radio-button": "^2.7.1",
     "react-native-theme": "^0.1.8",
     "react-navigation": "^2.4.1",
-    "react-navigation-fluid-transitions": "^0.2.2",
     "react-timer-mixin": "^0.13.3"
   },
   "devDependencies": {

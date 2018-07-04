@@ -11,7 +11,7 @@ import {
   UIManager,
   View
 } from "react-native";
-import { FluidNavigator } from "react-navigation-fluid-transitions";
+import { createStackNavigator } from "react-navigation";
 import { LndProvider } from "./ContextLnd.js";
 import ThemeConsumer, { ThemeProvider } from "./ContextTheme";
 import ScreenGenSeed from "./ScreenGenSeed.js";
@@ -19,22 +19,20 @@ import ScreenIntro from "./ScreenIntro.js";
 import ScreenIntroCreateUnlockWallet from "./ScreenIntroCreateUnlockWallet.js";
 import ScreenLightningLink from "./ScreenLightningLink.js";
 import ScreenWallet from "./ScreenWallet.js";
-import ScreenUnlock from "./ScreenUnlock.js";
 
 if (Platform.OS === "android") {
   UIManager.setLayoutAnimationEnabledExperimental &&
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const RootSwitch = FluidNavigator(
+const RootSwitch = createStackNavigator(
   {
     Intro: { screen: ScreenIntro },
     WalletCreate: { screen: ScreenIntroCreateUnlockWallet },
     GenSeed: { screen: ScreenGenSeed },
-    Wallet: { screen: ScreenWallet },
-    Unlock: { screen: ScreenUnlock }
+    Wallet: { screen: ScreenWallet }
   },
-  { transitionConfig: { duration: 500 } }
+  { headerMode: "none" }
 );
 
 type Props = {};

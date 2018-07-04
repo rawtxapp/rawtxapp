@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import {
   ActivityIndicator,
   LayoutAnimation,
+  ScrollView,
   StyleSheet,
   Text,
   View
@@ -171,11 +172,11 @@ class ComponentUnlock extends Component<Props, State> {
 
   render() {
     return (
-      <View style={styles.contentContainer}>
+      <ScrollView style={styles.contentContainer}>
         {this._renderWalletChoose()}
         {this._renderUnlocking()}
         {this.state.working && <ActivityIndicator color="white" />}
-      </View>
+      </ScrollView>
     );
   }
 }

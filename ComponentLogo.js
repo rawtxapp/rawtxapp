@@ -5,8 +5,6 @@ import { Image, StyleSheet, Text, View } from "react-native";
 import withTheme from "./withTheme";
 import { styles as theme } from "react-native-theme";
 
-import { Transition } from "react-navigation-fluid-transitions";
-
 type Props = {
   logoOnBackgroundColor?: string,
   theme: Object
@@ -16,16 +14,14 @@ class ComponentLogo extends Component<Props, State> {
   _renderLogo = () => {
     return (
       <View style={styles.imageContainer}>
-        <Transition shared="logo">
-          <Image
-            source={require("./assets/intro-logo.png")}
-            style={{
-              width: 216,
-              height: 80,
-              tintColor: "white"
-            }}
-          />
-        </Transition>
+        <Image
+          source={require("./assets/intro-logo.png")}
+          style={{
+            width: 216,
+            height: 80,
+            tintColor: "white"
+          }}
+        />
       </View>
     );
   };
@@ -35,13 +31,11 @@ class ComponentLogo extends Component<Props, State> {
       <View style={styles.logoContainer}>
         {this._renderLogo()}
         <View style={styles.container}>
-          <Transition shared="slogan">
-            <View>
-              <Text style={[styles.slogan, this.props.theme.textOnBackground]}>
-                lightning network wallet
-              </Text>
-            </View>
-          </Transition>
+          <View>
+            <Text style={[styles.slogan, this.props.theme.textOnBackground]}>
+              lightning network wallet
+            </Text>
+          </View>
         </View>
       </View>
     );
