@@ -12,43 +12,72 @@ type Props = {
   logoOnBackgroundColor?: string,
   theme: Object,
   unlockGradient: string[],
+  createGradient: string[],
+  remoteGradient: string[],
   navigation: Object,
   backgroundGradient: string[]
 };
 type State = {};
 class ScreenIntro extends Component<Props, State> {
-  _renderUnlock = () => {
+  _renderCard = (onPress, icon, action, ix, gradient) => {
     return (
-      <View style={styles.sheetCard}>
+      <View style={[styles.sheetCard, ix && { height: 30 * ix + "%" }]}>
         <Transition shared="sheet">
           <LinearGradient
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            colors={this.props.unlockGradient}
+            colors={gradient}
             style={theme.absoluteSheetCard}
           />
         </Transition>
-        <TouchableOpacity
-          onPress={() => this.props.navigation.navigate("Unlock")}
-          style={styles.touchable}
-        >
+        <TouchableOpacity onPress={onPress} style={styles.touchable}>
           <View style={styles.actionContainer}>
             <View style={styles.actionIcon}>
               <Transition shared="icon">
-                <Image
-                  source={require("./assets/feather/unlock.png")}
-                  style={styles.icon}
-                />
+                <Image source={icon} style={styles.icon} />
               </Transition>
             </View>
             <View style={styles.actionText}>
               <Transition shared="action">
-                <Text style={styles.sheetCardAction}>Unlock</Text>
+                <Text style={styles.sheetCardAction}>{action}</Text>
               </Transition>
             </View>
           </View>
         </TouchableOpacity>
+        {ix > 1 && (
+          <View style={{ width: "100%", height: 100 - 100 / ix + "%" }} />
+        )}
       </View>
+    );
+  };
+
+  _renderUnlock = () => {
+    return this._renderCard(
+      () => this.props.navigation.navigate("Unlock"),
+      require("./assets/feather/unlock.png"),
+      "Unlock",
+      1,
+      this.props.unlockGradient
+    );
+  };
+
+  _renderCreate = () => {
+    return this._renderCard(
+      () => this.props.navigation.navigate("Create"),
+      require("./assets/feather/add.png"),
+      "Create",
+      2,
+      this.props.createGradient
+    );
+  };
+
+  _renderRemote = () => {
+    return this._renderCard(
+      () => this.props.navigation.navigate("Remote"),
+      require("./assets/feather/monitor-1.png"),
+      "Remote",
+      3,
+      this.props.remoteGradient
     );
   };
 
@@ -66,7 +95,11 @@ class ScreenIntro extends Component<Props, State> {
         </Transition>
         <View style={styles.container}>
           <ComponentLogo />
-          <View style={styles.sheetContainer}>{this._renderUnlock()}</View>
+          <View style={styles.sheetContainer}>
+            {this._renderRemote()}
+            {this._renderCreate()}
+            {this._renderUnlock()}
+          </View>
         </View>
       </View>
     );
@@ -84,7 +117,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   sheetContainer: {
-    flex: 1,
+    flex: 4,
     justifyContent: "flex-end",
     paddingTop: 40
   },
@@ -99,7 +132,11 @@ const styles = StyleSheet.create({
   sheetCard: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    flex: 1
+    height: "20%",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0
   },
   sheetCardAction: {
     fontSize: 36,

@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   sheetContainer: {
-    flex: 2,
+    flex: 4,
     justifyContent: "flex-end",
     paddingTop: 40
   },
