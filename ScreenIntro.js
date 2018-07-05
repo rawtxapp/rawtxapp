@@ -14,6 +14,7 @@ import withTheme from "./withTheme";
 import ComponentLogo from "./ComponentLogo";
 import { styles as theme } from "react-native-theme";
 import ComponentUnlock from "./ComponentUnlock";
+import ComponentCreate from "./ComponentCreate";
 
 type Props = {
   logoOnBackgroundColor?: string,
@@ -205,7 +206,7 @@ class ScreenIntro extends Component<Props, State> {
       this.props.createGradient,
       this.state.showCreateAnim,
       this.state.showingCreate,
-      <Text>Test2</Text>
+      <ComponentCreate />
     );
   };
 
