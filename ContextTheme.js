@@ -42,10 +42,9 @@ class ThemeProvider extends Component {
           logoOnBackgroundColor: "white",
           spinnerOnBackgroundColor: "#37474F",
           backgroundGradient: ["#083f67", "#3490b6"],
-          unlockGradient: ["#EB3349", "#F45C43"],
-          createGradient: ["#348F50", "#56B4D3"],
-          remoteGradient: ["#FFE000", "#799F0C"],
-          unlockBackgroundGradient: ["#3494E6", "#EC6EAD"]
+          createGradient: ["#FF8008", "#FFC837"],
+          remoteGradient: ["#fa4d5c", "#fc97a0"],
+          unlockGradient: ["#a168a5", "#787baf"]
         }}
       >
         {this.props.children}
