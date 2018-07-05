@@ -16,11 +16,7 @@ class ComponentLogo extends Component<Props, State> {
       <View style={styles.imageContainer}>
         <Image
           source={require("./assets/intro-logo.png")}
-          style={{
-            width: 216,
-            height: 80,
-            tintColor: "white"
-          }}
+          style={styles.logo}
         />
       </View>
     );
@@ -32,7 +28,7 @@ class ComponentLogo extends Component<Props, State> {
         {this._renderLogo()}
         <View style={styles.container}>
           <View>
-            <Text style={[styles.slogan, this.props.theme.textOnBackground]}>
+            <Text style={[this.props.theme.textOnBackground, styles.slogan]}>
               lightning network wallet
             </Text>
           </View>
@@ -55,7 +51,8 @@ const styles = StyleSheet.create({
   },
   slogan: {
     alignSelf: "center",
-    fontSize: 16
+    fontSize: 16,
+    color: "rgba(255,255,255,0.7)"
   },
   logoContainer: {
     padding: 50,
@@ -65,5 +62,10 @@ const styles = StyleSheet.create({
   imageContainer: {
     alignItems: "center",
     marginBottom: -20
+  },
+  logo: {
+    width: 216,
+    height: 80,
+    tintColor: "white"
   }
 });
