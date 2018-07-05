@@ -177,6 +177,7 @@ class ComponentUnlock extends Component<Props, State> {
         {this._renderWalletChoose()}
         {this._renderUnlocking()}
         {this.state.working && <ActivityIndicator color="white" />}
+        <View style={{ height: 20 }} />
       </ScrollView>
     );
   }
@@ -187,7 +188,7 @@ export default withNavigation(withLnd(ComponentUnlock));
 const styles = StyleSheet.create({
   contentContainer: {
     padding: 20,
-    paddingTop: 10,
+    paddingVertical: 10,
     backgroundColor: "rgba(0, 0, 0, 0.3)"
   },
   text: {
@@ -200,9 +201,9 @@ const styles = StyleSheet.create({
     padding: 10,
     marginVertical: 5,
     borderRadius: 10,
-    flex: 1,
     backgroundColor: "#ECEFF1",
-    fontWeight: "300"
+    fontWeight: "300",
+    overflow: "hidden"
   },
   unlockingContainer: {
     alignItems: "center"
