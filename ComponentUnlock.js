@@ -11,6 +11,7 @@ import {
 import Button from "react-native-button";
 import { withNavigation } from "react-navigation";
 import { convertErrorToStr } from "./Utils.js";
+import { styles as theme } from "react-native-theme";
 import withLnd from "./withLnd.js";
 
 import type { LndApi, LNDState } from "./RestLnd";
@@ -172,7 +173,7 @@ class ComponentUnlock extends Component<Props, State> {
 
   render() {
     return (
-      <ScrollView style={styles.contentContainer}>
+      <ScrollView style={[styles.contentContainer]}>
         {this._renderWalletChoose()}
         {this._renderUnlocking()}
         {this.state.working && <ActivityIndicator color="white" />}
@@ -186,20 +187,22 @@ export default withNavigation(withLnd(ComponentUnlock));
 const styles = StyleSheet.create({
   contentContainer: {
     padding: 20,
-    paddingTop: 0
+    paddingTop: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.3)"
   },
   text: {
     color: "white"
   },
   button: {
     margin: 5,
-    color: "white",
-    borderWidth: 2,
-    borderColor: "white",
+    color: "#0277BD",
     margin: 10,
     padding: 10,
+    marginVertical: 5,
     borderRadius: 10,
-    flex: 1
+    flex: 1,
+    backgroundColor: "#ECEFF1",
+    fontWeight: "300"
   },
   unlockingContainer: {
     alignItems: "center"
