@@ -26,7 +26,8 @@ import type { LndApi, LNDState } from "./RestLnd";
 
 type Props = {
   addWallet: Object => Object,
-  startLndFromWallet: Object => boolean
+  startLndFromWallet: Object => boolean,
+  navigation: Object
 };
 type State = {
   name: string,
@@ -58,7 +59,7 @@ class ComponentCreate extends Component<Props, State> {
         try {
           const newWallet = await this.props.addWallet(this.state);
           await this.props.startLndFromWallet(newWallet);
-          this.setState({ showSeed: true });
+          this.props.navigation.navigate("GenSeed");
         } catch (error) {
           this.setState({ error: error.toString(), creating: false });
         }
