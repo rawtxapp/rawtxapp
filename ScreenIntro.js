@@ -15,6 +15,9 @@ import ComponentLogo from "./ComponentLogo";
 import { styles as theme } from "react-native-theme";
 import ComponentUnlock from "./ComponentUnlock";
 import ComponentCreate from "./ComponentCreate";
+import withLnd from "./withLnd";
+
+import type { LndApi } from "./RestLnd";
 
 type Props = {
   logoOnBackgroundColor?: string,
@@ -23,7 +26,9 @@ type Props = {
   createGradient: string[],
   remoteGradient: string[],
   navigation: Object,
-  backgroundGradient: string[]
+  backgroundGradient: string[],
+  getRunningWallet: void => Object,
+  lndApi: LndApi
 };
 type State = {
   showUnlockAnim: Object,
@@ -49,12 +54,36 @@ class ScreenIntro extends Component<Props, State> {
   }
 
   componentDidMount() {
+    this.determineState();
+  }
+
+  determineState = async () => {
+    try {
+      const running = await this.props.getRunningWallet();
+      if (!running) {
+        this.showIntro();
+        return;
+      }
+    } catch (err) {}
+
+    try {
+      const lndState = await this.props.lndApi.determineState();
+      if (lndState == "seed") {
+        this.props.navigation.navigate("GenSeed");
+      } else if (lndState == "unlocked") {
+        this.props.navigation.navigate("Wallet");
+      }
+      return;
+    } catch (err) {}
+  };
+
+  showIntro = () => {
     Animated.stagger(200, [
       this.normalAnimCard(this.state.showUnlockAnim),
       this.normalAnimCard(this.state.showCreateAnim),
       this.normalAnimCard(this.state.showRemoteAnim)
     ]).start();
-  }
+  };
 
   fullAnimCard = a => Animated.timing(a, { toValue: 2, duration: 500 });
   removeAnimCard = a => Animated.timing(a, { toValue: 0, duration: 500 });
@@ -248,7 +277,7 @@ class ScreenIntro extends Component<Props, State> {
   }
 }
 
-export default withTheme(ScreenIntro);
+export default withLnd(withTheme(ScreenIntro));
 
 const styles = StyleSheet.create({
   container: {
