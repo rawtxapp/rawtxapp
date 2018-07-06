@@ -11,7 +11,7 @@ import {
   UIManager,
   View
 } from "react-native";
-import { createStackNavigator } from "react-navigation";
+import { createSwitchNavigator } from "react-navigation";
 import { LndProvider } from "./ContextLnd.js";
 import ThemeConsumer, { ThemeProvider } from "./ContextTheme";
 import ScreenGenSeed from "./ScreenGenSeed.js";
@@ -25,7 +25,7 @@ if (Platform.OS === "android") {
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const RootSwitch = createStackNavigator(
+const RootSwitch = createSwitchNavigator(
   {
     Intro: { screen: ScreenIntro },
     WalletCreate: { screen: ScreenIntroCreateUnlockWallet },
