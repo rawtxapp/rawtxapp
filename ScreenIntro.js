@@ -54,7 +54,11 @@ class ScreenIntro extends Component<Props, State> {
   }
 
   componentDidMount() {
-    this.determineState();
+    if (this.props.navigation.getParam("showCardsImmediately", false) == true) {
+      this.showIntro();
+    } else {
+      this.determineState();
+    }
   }
 
   determineState = async () => {
