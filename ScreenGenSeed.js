@@ -110,7 +110,7 @@ class ScreenGenSeed extends Component {
                 const runningWallet = this.state.runningWallet;
                 const walletDir = await this.props.walletDir(runningWallet);
                 this.props.stopLnd(walletDir);
-                this.props.navigation.navigate("WalletCreate");
+                this.props.navigation.navigate("Intro");
               }}
             >
               Cancel wallet creation
@@ -333,7 +333,7 @@ class ScreenGenSeed extends Component {
                   const runningWallet = this.state.runningWallet;
                   const walletDir = await this.props.walletDir(runningWallet);
                   this.props.stopLnd(walletDir);
-                  this.props.navigation.navigate("WalletCreate");
+                  this.props.navigation.navigate("Intro");
                 }}
               >
                 Cancel wallet creation
