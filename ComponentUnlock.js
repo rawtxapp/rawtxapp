@@ -128,8 +128,11 @@ class ComponentUnlock extends Component<Props, State> {
                         });
                       } else if (lndState == "password") {
                         this.setState({ unlocking: w });
+                      } else if (lndState == "seed") {
+                        this.props.navigation.navigate("GenSeed");
+                        return;
                       } else {
-                        // TODO: handle seed + unlocked
+                        // TODO: handle unlocked
                       }
                     } catch (err) {
                       this.setState({
