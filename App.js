@@ -70,6 +70,7 @@ export default class App extends Component<Props, State> {
                 backgroundColor="rgba(255, 255, 255, 0)"
                 translucent={true}
                 animated={true}
+                barStyle="light-content"
               />
             )}
           </ThemeConsumer>
