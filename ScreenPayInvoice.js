@@ -219,13 +219,13 @@ const styles = StyleSheet.create({
     marginBottom: 5
   },
   rowName: {
-    flex: 1,
+    flex: 2,
     fontSize: 20,
     textAlign: "right",
     paddingRight: 10
   },
   rowValueContainer: {
-    flex: 4,
+    flex: 5,
     justifyContent: "center"
   },
   amountText: {
