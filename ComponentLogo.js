@@ -7,7 +7,8 @@ import { styles as theme } from "react-native-theme";
 
 type Props = {
   logoOnBackgroundColor?: string,
-  theme: Object
+  theme: Object,
+  imageStyles: number
 };
 type State = {};
 class ComponentLogo extends Component<Props, State> {
@@ -16,7 +17,11 @@ class ComponentLogo extends Component<Props, State> {
       <View style={styles.imageContainer}>
         <Image
           source={require("./assets/intro-logo.png")}
-          style={styles.logo}
+          style={[
+            styles.logo,
+            this.props.imageStyles,
+            this.props.useSmallLogo && styles.smallLogo
+          ]}
         />
       </View>
     );
@@ -24,15 +29,22 @@ class ComponentLogo extends Component<Props, State> {
 
   _renderLogoContainer = () => {
     return (
-      <View style={styles.logoContainer}>
+      <View
+        style={[
+          styles.logoContainer,
+          this.props.useSmallLogo && styles.smallLogoContainer
+        ]}
+      >
         {this._renderLogo()}
-        <View style={styles.container}>
-          <View>
-            <Text style={[this.props.theme.textOnBackground, styles.slogan]}>
-              lightning network wallet
-            </Text>
+        {!this.props.noSlogan && (
+          <View style={styles.container}>
+            <View>
+              <Text style={[this.props.theme.textOnBackground, styles.slogan]}>
+                lightning network wallet
+              </Text>
+            </View>
           </View>
-        </View>
+        )}
       </View>
     );
   };
@@ -56,8 +68,12 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     padding: 50,
-    paddingTop: 20,
+    paddingVertical: 20,
     flex: 1
+  },
+  smallLogoContainer: {
+    paddingTop: 0,
+    paddingBottom: 20
   },
   imageContainer: {
     alignItems: "center",
@@ -67,5 +83,9 @@ const styles = StyleSheet.create({
     width: 216,
     height: 80,
     tintColor: "white"
+  },
+  smallLogo: {
+    width: 162,
+    height: 60
   }
 });
