@@ -1,21 +1,7 @@
 import React, { Component } from "react";
-import {
-  ActivityIndicator,
-  Clipboard,
-  Linking,
-  LayoutAnimation,
-  Platform,
-  StyleSheet,
-  Text,
-  ToastAndroid,
-  TextInput,
-  View
-} from "react-native";
-import Button from "react-native-button";
-import withTheme from "./withTheme";
-import { styles as theme } from "react-native-theme";
-import withLnd from "./withLnd";
+import { StatusBar, StyleSheet, Text, View } from "react-native";
 import ScreenPayInvoice from "./ScreenPayInvoice";
+import withLnd from "./withLnd";
 
 class ScreenLightningLink extends Component {
   constructor(props) {
@@ -45,6 +31,7 @@ class ScreenLightningLink extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <StatusBar barStyle="dark-content" />
         <Text>{this.state.error}</Text>
         {this.state.walletRunning && (
           <ScreenPayInvoice payreq={this.props.link} />

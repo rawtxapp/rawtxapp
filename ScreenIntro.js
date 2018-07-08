@@ -263,7 +263,7 @@ class ScreenIntro extends Component<Props, State> {
       <View style={styles.linearGradient}>
         <LinearGradient
           start={{ x: 0.0, y: 0 }}
-          end={{ x: 1, y: 0.7 }}
+          end={{ x: 1, y: 0.3 }}
           locations={[0, 1]}
           colors={this.props.backgroundGradient}
           style={theme.absoluteFill}

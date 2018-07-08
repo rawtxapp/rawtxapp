@@ -1,40 +1,33 @@
 import React, { Component } from "react";
+import ReactMixin from "react-mixin";
 import {
   ActivityIndicator,
-  Image,
-  Linking,
-  Modal,
   Platform,
   ScrollView,
+  StatusBar,
   StyleSheet,
-  View,
   Text,
-  TextInput
+  View
 } from "react-native";
-import withLnd from "./withLnd.js";
-import TimerMixin from "react-timer-mixin";
-import ReactMixin from "react-mixin";
-import { LOGO_COLOR } from "./Colors.js";
-import { timeout } from "./Utils.js";
-
 import Button from "react-native-button";
 import { styles as theme } from "react-native-theme";
-
-import ComponentWalletOperations from "./ComponentWalletOperations.js";
-import ComponentReceiveFaucet from "./ComponentReceiveFaucet.js";
-import ScreenPayments from "./ScreenPayments.js";
-import ScreenInvoices from "./ScreenInvoices";
-import ComponentWhereSpend from "./ComponentWhereSpend.js";
-import ComponentWelcome from "./ComponentWelcome";
+import TimerMixin from "react-timer-mixin";
 import ComponentActionSheet from "./ComponentActionSheet";
 import ComponentAskFeedback from "./ComponentAskFeedback";
-import ScreenPayInvoice from "./ScreenPayInvoice.js";
-import ScreenReceiveInvoice from "./ScreenReceiveInvoice.js";
+import ComponentLogo from "./ComponentLogo.js";
+import ComponentReceiveFaucet from "./ComponentReceiveFaucet.js";
+import ComponentWalletOperations from "./ComponentWalletOperations.js";
+import ComponentWelcome from "./ComponentWelcome";
 import ScreenChannels from "./ScreenChannels.js";
-import ScreenReceiveBlockchain from "./ScreenReceiveBlockchain.js";
-import ScreenSendBlockchain from "./ScreenSendBlockchain.js";
 import ScreenCreateChannel from "./ScreenCreateChannel.js";
+import ScreenInvoices from "./ScreenInvoices";
+import ScreenPayInvoice from "./ScreenPayInvoice.js";
+import ScreenPayments from "./ScreenPayments.js";
+import ScreenReceiveBlockchain from "./ScreenReceiveBlockchain.js";
+import ScreenReceiveInvoice from "./ScreenReceiveInvoice.js";
+import ScreenSendBlockchain from "./ScreenSendBlockchain.js";
 import WalletShutdownBackground from "./WalletShutdownBackground.js";
+import withLnd from "./withLnd.js";
 import withTheme from "./withTheme.js";
 
 let backgroundShutdown = <View />;
@@ -83,7 +76,7 @@ class BaseSyncingBlock extends Component {
       lightningSynced = true;
     }
     return (
-      <View style={theme.container}>
+      <View style={[theme.container, syncingStyles.container]}>
         <Text style={[theme.accountHeader, statusStyle]}>{status}</Text>
         {blockchainSynced &&
           !lightningSynced && (
@@ -649,21 +642,18 @@ class ScreenWallet extends Component {
     }
 
     return (
-      <ScrollView style={[styles.container, theme.appBackground]}>
-        {backgroundShutdown}
-        <View style={styles.logoContainer}>
-          <Image
-            source={require("./assets/intro-logo.png")}
-            style={{
-              width: undefined,
-              height: 80,
-              tintColor: this.props.logoOnBackgroundColor
-            }}
-            resizeMode="contain"
+      <View style={[styles.container, theme.appBackground]}>
+        <ScrollView>
+          {backgroundShutdown}
+          <StatusBar barStyle="dark-content" />
+          <ComponentLogo
+            noSlogan={true}
+            imageStyles={theme.logoOnLightBackground}
+            useSmallLogo={true}
           />
-        </View>
-        <View style={styles.restContainer}>{content}</View>
-      </ScrollView>
+          <View style={styles.restContainer}>{content}</View>
+        </ScrollView>
+      </View>
     );
   }
 }
@@ -672,7 +662,8 @@ export default withTheme(withLnd(ScreenWallet));
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    paddingTop: Platform.OS == "ios" ? 20 : StatusBar.currentHeight
   },
   logoContainer: {
     flex: 1
@@ -691,5 +682,8 @@ const syncingStyles = StyleSheet.create({
   },
   unsynced: {
     color: "orange"
+  },
+  container: {
+    marginTop: 0
   }
 });

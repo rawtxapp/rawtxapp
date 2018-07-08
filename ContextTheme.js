@@ -358,5 +358,8 @@ theme.add({
     position: "absolute",
     width: "100%",
     height: "100%"
+  },
+  logoOnLightBackground: {
+    tintColor: "#37474F"
   }
 });
