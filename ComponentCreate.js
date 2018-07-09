@@ -145,7 +145,7 @@ class ComponentCreate extends Component<Props, State> {
         >
           Create wallet
         </Button>
-        {this.state.creating && <ActivityIndicator />}
+        {this.state.creating && <ActivityIndicator color="white" />}
         {this.state.error != "" && (
           <Text style={styles.warningText}>{this.state.error}</Text>
         )}
