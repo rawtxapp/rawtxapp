@@ -76,6 +76,8 @@ class ScreenIntro extends Component<Props, State> {
         this.props.navigation.navigate("GenSeed");
       } else if (lndState == "unlocked") {
         this.props.navigation.navigate("Wallet");
+      } else if (lndState == "password") {
+        this.showOnlyCard({ showingUnlock: true }, this.state.showUnlockAnim);
       }
       return;
     } catch (err) {}
