@@ -6,12 +6,14 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View
 } from "react-native";
 import Button from "react-native-button";
+import CheckBox from "react-native-check-box";
+import { styles as theme } from "react-native-theme";
 import { withNavigation } from "react-navigation";
 import { convertErrorToStr } from "./Utils.js";
-import { styles as theme } from "react-native-theme";
 import withLnd from "./withLnd.js";
 
 import type { LndApi, LNDState } from "./RestLnd";
@@ -19,16 +21,21 @@ import type { LndApi, LNDState } from "./RestLnd";
 type Props = {
   wallets: Object[],
   startLndFromWallet: Object => void,
+  stopLndFromWallet: (?Object) => void,
+  updateWalletConf: Object => void,
   lndApi: LndApi,
   getRunningWallet: void => Object,
   walletKeychain: Object,
   navigation: Object
 };
 type State = {
-  working: ?boolean,
+  working: boolean,
   error: ?string,
   unlocking: ?Object,
-  initialLndState: LNDState
+  initialLndState: LNDState,
+
+  password: string,
+  useKeychain: boolean
 };
 class ComponentUnlock extends Component<Props, State> {
   constructor(props) {
@@ -38,7 +45,9 @@ class ComponentUnlock extends Component<Props, State> {
       error: undefined,
       lndState: "unknown",
       unlocking: undefined,
-      initialLndState: "unknown"
+      initialLndState: "unknown",
+      password: "",
+      useKeychain: false
     };
   }
 
@@ -163,13 +172,90 @@ class ComponentUnlock extends Component<Props, State> {
   };
 
   _renderUnlocking = () => {
-    if (!this.state.unlocking || this.state.working) return;
+    if (!this.state.unlocking) return;
     if (this.state.unlocking.usesKeychain) {
       return this._renderUnlockingWithKeychain();
     }
+    const showKeychainOpt =
+      !this.state.unlocking.usesKeychain &&
+      this.props.walletKeychain &&
+      this.props.walletKeychain.isKeychainEnabled();
     return (
       <View>
-        <Text>{JSON.stringify(this.state.unlocking)}</Text>
+        <TextInput
+          style={styles.nameInput}
+          underlineColorAndroid="transparent"
+          placeholder="Password"
+          secureTextEntry={true}
+          value={this.state.password}
+          onChangeText={text => this.setState({ password: text })}
+        />
+        {showKeychainOpt && (
+          <CheckBox
+            style={{ flex: 1, padding: 10 }}
+            onClick={() =>
+              this.setState({ useKeychain: !this.state.useKeychain })
+            }
+            rightTextStyle={{ color: "white" }}
+            isChecked={this.state.useKeychain}
+            rightText="Remember password"
+            checkBoxColor="white"
+          />
+        )}
+        <View>
+          <Button
+            style={styles.button}
+            disabled={this.state.working}
+            styleDisabled={styles.disabledStyle}
+            onPress={async () => {
+              if (!this.state.password || this.state.password == "") {
+                this.setState({ error: "Empty password!" });
+                return;
+              }
+              this.setState({ working: true, error: "" }, async () => {
+                const unlockResult = await this.props.lndApi.unlockwallet(
+                  this.state.password
+                );
+                this.setState({ working: false });
+                if (unlockResult.error) {
+                  this.setState({ error: unlockResult.error });
+                  return;
+                }
+                if (this.state.useKeychain && this.state.unlocking) {
+                  this.state.unlocking.usesKeychain = true;
+                  await this.props.updateWalletConf(this.state.unlocking);
+                  await this.props.walletKeychain.setWalletPassword(
+                    this.state.unlocking && this.state.unlocking.ix,
+                    this.state.password
+                  );
+                }
+                this.props.navigation.navigate("Wallet");
+              });
+            }}
+          >
+            Unlock
+          </Button>
+
+          <Button
+            style={[styles.button, styles.cancelButton]}
+            disabled={this.state.working}
+            styleDisabled={styles.disabledStyle}
+            onPress={async () => {
+              LayoutAnimation.easeInEaseOut();
+              await this.props.stopLndFromWallet(this.state.unlocking);
+              this.setState({
+                unlocking: undefined,
+                password: "",
+                error: "",
+                working: false,
+                useKeychain: false
+              });
+            }}
+          >
+            Cancel
+          </Button>
+          <Text style={styles.text}>{this.state.error}</Text>
+        </View>
       </View>
     );
   };
@@ -208,7 +294,19 @@ const styles = StyleSheet.create({
     fontWeight: "300",
     overflow: "hidden"
   },
+  cancelButton: {
+    color: "red"
+  },
+  disabledStyle: {
+    color: "grey"
+  },
   unlockingContainer: {
     alignItems: "center"
+  },
+  nameInput: {
+    height: 50,
+    backgroundColor: "#ECEFF1",
+    borderRadius: 10,
+    marginBottom: 10
   }
 });
