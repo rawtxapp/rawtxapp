@@ -27,7 +27,8 @@ import type { LndApi, LNDState } from "./RestLnd";
 type Props = {
   addWallet: Object => Object,
   startLndFromWallet: Object => boolean,
-  navigation: Object
+  navigation: Object,
+  recklessMode: boolean
 };
 type State = {
   name: string,

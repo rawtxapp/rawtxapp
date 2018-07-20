@@ -76,9 +76,12 @@ export default class App extends Component<Props, State> {
           </ThemeConsumer>
 
           <LndProvider>
-            {this.state.mode == "normal" && <RootSwitch />}
-            {!!this.state.lightningLink && (
+            {this.state.mode == "normal" ? (
+              <RootSwitch />
+            ) : !!this.state.lightningLink ? (
               <ScreenLightningLink link={this.state.lightningLink} />
+            ) : (
+              <View />
             )}
           </LndProvider>
         </ThemeProvider>

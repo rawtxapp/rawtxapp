@@ -56,7 +56,7 @@ const fileExists = async function(filename: string) {
 
 // Directory where we can read and write app specific files, where lnd will
 // be created.
-const getAppDir = async function() {
+const getAppDir = async function(): Promise<string> {
   return await Rtx.getFilesDir();
 };
 

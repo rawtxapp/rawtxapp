@@ -1,6 +1,9 @@
+/* @flow */
 import React, { Component, createContext } from "react";
 import { Platform } from "react-native";
 import EventEmitter from "EventEmitter";
+
+import type { Wallet } from "./Types";
 
 const LndContext = createContext({
   startLnd: () => {},
@@ -59,7 +62,7 @@ const writeWalletConfig = async function(contentJSON) {
   );
 };
 
-const addWallet = async function(newWallet) {
+const addWallet = async function(newWallet: Wallet) {
   newWallet.usesKeychain = newWallet.usesKeychain || false;
   // Only keep known fields from newWallet.
   newWallet = (({
@@ -75,7 +78,8 @@ const addWallet = async function(newWallet) {
     network,
     mode,
     neutrinoConnect,
-    usesKeychain
+    usesKeychain,
+    ix: 0
   }))(newWallet);
 
   // the wallets have folders appDir/wallets/<X>/ structure, the X can't be
@@ -120,11 +124,11 @@ const updateWalletConf = async function(updatedWallet) {
   await writeWalletConfig(currentConfig);
 };
 
-const walletDir = async function(wallet) {
-  return (await getAppDir()) + "/wallets/" + (wallet.ix || 0) + "/";
+const walletDir = async function(wallet: ?Wallet): Promise<string> {
+  return (await getAppDir()) + "/wallets/" + ((wallet && wallet.ix) || 0) + "/";
 };
 
-const logDir = async function(wallet) {
+const logDir = async function(wallet: ?Wallet): Promise<?string> {
   let w = wallet;
   if (!wallet) {
     const runningWallet = await getRunningWallet();
@@ -134,20 +138,24 @@ const logDir = async function(wallet) {
       return;
     }
   }
+  if (!w) {
+    return;
+  }
   const walletD = await walletDir(w);
-  return walletD + "logs/" + w.coin + "/" + w.network + "/";
+  return walletD + "logs/" + (w && w.coin) + "/" + (w && w.network) + "/";
 };
 
-const getLogs = async function(nLines) {
+const getLogs = async function(nLines: number) {
   try {
-    const logD = await logDir();
-    const logFile = logD + "lnd.log";
+    const runningWallet = await getRunningWallet();
+    const logD = await logDir(runningWallet);
+    const logFile = (logD || "") + "lnd.log";
     const lastN = await getLastNLines(logFile, nLines);
     return lastN;
   } catch (e) {}
 };
 
-const getWalletFile = async function(file) {
+const getWalletFile = async function(file: string) {
   try {
     const walletD = await walletDir(await getRunningWallet());
     return await readFile(walletD + file);
@@ -200,10 +208,9 @@ ${peers}`;
   return await writeFile(walletDirectory + "/lnd.conf", conf);
 };
 
-const startLndFromWallet = async function(wallet) {
+const startLndFromWallet = async function(wallet?: Wallet): Promise<any> {
   if (!wallet || !wallet.ix) {
     throw new Error("Can't start lnd without a wallet!");
-    return;
   }
   await writeLndConf(wallet);
   return await startLnd(await walletDir(wallet));
@@ -213,7 +220,7 @@ const stopLndFromWallet = async function(wallet) {
   return await stopLnd(await walletDir(wallet));
 };
 
-const getRunningWallet = async function() {
+const getRunningWallet = async function(): Promise<?Wallet> {
   const isRunning = await isLndProcessRunning();
   if (!isRunning) {
     return;
@@ -241,8 +248,22 @@ const getRunningWallet = async function() {
 
 const initWallet = async function(wallet, cipher, password) {};
 
-class LndProvider extends Component {
-  constructor(props) {
+type Props = {
+  children: Object
+};
+type State = {
+  walletConf: Object,
+  displayUnit: "satoshi",
+  qrCodeEvents: Object,
+  keychain?: WalletKeychain,
+  walletListener?: WalletListener
+};
+class LndProvider extends Component<Props, State> {
+  channelListener_: Object;
+  hideActionSheet: ?((void) => Promise<?any>) => void;
+  showActionSheet: ?((void) => void) => void;
+
+  constructor(props: Props) {
     super(props);
     this.state = {
       walletConf: {},
@@ -265,7 +286,10 @@ class LndProvider extends Component {
 
   // Because of changing ip addresses and ports, some channels
   // go inactive when can't communicate with the peer.
-  reactivateInactiveChannels(walletListener, lndApi) {
+  reactivateInactiveChannels(
+    walletListener: WalletListener,
+    lndApi: typeof LndApi
+  ) {
     let rateLimit = -1;
     this.channelListener_ = walletListener.listenToChannels(async c => {
       if (!c || !c.channels) return;
@@ -298,7 +322,7 @@ class LndProvider extends Component {
 
   // Returns string representation with the unit
   // (ex displaySatoshi(2) = "2 sat")
-  displaySatoshi = satoshi => {
+  displaySatoshi = (satoshi: number) => {
     if (!satoshi) return;
     if (this.state.displayUnit == "satoshi") {
       return satoshi + " sat";
@@ -311,7 +335,7 @@ class LndProvider extends Component {
     return "satoshi";
   };
 
-  displayUnitToSatoshi = amount_in_display_unit => {
+  displayUnitToSatoshi = (amount_in_display_unit: number) => {
     if (this.getDisplayUnit() == "satoshi") {
       return amount_in_display_unit;
     }
@@ -330,7 +354,10 @@ class LndProvider extends Component {
     this.initialInvoiceHandled = true;
   };
 
-  setActionSheetMethods = (hideActionSheet, showActionSheet) => {
+  setActionSheetMethods = (
+    hideActionSheet: ((void) => Promise<?any>) => void,
+    showActionSheet: ((void) => void) => void
+  ) => {
     this.hideActionSheet = hideActionSheet;
     this.showActionSheet = showActionSheet;
   };
@@ -364,18 +391,20 @@ class LndProvider extends Component {
       return async () => {
         if (this.hideActionSheet && this.showActionSheet) {
           return new Promise((resolve, _) => {
-            this.hideActionSheet(async () => {
-              const qr = await scanQrCode();
-              const forShowingActionSheet = new Promise((resolve, _) => {
-                this.showActionSheet(() => {
-                  resolve();
+            this.hideActionSheet &&
+              this.hideActionSheet(async () => {
+                const qr = await scanQrCode();
+                const forShowingActionSheet = new Promise((resolve, _) => {
+                  this.showActionSheet &&
+                    this.showActionSheet(() => {
+                      resolve();
+                    });
                 });
+                await forShowingActionSheet;
+                // hack to give modal children enough time to finish with animation
+                await sleep(200);
+                this.state.qrCodeEvents.emit("qrCodeScanned", qr);
               });
-              await forShowingActionSheet;
-              // hack to give modal children enough time to finish with animation
-              await sleep(200);
-              this.state.qrCodeEvents.emit("qrCodeScanned", qr);
-            });
           });
         } else {
           return await scanQrCode();

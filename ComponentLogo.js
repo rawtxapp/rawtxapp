@@ -8,7 +8,9 @@ import { styles as theme } from "react-native-theme";
 type Props = {
   logoOnBackgroundColor?: string,
   theme: Object,
-  imageStyles: number
+  imageStyles: number,
+  useSmallLogo: boolean,
+  noSlogan: boolean
 };
 type State = {};
 class ComponentLogo extends Component<Props, State> {

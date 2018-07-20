@@ -35,7 +35,8 @@ type State = {
   initialLndState: LNDState,
 
   password: string,
-  useKeychain: boolean
+  useKeychain: boolean,
+  usesKeychain?: boolean
 };
 class ComponentUnlock extends Component<Props, State> {
   constructor(props) {
