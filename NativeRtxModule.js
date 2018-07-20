@@ -1,10 +1,11 @@
+/* @flow */
 import { DeviceEventEmitter, NativeModules } from "react-native";
 import LndApi from "./RestLnd.js";
 import { sleep } from "./Utils";
 
 const Rtx = NativeModules.RtxModule;
 
-const startLnd = async function(lndDir) {
+const startLnd = async function(lndDir: string) {
   const running = await isLndProcessRunning();
   if (running) {
     console.error("LND is already running, can only run 1 instance of LND!");
@@ -13,19 +14,19 @@ const startLnd = async function(lndDir) {
   return await NativeModules.RtxModule.startLnd(lndDir);
 };
 
-const stopLnd = async function(lndDir) {
+const stopLnd = async function(lndDir: string) {
   return await NativeModules.RtxModule.stopLnd(lndDir);
 };
 
-const getLastNLines = async function(file, n) {
+const getLastNLines = async function(file: string, n: number) {
   return await Rtx.getLastNLines(file, n);
 };
 
-const startWatchingLogContent = function(callback) {
+const startWatchingLogContent = function(callback: string => void) {
   DeviceEventEmitter.addListener("LND_LOGS_MODIFIED", callback);
 };
 
-const stopWatchingLogContent = function(callback) {
+const stopWatchingLogContent = function(callback: void => void) {
   DeviceEventEmitter.removeListener("LND_LOGS_MODIFIED", callback);
 };
 
@@ -33,7 +34,7 @@ const stopWatchingLogContent = function(callback) {
 // method: "post"
 // jsonBody: JSONObject
 // it will send a POST request to url
-const fetch = async function(request) {
+const fetch = async function(request: Object) {
   return await Rtx.fetch(request);
 };
 
@@ -41,15 +42,15 @@ const readWalletConfig = async function() {
   return await Rtx.readWalletConfig();
 };
 
-const readFile = async function(filename) {
+const readFile = async function(filename: string) {
   return await Rtx.readFile(filename);
 };
 
-const writeFile = async function(filename, content) {
+const writeFile = async function(filename: string, content: string) {
   return await Rtx.writeFile(filename, content);
 };
 
-const fileExists = async function(filename) {
+const fileExists = async function(filename: string) {
   return await Rtx.fileExists(filename);
 };
 
@@ -63,7 +64,7 @@ const isLndProcessRunning = async function() {
   return await Rtx.isLndProcessRunning();
 };
 
-const encodeBase64 = async function(str) {
+const encodeBase64 = async function(str: string) {
   return await Rtx.encodeBase64(str);
 };
 
@@ -78,7 +79,7 @@ const scanQrCode = async function() {
   return result;
 };
 
-const getMacaroonHex = async function(macaroonFile) {
+const getMacaroonHex = async function(macaroonFile: string) {
   return await Rtx.getMacaroonHex(macaroonFile);
 };
 
