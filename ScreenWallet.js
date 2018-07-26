@@ -645,7 +645,6 @@ class ScreenWallet extends Component {
       <View style={[styles.container, theme.appBackground]}>
         <ScrollView>
           {backgroundShutdown}
-          <StatusBar barStyle="dark-content" />
           <ComponentLogo
             noSlogan={true}
             imageStyles={theme.logoOnLightBackground}

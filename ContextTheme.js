@@ -117,7 +117,7 @@ const defaultTheme = StyleSheet.create({
     backgroundColor: "#ECEFF1"
   },
   textOnBackground: {
-    color: "white"
+    color: "#37474F"
   }
 });
 
@@ -361,5 +361,14 @@ theme.add({
   },
   logoOnLightBackground: {
     tintColor: "#37474F"
+  },
+  unlockCard: {
+    backgroundColor: "#A1B235"
+  },
+  createCard: {
+    backgroundColor: "#358AB2"
+  },
+  remoteCard: {
+    backgroundColor: "#37474F"
   }
 });

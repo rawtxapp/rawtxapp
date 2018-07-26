@@ -82,7 +82,7 @@ class ComponentUnlock extends Component<Props, State> {
           error: convertErrorToStr(unlockResult.error)
         });
       } else {
-        this.props.navigation.navigate("Wallet");
+        this.props.navigate("Wallet");
       }
     }
   };
@@ -109,56 +109,57 @@ class ComponentUnlock extends Component<Props, State> {
       <View>
         <Text style={styles.text}>Select wallet to unlock:</Text>
 
-        {this.props.wallets.map((w, i) => {
-          return (
-            <View key={i}>
-              <Button
-                style={styles.button}
-                onPress={async () => {
-                  LayoutAnimation.easeInEaseOut();
-                  this.setState({ working: true }, async () => {
-                    try {
-                      await this.props.startLndFromWallet(w);
-                    } catch (err) {
-                      this.setState({
-                        error: convertErrorToStr(err),
-                        working: false
-                      });
-                      return;
-                    }
-
-                    let lndState: LNDState = "unknown";
-                    try {
-                      for (let i = 0; i < 10 && lndState == "unknown"; i++) {
-                        lndState = await this.props.lndApi.determineState();
-                      }
-                      if (lndState == "unknown") {
+        {this.props.wallets &&
+          this.props.wallets.map((w, i) => {
+            return (
+              <View key={i}>
+                <Button
+                  style={styles.button}
+                  onPress={async () => {
+                    LayoutAnimation.easeInEaseOut();
+                    this.setState({ working: true }, async () => {
+                      try {
+                        await this.props.startLndFromWallet(w);
+                      } catch (err) {
                         this.setState({
-                          error: "couldn't determine lnd state"
+                          error: convertErrorToStr(err),
+                          working: false
                         });
-                      } else if (lndState == "password") {
-                        this.setState({ unlocking: w });
-                      } else if (lndState == "seed") {
-                        this.props.navigation.navigate("GenSeed");
                         return;
-                      } else {
-                        // TODO: handle unlocked
                       }
-                    } catch (err) {
-                      this.setState({
-                        error: convertErrorToStr(err),
-                        working: false
-                      });
-                    }
-                    this.setState({ working: false });
-                  });
-                }}
-              >
-                {w.name}
-              </Button>
-            </View>
-          );
-        })}
+
+                      let lndState: LNDState = "unknown";
+                      try {
+                        for (let i = 0; i < 10 && lndState == "unknown"; i++) {
+                          lndState = await this.props.lndApi.determineState();
+                        }
+                        if (lndState == "unknown") {
+                          this.setState({
+                            error: "couldn't determine lnd state"
+                          });
+                        } else if (lndState == "password") {
+                          this.setState({ unlocking: w });
+                        } else if (lndState == "seed") {
+                          this.props.navigation.navigate("GenSeed");
+                          return;
+                        } else {
+                          // TODO: handle unlocked
+                        }
+                      } catch (err) {
+                        this.setState({
+                          error: convertErrorToStr(err),
+                          working: false
+                        });
+                      }
+                      this.setState({ working: false });
+                    });
+                  }}
+                >
+                  {w.name}
+                </Button>
+              </View>
+            );
+          })}
       </View>
     );
   };

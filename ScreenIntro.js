@@ -33,10 +33,7 @@ type Props = {
 type State = {
   showUnlockAnim: Object,
   showCreateAnim: Object,
-  showRemoteAnim: Object,
-  showingUnlock: boolean,
-  showingCreate: boolean,
-  showingRemote: boolean
+  showRemoteAnim: Object
 };
 
 class ScreenIntro extends Component<Props, State> {
@@ -45,11 +42,7 @@ class ScreenIntro extends Component<Props, State> {
     this.state = {
       showUnlockAnim: new Animated.Value(0),
       showCreateAnim: new Animated.Value(0),
-      showRemoteAnim: new Animated.Value(0),
-
-      showingUnlock: false,
-      showingCreate: false,
-      showingRemote: false
+      showRemoteAnim: new Animated.Value(0)
     };
   }
 
@@ -77,7 +70,7 @@ class ScreenIntro extends Component<Props, State> {
       } else if (lndState == "unlocked") {
         this.props.navigation.navigate("Wallet");
       } else if (lndState == "password") {
-        this.showOnlyCard({ showingUnlock: true }, this.state.showUnlockAnim);
+        this.showOnlyCard(this.state.showUnlockAnim);
       }
       return;
     } catch (err) {}
@@ -91,51 +84,41 @@ class ScreenIntro extends Component<Props, State> {
     ]).start();
   };
 
-  fullAnimCard = a => Animated.timing(a, { toValue: 2, duration: 500 });
-  removeAnimCard = a => Animated.timing(a, { toValue: 0, duration: 500 });
-  normalAnimCard = a => Animated.timing(a, { toValue: 1, duration: 500 });
+  fullAnimCard = a => Animated.spring(a, { toValue: 2 });
+  removeAnimCard = a => Animated.timing(a, { toValue: 0 });
+  normalAnimCard = a => Animated.spring(a, { toValue: 1 });
 
-  showOnlyCard = (s, a) => {
+  showOnlyCard = a => {
     const r = this.state.showRemoteAnim,
       c = this.state.showCreateAnim,
       u = this.state.showUnlockAnim;
-    this.setState(s, () => {
-      Animated.stagger(200, [
-        a == r ? this.fullAnimCard(a) : this.removeAnimCard(r),
-        a == c ? this.fullAnimCard(a) : this.removeAnimCard(c),
-        a == u ? this.fullAnimCard(a) : this.removeAnimCard(u)
-      ]).start();
-    });
+    let anims = [];
+    a == r
+      ? anims.unshift(this.fullAnimCard(a))
+      : anims.push(this.removeAnimCard(r));
+    a == c
+      ? anims.unshift(this.fullAnimCard(a))
+      : anims.push(this.removeAnimCard(c));
+    a == u
+      ? anims.unshift(this.fullAnimCard(a))
+      : anims.push(this.removeAnimCard(u));
+    Animated.stagger(100, anims).start();
   };
 
   hideAllCards = () => {
-    Animated.stagger(200, [
+    Animated.stagger(100, [
       this.normalAnimCard(this.state.showRemoteAnim),
       this.normalAnimCard(this.state.showCreateAnim),
       this.normalAnimCard(this.state.showUnlockAnim)
-    ]).start(() => {
-      this.setState({
-        showingUnlock: false,
-        showingCreate: false,
-        showingRemote: false
-      });
-    });
+    ]).start();
   };
 
-  _renderCard = (
-    onPress,
-    icon,
-    action,
-    ix,
-    gradient,
-    anim,
-    showContent,
-    content
-  ) => {
+  _renderCard = (onPress, icon, action, ix, color, anim, content) => {
     return (
       <Animated.View
         style={[
           styles.sheetCard,
+          color,
           ix && {
             height: anim.interpolate({
               inputRange: [0, 1, 2],
@@ -144,12 +127,6 @@ class ScreenIntro extends Component<Props, State> {
           }
         ]}
       >
-        <LinearGradient
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          colors={gradient}
-          style={theme.absoluteSheetCard}
-        />
         <TouchableWithoutFeedback onPress={onPress}>
           <Animated.View
             style={[
@@ -210,37 +187,64 @@ class ScreenIntro extends Component<Props, State> {
             </View>
           </Animated.View>
         </TouchableWithoutFeedback>
-        {showContent && content}
+        <Animated.View
+          style={{
+            flex: 1,
+            transform: [
+              {
+                translateY: anim.interpolate({
+                  inputRange: [0, 1, 2],
+                  outputRange: [0, 60, 0] // 0 : 150, 0.5 : 75, 1 : 0
+                })
+              }
+            ]
+          }}
+        >
+          {content}
+        </Animated.View>
       </Animated.View>
     );
+  };
+
+  // This function helps animate cards away from the screen before calling
+  // navigate.
+  _navigate = screen => {
+    Animated.parallel([
+      this.removeAnimCard(this.state.showRemoteAnim),
+      this.removeAnimCard(this.state.showCreateAnim),
+      this.removeAnimCard(this.state.showUnlockAnim)
+    ]).start(() => {
+      this.props.navigation.navigate(screen);
+    });
   };
 
   _renderUnlock = () => {
     return this._renderCard(
       () => {
-        this.showOnlyCard({ showingUnlock: true }, this.state.showUnlockAnim);
+        this.showOnlyCard(this.state.showUnlockAnim);
       },
       require("./assets/feather/unlock.png"),
       "Unlock",
       1,
-      this.props.unlockGradient,
+      theme.unlockCard,
       this.state.showUnlockAnim,
-      this.state.showingUnlock,
-      <ComponentUnlock navigation={this.props.navigation} />
+      <ComponentUnlock
+        navigation={this.props.navigation}
+        navigate={this._navigate}
+      />
     );
   };
 
   _renderCreate = () => {
     return this._renderCard(
       () => {
-        this.showOnlyCard({ showingCreate: true }, this.state.showCreateAnim);
+        this.showOnlyCard(this.state.showCreateAnim);
       },
       require("./assets/feather/add.png"),
       "Create",
       2,
-      this.props.createGradient,
+      theme.createCard,
       this.state.showCreateAnim,
-      this.state.showingCreate,
       <ComponentCreate />
     );
   };
@@ -248,14 +252,13 @@ class ScreenIntro extends Component<Props, State> {
   _renderRemote = () => {
     return this._renderCard(
       () => {
-        this.showOnlyCard({ showingRemote: true }, this.state.showRemoteAnim);
+        this.showOnlyCard(this.state.showRemoteAnim);
       },
       require("./assets/feather/monitor-1.png"),
       "Remote",
       3,
-      this.props.remoteGradient,
+      theme.remoteCard,
       this.state.showRemoteAnim,
-      this.state.showingRemote,
       <Text>Test3</Text>
     );
   };
@@ -263,15 +266,8 @@ class ScreenIntro extends Component<Props, State> {
   render() {
     return (
       <View style={styles.linearGradient}>
-        <LinearGradient
-          start={{ x: 0.0, y: 0 }}
-          end={{ x: 1, y: 0.3 }}
-          locations={[0, 1]}
-          colors={this.props.backgroundGradient}
-          style={theme.absoluteFill}
-        />
         <View style={styles.container}>
-          <ComponentLogo />
+          <ComponentLogo imageStyles={theme.logoOnLightBackground} />
           <View style={styles.sheetContainer}>
             {this._renderRemote()}
             {this._renderCreate()}
