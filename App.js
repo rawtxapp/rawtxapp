@@ -4,6 +4,8 @@
 
 import React, { Component } from "react";
 import {
+  Animated,
+  Easing,
   Linking,
   Platform,
   StatusBar,
@@ -11,7 +13,7 @@ import {
   UIManager,
   View
 } from "react-native";
-import { createSwitchNavigator } from "react-navigation";
+import { createStackNavigator } from "react-navigation";
 import { LndProvider } from "./ContextLnd.js";
 import ThemeConsumer, { ThemeProvider } from "./ContextTheme";
 import ScreenGenSeed from "./ScreenGenSeed.js";
@@ -25,14 +27,38 @@ if (Platform.OS === "android") {
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const RootSwitch = createSwitchNavigator(
+const transitionConfig = () => {
+  return {
+    transitionSpec: {
+      duration: 750,
+      easing: Easing.out(Easing.poly(4)),
+      timing: Animated.timing,
+      useNativeDriver: true
+    },
+    screenInterpolator: sceneProps => {
+      const { layout, position, scene } = sceneProps;
+
+      const thisSceneIndex = scene.index;
+      const width = layout.initWidth;
+
+      const opacity = position.interpolate({
+        inputRange: [thisSceneIndex - 1, thisSceneIndex],
+        outputRange: [0, 1]
+      });
+
+      return { opacity };
+    }
+  };
+};
+
+const RootSwitch = createStackNavigator(
   {
     Intro: { screen: ScreenIntro },
     WalletCreate: { screen: ScreenIntroCreateUnlockWallet },
     GenSeed: { screen: ScreenGenSeed },
     Wallet: { screen: ScreenWallet }
   },
-  { headerMode: "none" }
+  { headerMode: "none", transitionConfig }
 );
 
 type Props = {};
@@ -70,7 +96,7 @@ export default class App extends Component<Props, State> {
                 backgroundColor="rgba(255, 255, 255, 0)"
                 translucent={true}
                 animated={true}
-                barStyle="light-content"
+                barStyle="dark-content"
               />
             )}
           </ThemeConsumer>
