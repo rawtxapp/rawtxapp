@@ -65,8 +65,7 @@ const styles = StyleSheet.create({
   },
   slogan: {
     alignSelf: "center",
-    fontSize: 16,
-    color: "rgba(255,255,255,0.7)"
+    fontSize: 16
   },
   logoContainer: {
     padding: 50,
