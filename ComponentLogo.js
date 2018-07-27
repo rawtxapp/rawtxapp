@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   smallLogoContainer: {
-    paddingTop: 0,
+    paddingTop: 30,
     paddingBottom: 20
   },
   imageContainer: {

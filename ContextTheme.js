@@ -146,8 +146,6 @@ theme.add({
     backgroundColor: "white",
     padding: 10,
     margin: 10,
-    marginLeft: 20,
-    marginRight: 20,
     elevation: 1,
     ios: {
       shadowOpacity: 0.0015 + 0.18,

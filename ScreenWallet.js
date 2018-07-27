@@ -300,7 +300,7 @@ class CheckingAccount extends Component {
 
   render() {
     return (
-      <View style={theme.container}>
+      <View style={[theme.container, styles.container]}>
         <Text style={theme.accountHeader}>
           Checking account{" "}
           <Text style={theme.smallerHeader}>(funds on channels)</Text>
@@ -486,7 +486,7 @@ class SavingsAccount extends Component {
 
   render() {
     return (
-      <View style={theme.container}>
+      <View style={[theme.container, styles.container]}>
         <Text style={theme.accountHeader}>
           Savings account{" "}
           <Text style={theme.smallerHeader}>(funds on blockchain)</Text>
@@ -555,13 +555,6 @@ class ScreenWallet extends Component {
         this.setState({ getinfo });
       }
     );
-    // TODO: remove this when queryroutes is shipped in an lnd release.
-    // This node supports the experimental queryroutes feature, will help
-    // syncing with the lightning graph faster.
-    this.props.lndApi.addPeers(
-      "02e53fcf06df8242cb36d1cb802146895307aeeb20b31622672601a9efa6eaacc8",
-      "lnd-testnet.rawtx.com"
-    );
   }
 
   componentWillUnmount() {
@@ -628,14 +621,17 @@ class ScreenWallet extends Component {
         </View>
       );
     } else {
+      // TODO: add welcome and feedback components back.
+      // <ComponentWelcome />
+      // <ComponentAskFeedback />
       content = (
-        <View>
-          <SyncingBlock getinfo={this.state.getinfo} />
-          <ComponentWelcome />
-          <ComponentAskFeedback />
-          <CheckingAccountWithLnd />
-          <SavingsAccountWithLnd />
-          <ComponentWalletOperations />
+        <View style={styles.container}>
+          <View style={styles.container}>
+            <CheckingAccountWithLnd />
+          </View>
+          <View style={styles.container}>
+            <SavingsAccountWithLnd />
+          </View>
           {footer}
         </View>
       );
@@ -643,15 +639,15 @@ class ScreenWallet extends Component {
 
     return (
       <View style={[styles.container, theme.appBackground]}>
-        <ScrollView>
-          {backgroundShutdown}
+        {backgroundShutdown}
+        <View>
           <ComponentLogo
             noSlogan={true}
             imageStyles={theme.logoOnLightBackground}
             useSmallLogo={true}
           />
-          <View style={styles.restContainer}>{content}</View>
-        </ScrollView>
+        </View>
+        <View style={styles.restContainer}>{content}</View>
       </View>
     );
   }
@@ -661,14 +657,14 @@ export default withTheme(withLnd(ScreenWallet));
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingTop: Platform.OS == "ios" ? 20 : StatusBar.currentHeight
+    flex: 1
   },
   logoContainer: {
     flex: 1
   },
   restContainer: {
-    flex: 8
+    flex: 1,
+    paddingTop: 40
   },
   closeWalletButton: {
     color: "red"
