@@ -3,6 +3,7 @@
 import React, { Component } from "react";
 import {
   Animated,
+  Dimensions,
   Image,
   StyleSheet,
   Text,
@@ -18,6 +19,8 @@ import ComponentCreate from "./ComponentCreate";
 import withLnd from "./withLnd";
 
 import type { LndApi } from "./RestLnd";
+
+const { height, width } = Dimensions.get("window");
 
 type Props = {
   logoOnBackgroundColor?: string,
@@ -84,9 +87,11 @@ class ScreenIntro extends Component<Props, State> {
     ]).start();
   };
 
-  fullAnimCard = a => Animated.spring(a, { toValue: 2 });
-  removeAnimCard = a => Animated.timing(a, { toValue: 0 });
-  normalAnimCard = a => Animated.spring(a, { toValue: 1 });
+  fullAnimCard = a => Animated.spring(a, { toValue: 2, useNativeDriver: true });
+  removeAnimCard = a =>
+    Animated.timing(a, { toValue: 0, useNativeDriver: true });
+  normalAnimCard = a =>
+    Animated.spring(a, { toValue: 1, useNativeDriver: true });
 
   showOnlyCard = a => {
     const r = this.state.showRemoteAnim,
@@ -119,38 +124,69 @@ class ScreenIntro extends Component<Props, State> {
         style={[
           styles.sheetCard,
           color,
-          ix && {
-            height: anim.interpolate({
-              inputRange: [0, 1, 2],
-              outputRange: ["0%", 30 * ix + "%", "100%"]
-            })
+          {
+            transform: [
+              {
+                translateY: anim.interpolate({
+                  inputRange: [0, 1, 2],
+                  outputRange: [height, 150 * ix - 100, 0]
+                })
+              }
+            ],
+            zIndex: ix
           }
         ]}
       >
+        <TouchableWithoutFeedback onPress={onPress}>
+          <View style={[StyleSheet.absoluteFill]} />
+        </TouchableWithoutFeedback>
         <TouchableWithoutFeedback onPress={onPress}>
           <Animated.View
             style={[
               styles.touchable,
               {
-                height: anim.interpolate({
-                  inputRange: [1, 2],
-                  outputRange: [100 / ix + "%", "15%"]
-                })
+                transform: [
+                  {
+                    translateY: anim.interpolate({
+                      inputRange: [1, 2],
+                      outputRange: [50, 0]
+                    })
+                  }
+                ]
               }
             ]}
           >
             <View style={styles.actionContainer}>
-              <View style={styles.actionIcon}>
+              <Animated.View
+                style={[
+                  styles.actionIcon,
+
+                  {
+                    transform: [
+                      {
+                        translateX: anim.interpolate({
+                          inputRange: [1, 2],
+                          outputRange: [30, 0]
+                        })
+                      }
+                    ]
+                  }
+                ]}
+              >
                 <Image source={icon} style={styles.icon} />
-              </View>
+              </Animated.View>
               <Animated.View
                 style={[
                   styles.actionText,
                   {
-                    marginRight: anim.interpolate({
-                      inputRange: [1, 2],
-                      outputRange: [50, 0]
-                    })
+                    transform: [
+                      {
+                        translateX: anim.interpolate({
+                          inputRange: [1, 2],
+                          outputRange: [30, 0]
+                        })
+                      }
+                    ]
                   }
                 ]}
               >
@@ -161,24 +197,33 @@ class ScreenIntro extends Component<Props, State> {
                   style={[
                     styles.actionIcon,
                     {
-                      flex: anim.interpolate({
+                      flex: 1,
+                      opacity: anim.interpolate({
                         inputRange: [1, 2],
                         outputRange: [0, 1]
-                      })
+                      }),
+                      transform: [
+                        {
+                          scaleX: anim.interpolate({
+                            inputRange: [1, 2],
+                            outputRange: [0, 1]
+                          })
+                        },
+                        {
+                          scaleY: anim.interpolate({
+                            inputRange: [1, 2],
+                            outputRange: [0, 1]
+                          })
+                        }
+                      ]
                     }
                   ]}
                 >
                   <Animated.Image
                     source={require("./assets/feather/close-2.png")}
                     style={{
-                      width: anim.interpolate({
-                        inputRange: [1, 2],
-                        outputRange: [0, 20]
-                      }),
-                      height: anim.interpolate({
-                        inputRange: [1, 2],
-                        outputRange: [0, 20]
-                      }),
+                      width: 20,
+                      height: 20,
                       tintColor: "white"
                     }}
                   />
@@ -194,7 +239,7 @@ class ScreenIntro extends Component<Props, State> {
               {
                 translateY: anim.interpolate({
                   inputRange: [0, 1, 2],
-                  outputRange: [0, 60, 0] // 0 : 150, 0.5 : 75, 1 : 0
+                  outputRange: [0, 200, 0] // 0 : 150, 0.5 : 75, 1 : 0
                 })
               }
             ]
@@ -225,7 +270,7 @@ class ScreenIntro extends Component<Props, State> {
       },
       require("./assets/feather/unlock.png"),
       "Unlock",
-      1,
+      3,
       theme.unlockCard,
       this.state.showUnlockAnim,
       <ComponentUnlock
@@ -256,7 +301,7 @@ class ScreenIntro extends Component<Props, State> {
       },
       require("./assets/feather/monitor-1.png"),
       "Remote",
-      3,
+      1,
       theme.remoteCard,
       this.state.showRemoteAnim,
       <Text>Test3</Text>
@@ -306,12 +351,11 @@ const styles = StyleSheet.create({
   sheetCard: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    height: "20%",
+    height: "100%",
     position: "absolute",
     bottom: 0,
     left: 0,
-    right: 0,
-    overflow: "hidden"
+    right: 0
   },
   sheetCardAction: {
     fontSize: 36,
