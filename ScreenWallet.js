@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import ReactMixin from "react-mixin";
 import {
   ActivityIndicator,
+  Animated,
   Platform,
   ScrollView,
   StatusBar,
@@ -300,7 +301,19 @@ class CheckingAccount extends Component {
 
   render() {
     return (
-      <View style={[theme.container, styles.container]}>
+      <Animated.View
+        style={[
+          theme.container,
+          styles.container,
+          {
+            opacity: this.props.showAnim,
+            transform: [
+              { scaleX: this.props.showAnim },
+              { scaleY: this.props.showAnim }
+            ]
+          }
+        ]}
+      >
         <Text style={theme.accountHeader}>
           Checking account{" "}
           <Text style={theme.smallerHeader}>(funds on channels)</Text>
@@ -374,7 +387,7 @@ class CheckingAccount extends Component {
         {this._renderPayInvoice()}
         {this._renderReceiveInvoice()}
         {this._renderChannels()}
-      </View>
+      </Animated.View>
     );
   }
 }
@@ -486,7 +499,19 @@ class SavingsAccount extends Component {
 
   render() {
     return (
-      <View style={[theme.container, styles.container]}>
+      <Animated.View
+        style={[
+          theme.container,
+          styles.container,
+          {
+            opacity: this.props.showAnim,
+            transform: [
+              { scaleX: this.props.showAnim },
+              { scaleY: this.props.showAnim }
+            ]
+          }
+        ]}
+      >
         <Text style={theme.accountHeader}>
           Savings account{" "}
           <Text style={theme.smallerHeader}>(funds on blockchain)</Text>
@@ -534,7 +559,7 @@ class SavingsAccount extends Component {
         {this._renderReceive()}
         {this._renderSend()}
         {this._renderTransfer()}
-      </View>
+      </Animated.View>
     );
   }
 }
@@ -544,7 +569,12 @@ const SavingsAccountWithLnd = withLnd(SavingsAccount);
 class ScreenWallet extends Component {
   constructor(props) {
     super(props);
-    this.state = { wallet: undefined, getinfo: undefined, working: false };
+    this.state = {
+      wallet: undefined,
+      getinfo: undefined,
+      working: false,
+      showAnim: new Animated.Value(0)
+    };
   }
 
   componentDidMount() {
@@ -555,6 +585,12 @@ class ScreenWallet extends Component {
         this.setState({ getinfo });
       }
     );
+    Animated.spring(this.state.showAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      friction: 10,
+      tension: 20
+    }).start();
   }
 
   componentWillUnmount() {
@@ -627,10 +663,10 @@ class ScreenWallet extends Component {
       content = (
         <View style={styles.container}>
           <View style={styles.container}>
-            <CheckingAccountWithLnd />
+            <CheckingAccountWithLnd showAnim={this.state.showAnim} />
           </View>
           <View style={styles.container}>
-            <SavingsAccountWithLnd />
+            <SavingsAccountWithLnd showAnim={this.state.showAnim} />
           </View>
           {footer}
         </View>
@@ -640,13 +676,25 @@ class ScreenWallet extends Component {
     return (
       <View style={[styles.container, theme.appBackground]}>
         {backgroundShutdown}
-        <View>
+        <Animated.View
+          style={{
+            flex: 0,
+            transform: [
+              {
+                translateY: this.state.showAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [-200, 0]
+                })
+              }
+            ]
+          }}
+        >
           <ComponentLogo
             noSlogan={true}
             imageStyles={theme.logoOnLightBackground}
             useSmallLogo={true}
           />
-        </View>
+        </Animated.View>
         <View style={styles.restContainer}>{content}</View>
       </View>
     );
@@ -663,8 +711,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   restContainer: {
-    flex: 1,
-    paddingTop: 40
+    flex: 8
   },
   closeWalletButton: {
     color: "red"
