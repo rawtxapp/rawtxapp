@@ -36,7 +36,8 @@ type Props = {
 type State = {
   showUnlockAnim: Object,
   showCreateAnim: Object,
-  showRemoteAnim: Object
+  showRemoteAnim: Object,
+  logoAnim: Object
 };
 
 class ScreenIntro extends Component<Props, State> {
@@ -45,7 +46,8 @@ class ScreenIntro extends Component<Props, State> {
     this.state = {
       showUnlockAnim: new Animated.Value(0),
       showCreateAnim: new Animated.Value(0),
-      showRemoteAnim: new Animated.Value(0)
+      showRemoteAnim: new Animated.Value(0),
+      logoAnim: new Animated.Value(0)
     };
   }
 
@@ -85,6 +87,10 @@ class ScreenIntro extends Component<Props, State> {
       this.normalAnimCard(this.state.showCreateAnim),
       this.normalAnimCard(this.state.showRemoteAnim)
     ]).start();
+    Animated.spring(this.state.logoAnim, {
+      toValue: 1,
+      useNativeDriver: true
+    }).start();
   };
 
   fullAnimCard = a => Animated.spring(a, { toValue: 2, useNativeDriver: true });
@@ -256,7 +262,8 @@ class ScreenIntro extends Component<Props, State> {
     Animated.parallel([
       this.removeAnimCard(this.state.showRemoteAnim),
       this.removeAnimCard(this.state.showCreateAnim),
-      this.removeAnimCard(this.state.showUnlockAnim)
+      this.removeAnimCard(this.state.showUnlockAnim),
+      this.removeAnimCard(this.state.logoAnim)
     ]).start(() => {
       this.props.navigation.navigate(screen);
     });
@@ -307,11 +314,31 @@ class ScreenIntro extends Component<Props, State> {
     );
   };
 
+  _renderLogo = () => {
+    return (
+      <Animated.View
+        style={{
+          flex: 1,
+          transform: [
+            {
+              translateY: this.state.logoAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [-300, 0]
+              })
+            }
+          ]
+        }}
+      >
+        <ComponentLogo imageStyles={theme.logoOnLightBackground} />
+      </Animated.View>
+    );
+  };
+
   render() {
     return (
       <View style={styles.linearGradient}>
         <View style={styles.container}>
-          <ComponentLogo imageStyles={theme.logoOnLightBackground} />
+          {this._renderLogo()}
           <View style={styles.sheetContainer}>
             {this._renderRemote()}
             {this._renderCreate()}
