@@ -9,7 +9,6 @@ import {
   Linking,
   Modal,
   Platform,
-  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -51,7 +50,6 @@ class ActionModal extends Component {
           visible={visible}
           onRequestClose={close}
         >
-          {visible && <StatusBar backgroundColor={this.props.statusBarDark} />}
           <View style={styles.modalContainer}>
             <TouchableOpacity
               onPress={close}
