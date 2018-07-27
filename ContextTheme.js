@@ -369,6 +369,6 @@ theme.add({
     backgroundColor: "#358AB2"
   },
   remoteCard: {
-    backgroundColor: "#37474F"
+    backgroundColor: "#586C75"
   }
 });

@@ -160,7 +160,6 @@ class ScreenIntro extends Component<Props, State> {
               <Animated.View
                 style={[
                   styles.actionIcon,
-
                   {
                     transform: [
                       {
