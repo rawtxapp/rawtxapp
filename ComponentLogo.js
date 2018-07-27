@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     padding: 50,
     paddingVertical: 20,
-    flex: 1
+    flex: 0
   },
   smallLogoContainer: {
     paddingTop: 30,
