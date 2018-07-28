@@ -368,5 +368,11 @@ theme.add({
   },
   remoteCard: {
     backgroundColor: "#586C75"
+  },
+  sendButton: {
+    backgroundColor: LIGHT_BLUE_500
+  },
+  receiveButton: {
+    backgroundColor: "#8BC34A"
   }
 });

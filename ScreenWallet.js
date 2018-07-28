@@ -8,6 +8,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  TouchableWithoutFeedback,
   View
 } from "react-native";
 import Button from "react-native-button";
@@ -308,8 +309,12 @@ class CheckingAccount extends Component {
           {
             opacity: this.props.showAnim,
             transform: [
-              { scaleX: this.props.showAnim },
-              { scaleY: this.props.showAnim }
+              {
+                translateY: this.props.showAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [800, 0]
+                })
+              }
             ]
           }
         ]}
@@ -506,8 +511,12 @@ class SavingsAccount extends Component {
           {
             opacity: this.props.showAnim,
             transform: [
-              { scaleX: this.props.showAnim },
-              { scaleY: this.props.showAnim }
+              {
+                translateY: this.props.showAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [800, 0]
+                })
+              }
             ]
           }
         ]}
@@ -609,6 +618,35 @@ class ScreenWallet extends Component {
     }
   };
 
+  _renderSendReceive = () => {
+    return (
+      <View style={[styles.sendReceiveContainer]}>
+        <TouchableWithoutFeedback>
+          <View
+            style={[
+              theme.sendButton,
+              styles.actionButtonContainer,
+              { marginLeft: 10 }
+            ]}
+          >
+            <Text style={styles.actionText}>Send</Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback>
+          <View
+            style={[
+              theme.receiveButton,
+              styles.actionButtonContainer,
+              { marginRight: 10, borderTopStartRadius: 10 }
+            ]}
+          >
+            <Text style={styles.actionText}>Receive</Text>
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
+    );
+  };
+
   render() {
     let content;
 
@@ -669,6 +707,7 @@ class ScreenWallet extends Component {
             <SavingsAccountWithLnd showAnim={this.state.showAnim} />
           </View>
           {footer}
+          {this._renderSendReceive()}
         </View>
       );
     }
@@ -715,6 +754,21 @@ const styles = StyleSheet.create({
   },
   closeWalletButton: {
     color: "red"
+  },
+  sendReceiveContainer: {
+    flexDirection: "row"
+  },
+  actionButtonContainer: {
+    padding: 20,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 10
+  },
+  actionText: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "white"
   }
 });
 
