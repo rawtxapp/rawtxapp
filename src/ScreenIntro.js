@@ -10,7 +10,6 @@ import {
   TouchableWithoutFeedback,
   View
 } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
 import withTheme from "./withTheme";
 import ComponentLogo from "./ComponentLogo";
 import { styles as theme } from "react-native-theme";

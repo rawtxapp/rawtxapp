@@ -160,7 +160,6 @@ android {
 }
 
 dependencies {
-    api project(':react-native-linear-gradient')
     api project(':react-native-keychain')
     api fileTree(include: ['*.jar'], dir: 'libs')
     api 'com.android.support:appcompat-v7:27.0.2'
