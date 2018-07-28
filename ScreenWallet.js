@@ -626,7 +626,7 @@ class ScreenWallet extends Component {
             style={[
               theme.sendButton,
               styles.actionButtonContainer,
-              { marginLeft: 10 }
+              styles.sendButton
             ]}
           >
             <Text style={styles.actionText}>Send</Text>
@@ -637,7 +637,7 @@ class ScreenWallet extends Component {
             style={[
               theme.receiveButton,
               styles.actionButtonContainer,
-              { marginRight: 10, borderTopStartRadius: 10 }
+              styles.receiveButton
             ]}
           >
             <Text style={styles.actionText}>Receive</Text>
@@ -769,6 +769,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     color: "white"
+  },
+  receiveButton: {
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+    marginRight: 10
+  },
+  sendButton: {
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
+    marginLeft: 10
   }
 });
 
