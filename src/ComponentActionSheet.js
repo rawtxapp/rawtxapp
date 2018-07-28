@@ -60,7 +60,7 @@ class ActionModal extends Component {
                 <View style={styles.xContainer}>
                   <TouchableOpacity onPress={close}>
                     <Image
-                      source={require("./assets/close.png")}
+                      source={require("../assets/close.png")}
                       style={styles.closeButton}
                     />
                   </TouchableOpacity>

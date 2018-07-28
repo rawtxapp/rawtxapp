@@ -643,7 +643,7 @@ class ScreenIntroCreateUnlockWallet extends Component {
           >
             <View style={styles.simpleContainer}>
               <Image
-                source={require("./assets/intro-logo.png")}
+                source={require("../assets/intro-logo.png")}
                 style={{
                   width: undefined,
                   height: 150,

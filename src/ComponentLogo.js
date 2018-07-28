@@ -18,7 +18,7 @@ class ComponentLogo extends Component<Props, State> {
     return (
       <View style={styles.imageContainer}>
         <Image
-          source={require("./assets/intro-logo.png")}
+          source={require("../assets/intro-logo.png")}
           style={[
             styles.logo,
             this.props.imageStyles,

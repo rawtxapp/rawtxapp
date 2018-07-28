@@ -225,7 +225,7 @@ class ScreenIntro extends Component<Props, State> {
                   ]}
                 >
                   <Animated.Image
-                    source={require("./assets/feather/close-2.png")}
+                    source={require("../assets/feather/close-2.png")}
                     style={{
                       width: 20,
                       height: 20,
@@ -274,7 +274,7 @@ class ScreenIntro extends Component<Props, State> {
       () => {
         this.showOnlyCard(this.state.showUnlockAnim);
       },
-      require("./assets/feather/unlock.png"),
+      require("../assets/feather/unlock.png"),
       "Unlock",
       3,
       theme.unlockCard,
@@ -291,7 +291,7 @@ class ScreenIntro extends Component<Props, State> {
       () => {
         this.showOnlyCard(this.state.showCreateAnim);
       },
-      require("./assets/feather/add.png"),
+      require("../assets/feather/add.png"),
       "Create",
       2,
       theme.createCard,
@@ -305,7 +305,7 @@ class ScreenIntro extends Component<Props, State> {
       () => {
         this.showOnlyCard(this.state.showRemoteAnim);
       },
-      require("./assets/feather/monitor-1.png"),
+      require("../assets/feather/monitor-1.png"),
       "Remote",
       1,
       theme.remoteCard,
