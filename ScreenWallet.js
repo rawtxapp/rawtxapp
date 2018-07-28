@@ -620,7 +620,22 @@ class ScreenWallet extends Component {
 
   _renderSendReceive = () => {
     return (
-      <View style={[styles.sendReceiveContainer]}>
+      <Animated.View
+        style={[
+          styles.sendReceiveContainer,
+          {
+            opacity: this.state.showAnim,
+            transform: [
+              {
+                translateY: this.state.showAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [100, 0]
+                })
+              }
+            ]
+          }
+        ]}
+      >
         <TouchableWithoutFeedback>
           <View
             style={[
@@ -643,7 +658,7 @@ class ScreenWallet extends Component {
             <Text style={styles.actionText}>Receive</Text>
           </View>
         </TouchableWithoutFeedback>
-      </View>
+      </Animated.View>
     );
   };
 
