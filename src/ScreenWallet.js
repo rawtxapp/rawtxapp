@@ -32,6 +32,7 @@ import WalletShutdownBackground from "./WalletShutdownBackground.js";
 import withLnd from "./withLnd.js";
 import withTheme from "./withTheme.js";
 import ScreenSend from "./ScreenSend";
+import ScreenReceive from "./ScreenReceive";
 
 let backgroundShutdown = <View />;
 if (Platform.OS === "ios") {
@@ -241,36 +242,6 @@ class CheckingAccount extends Component {
     );
   };
 
-  _renderPayInvoice = () => {
-    const closeModal = () => this.setState({ showingPayInvoice: false });
-    return (
-      <ComponentActionSheet
-        visible={!!this.state.showingPayInvoice}
-        onRequestClose={closeModal}
-        animationType="slide"
-        buttonText="Done"
-        title="Pay invoice"
-      >
-        <ScreenPayInvoice onCancel={closeModal} />
-      </ComponentActionSheet>
-    );
-  };
-
-  _renderReceiveInvoice = () => {
-    const closeModal = () => this.setState({ showingReceiveInvoice: false });
-    return (
-      <ComponentActionSheet
-        visible={!!this.state.showingReceiveInvoice}
-        onRequestClose={closeModal}
-        animationType="slide"
-        buttonText="Done"
-        title="Receive"
-      >
-        <ScreenReceiveInvoice onCancel={closeModal} />
-      </ComponentActionSheet>
-    );
-  };
-
   _renderShowInvoices = () => {
     const closeModal = () => this.setState({ showingInvoices: false });
     return (
@@ -332,30 +303,6 @@ class CheckingAccount extends Component {
             style={theme.smallActionButtonText}
             onPress={() => {
               this.setState({
-                showingPayInvoice: true
-              });
-            }}
-          >
-            Pay
-          </Button>
-          <Button
-            containerStyle={theme.smallActionButton}
-            style={theme.smallActionButtonText}
-            onPress={() => {
-              this.setState({
-                showingReceiveInvoice: true
-              });
-            }}
-          >
-            Receive
-          </Button>
-        </View>
-        <View style={{ flexDirection: "row" }}>
-          <Button
-            containerStyle={theme.smallActionButton}
-            style={theme.smallActionButtonText}
-            onPress={() => {
-              this.setState({
                 showingPayments: true
               });
             }}
@@ -390,8 +337,6 @@ class CheckingAccount extends Component {
         {this._renderFaucet()}
         {this._renderShowPayments()}
         {this._renderShowInvoices()}
-        {this._renderPayInvoice()}
-        {this._renderReceiveInvoice()}
         {this._renderChannels()}
       </Animated.View>
     );
@@ -634,10 +579,26 @@ class ScreenWallet extends Component {
     );
   };
 
+  _renderReceive = () => {
+    const closeModal = () => this.setState({ showingReceive: false });
+    return (
+      <ComponentActionSheet
+        visible={!!this.state.showingReceive}
+        onRequestClose={closeModal}
+        animationType="slide"
+        buttonText="Done"
+        title="Receive"
+      >
+        <ScreenReceive />
+      </ComponentActionSheet>
+    );
+  };
+
   _renderSendReceive = () => {
     return (
       <View>
         {this._renderSend()}
+        {this._renderReceive()}
         <Animated.View
           style={[
             styles.sendReceiveContainer,
