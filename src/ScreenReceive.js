@@ -18,6 +18,7 @@ import withTheme from "./withTheme";
 import { styles as theme } from "react-native-theme";
 import withLnd from "./withLnd";
 import QRCode from "react-native-qrcode";
+import { convertErrorToStr } from "./Utils";
 
 const qrWidth = Dimensions.get("window").width * 0.8;
 
@@ -57,7 +58,7 @@ class ScreenReceive extends Component {
   };
 
   _renderInput = () => {
-    if (this.state.payment_request) return;
+    if (this.state.payment_request || this.state.generatedAddress) return;
     const showError = error => {
       this.setState({
         working: false,
@@ -117,11 +118,75 @@ class ScreenReceive extends Component {
             ? "Creating invoice failed!"
             : this.state.working
               ? "Creating"
-              : "Create invoice"}
+              : "Create lightning invoice"}
         </Button>
         {!!this.state.error && (
           <View style={styles.errorContainer}>
             <Text style={theme.errorText}>{this.state.error}</Text>
+          </View>
+        )}
+      </View>
+    );
+  };
+
+  _renderOnchainAddress = () => {
+    if (!this.state.generatedAddress) return;
+    return (
+      <View>
+        <Text selectable style={theme.textInput}>
+          {this.state.generatedAddress}
+        </Text>
+        <View style={styles.qrCodeContainer}>
+          <QRCode value={this.state.generatedAddress} size={qrWidth} />
+        </View>
+      </View>
+    );
+  };
+
+  _renderGenerateOnchain = () => {
+    if (this.state.payment_request || this.state.generatedAddress) return;
+    return (
+      <View>
+        <View style={styles.orContainer}>
+          <Text style={styles.orText}>- or -</Text>
+        </View>
+
+        <Button
+          style={[
+            theme.actionButton,
+            this.state.onchainWorking && theme.activeActionButton,
+            !!this.state.onchainError && theme.errorActionButton
+          ]}
+          onPress={() => {
+            this.setState(
+              {
+                onchainWorking: true,
+                error: "",
+                onchainError: "",
+                payment_request: "",
+                generatedAddress: ""
+              },
+              async () => {
+                try {
+                  const newaddress = await this.props.lndApi.newaddress();
+                  this.setState({
+                    generatedAddress: newaddress["address"]
+                  });
+                } catch (err) {
+                  this.setState({ onchainError: convertErrorToStr(err) });
+                }
+                this.setState({ onchainWorking: false });
+              }
+            );
+          }}
+        >
+          {this.state.onchainWorking
+            ? "Generating"
+            : "Generate blockchain address"}
+        </Button>
+        {!!this.state.onchainError && (
+          <View style={styles.errorContainer}>
+            <Text style={theme.errorText}>{this.state.onchainError}</Text>
           </View>
         )}
       </View>
@@ -186,6 +251,8 @@ class ScreenReceive extends Component {
     return (
       <View>
         {this._renderInput()}
+        {this._renderGenerateOnchain()}
+        {this._renderOnchainAddress()}
 
         <ScrollView>
           {this._renderPaymentRequest()}
@@ -222,5 +289,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 10
+  },
+  orContainer: {
+    alignItems: "center"
+  },
+  orText: {
+    fontSize: 20
   }
 });
