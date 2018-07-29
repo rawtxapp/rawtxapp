@@ -46,7 +46,12 @@ class ScreenSend extends Component {
         this.state.payreq != nextState.payreq) ||
       (!this.state.payreq && nextState.payreq && nextState.payreq.length > 0)
     ) {
-      this._decodePayreq(nextState.payreq);
+      const lower = nextState.payreq.toLowerCase();
+      if (lower.startsWith("ln") || lower.startsWith("lightning")) {
+        this._decodePayreq(nextState.payreq);
+      } else {
+        this.setState({ address: nextState.payreq });
+      }
     }
   }
 
@@ -149,6 +154,9 @@ class ScreenSend extends Component {
   };
 
   _renderInput = () => {
+    const setPayreq = payreq => {
+      this.setState({ payreq });
+    };
     return (
       <View style={styles.payreqContainer}>
         <TextInput
@@ -158,17 +166,15 @@ class ScreenSend extends Component {
             this.state.decoded && theme.textInputSuccess
           ]}
           underlineColorAndroid="transparent"
-          placeholder="Payment request"
+          placeholder="Payment request or BTC address"
           value={this.state.payreq}
-          onChangeText={text => this.setState({ payreq: text })}
+          onChangeText={text => setPayreq(text)}
         />
         {!!this.state.pastable &&
           !this.state.decoded && (
             <Button
               style={theme.actionButton}
-              onPress={() => {
-                this.setState({ payreq: this.state.pastable });
-              }}
+              onPress={() => setPayreq(this.state.pastable)}
             >
               Paste
             </Button>
@@ -179,7 +185,7 @@ class ScreenSend extends Component {
             onPress={async () => {
               const qr = await this.props.scanQrCode();
               if (qr) {
-                this.setState({ payreq: qr });
+                setPayreq(qr);
               }
             }}
           >
@@ -190,12 +196,119 @@ class ScreenSend extends Component {
     );
   };
 
+  _renderOnchainPay = () => {
+    if (
+      !this.state.address ||
+      !this.state.amount ||
+      this.state.address.length == 0 ||
+      this.state.amount.length == 0 ||
+      this.state.payreq.length == 0
+    ) {
+      return;
+    }
+    return (
+      <View style={styles.payContainer}>
+        <Button
+          style={[
+            theme.actionButton,
+            this.state.paying && theme.activeActionButton,
+            !!this.state.error && theme.errorActionButton,
+            this.state.paid && theme.successActionButton
+          ]}
+          onPress={() => {
+            if (this.state.paid || this.state.paying || this.state.error) {
+              return;
+            }
+            LayoutAnimation.easeInEaseOut();
+            this.setState({ paying: true }, async () => {
+              try {
+                const payment = await this.props.lndApi.sendTransactionBlockchain(
+                  this.state.address,
+                  this.state.amount
+                );
+                LayoutAnimation.easeInEaseOut();
+                if (payment.txid) {
+                  this.setState({ paymentTx: payment.txid, paid: true });
+                } else if (
+                  payment.error &&
+                  payment.error.includes("already have transaction")
+                ) {
+                  let paymentTx;
+                  if (payment.error.startsWith("Transaction")) {
+                    paymentTx = payment.error.split(" ").filter(String)[1];
+                  }
+                  this.setState({
+                    paid: true,
+                    paymentTx: paymentTx
+                      ? paymentTx
+                      : "Your payment should be sent!"
+                  });
+                } else if (payment.error) {
+                  this.setState({ error: payment.error });
+                } else {
+                  this.setState({ error: "Couldn't send coins!" });
+                }
+              } catch (e) {
+                this.setState({ error: JSON.stringify(e) });
+              }
+              this.setState({ paying: false });
+            });
+          }}
+        >
+          {this.state.error
+            ? "Payment failed!"
+            : this.state.paid
+              ? "Paid!"
+              : this.state.paying
+                ? "Paying"
+                : "Pay"}
+        </Button>
+        {!!this.state.paymentTx && (
+          <Text style={theme.successText}>
+            Payment sent, tx id is{" "}
+            <Text selectable>{this.state.paymentTx}</Text>.
+          </Text>
+        )}
+        {!!this.state.error && (
+          <Text style={theme.errorText}>{this.state.error}</Text>
+        )}
+      </View>
+    );
+  };
+
+  _renderAmountInput = () => {
+    if (
+      !this.state.address ||
+      this.state.address == "" ||
+      this.state.payreq == ""
+    ) {
+      return;
+    }
+    return (
+      <View>
+        <TextInput
+          style={[theme.textInput]}
+          underlineColorAndroid="transparent"
+          placeholder="Amount (in satoshis)"
+          keyboardType="numeric"
+          value={this.state.amount}
+          onChangeText={text => {
+            LayoutAnimation.easeInEaseOut();
+            this.setState({ amount: text, error: "" });
+          }}
+        />
+      </View>
+    );
+  };
+
   render() {
     return (
       <View>
         {this._renderInput()}
+        {this._renderAmountInput()}
         {this._renderDecoded()}
         {this._renderPay()}
+        {this._renderOnchainPay()}
       </View>
     );
   }
