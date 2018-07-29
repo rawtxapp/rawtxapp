@@ -5,6 +5,7 @@ import {
   AppState,
   Dimensions,
   Image,
+  InteractionManager,
   LayoutAnimation,
   Linking,
   Modal,
@@ -28,10 +29,12 @@ class ActionModal extends Component {
   componentWillReceiveProps(newProps) {
     if (newProps.visible) {
       this.props.dimBackground(true);
-      this.props.setActionSheetMethods(
-        callback => this.setState({ hidden: true }, callback),
-        callback => this.setState({ hidden: false }, callback)
-      );
+      InteractionManager.runAfterInteractions(() => {
+        this.props.setActionSheetMethods(
+          callback => this.setState({ hidden: true }, callback),
+          callback => this.setState({ hidden: false }, callback)
+        );
+      });
     }
   }
 

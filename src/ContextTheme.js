@@ -1,9 +1,11 @@
 import React, { Component, createContext } from "react";
-import { Animated, StyleSheet, View } from "react-native";
+import { Animated, Dimensions, StyleSheet, View } from "react-native";
 import { LIGHT_BLUE_500, LOGO_COLOR, LIGHT_BLUE_200 } from "./Colors";
 import theme from "react-native-theme";
 
 const Theme = createContext({});
+
+const { height, width } = Dimensions.get("screen");
 
 class ThemeProvider extends Component {
   constructor(props) {
@@ -16,19 +18,11 @@ class ThemeProvider extends Component {
   }
 
   dimBackground = dim => {
-    if (this.state.dimmed == dim) return;
-    if (dim) {
-      this.setState({ dimmed: dim });
-    }
     Animated.timing(this.state.dimAnim, {
       toValue: dim ? 0.7 : 0,
       duration: 300,
       useNativeDriver: true
-    }).start(() => {
-      if (!dim) {
-        this.setState({ dimmed: dim });
-      }
-    });
+    }).start(() => {});
   };
 
   render() {
@@ -51,8 +45,23 @@ class ThemeProvider extends Component {
         <Animated.View
           style={[
             styles.dim,
-            this.state.dimmed && styles.visible,
-            { opacity: this.state.dimAnim }
+            {
+              opacity: this.state.dimAnim,
+              transform: [
+                {
+                  scaleX: this.state.dimAnim.interpolate({
+                    inputRange: [0, 0.01],
+                    outputRange: [0.005, width]
+                  })
+                },
+                {
+                  scaleY: this.state.dimAnim.interpolate({
+                    inputRange: [0, 0.01],
+                    outputRange: [0.005, width]
+                  })
+                }
+              ]
+            }
           ]}
         />
       </Theme.Provider>
@@ -66,7 +75,7 @@ export { ThemeProvider };
 const styles = StyleSheet.create({
   dim: {
     position: "absolute",
-    top: 10000,
+    top: 0,
     left: 0,
     right: 0,
     bottom: 0,
