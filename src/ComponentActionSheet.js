@@ -60,6 +60,12 @@ class ActionModal extends Component {
             />
             <View style={styles.modalSpacer}>
               <View style={[styles.modalTopContainer, this.props.theme.modal]}>
+                <View style={styles.leftActionContainer} />
+                <View style={styles.titleContainer}>
+                  <Text style={[styles.title, this.props.theme.modalTitle]}>
+                    {this.props.title}
+                  </Text>
+                </View>
                 <View style={styles.xContainer}>
                   <TouchableOpacity onPress={close}>
                     <Image
@@ -68,33 +74,20 @@ class ActionModal extends Component {
                     />
                   </TouchableOpacity>
                 </View>
-                <View style={styles.titleContainer}>
-                  <Text style={[styles.title, this.props.theme.modalTitle]}>
-                    {this.props.title}
-                  </Text>
-                </View>
-                <View style={styles.rightActionContainer} />
               </View>
-              <View style={this.props.theme.separator} />
-              <View style={[this.props.theme.modal, styles.sideBorder]}>
+              <View style={[this.props.theme.modal]}>
                 {this.props.children}
                 {Platform.OS == "ios" && <KeyboardSpacer />}
               </View>
             </View>
-            <View style={this.props.theme.separator} />
-            <View
-              style={[
-                styles.actionContainer,
-                styles.sideBorder,
-                this.props.theme.modal
-              ]}
-            >
-              <Button
-                onPress={close}
-                style={[theme.actionButton, styles.actionButton]}
-              >
-                {this.props.buttonText || "Done"}
-              </Button>
+            <View style={[styles.actionContainer, this.props.theme.modal]}>
+              <TouchableOpacity onPress={close}>
+                <View style={[styles.actionButton]}>
+                  <Text style={styles.actionText}>
+                    {this.props.buttonText || "Done"}
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
         </Modal>
@@ -115,8 +108,14 @@ const styles = StyleSheet.create({
     height: 20
   },
   actionButton: {
-    padding: 5,
-    margin: 5
+    backgroundColor: "#CFD8DC",
+    alignItems: "center",
+    padding: 10,
+    marginTop: 10
+  },
+  actionText: {
+    color: "#37474F",
+    fontSize: 18
   },
   modalSpacer: {
     flex: 1,
@@ -132,13 +131,13 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     backgroundColor: "white",
-    borderWidth: StyleSheet.hairlineWidth * 3,
-    borderBottomWidth: 0,
     padding: 10,
     flexDirection: "row"
   },
   xContainer: {
-    flex: 1
+    flex: 1,
+    alignItems: "flex-end",
+    marginRight: 10
   },
   titleContainer: {
     justifyContent: "center",
@@ -148,7 +147,7 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "bold"
   },
-  rightActionContainer: {
+  leftActionContainer: {
     flex: 1
   },
   backdropContainer: {
@@ -158,9 +157,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0
   },
-  actionContainer: {
-    padding: 5
-  },
+  actionContainer: {},
   sideBorder: {
     borderLeftWidth: 3 * StyleSheet.hairlineWidth,
     borderRightWidth: 3 * StyleSheet.hairlineWidth
