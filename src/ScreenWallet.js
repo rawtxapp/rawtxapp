@@ -5,9 +5,9 @@ import {
   Animated,
   Platform,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
+  TouchableOpacity,
   TouchableWithoutFeedback,
   View
 } from "react-native";
@@ -31,6 +31,7 @@ import ScreenSendBlockchain from "./ScreenSendBlockchain.js";
 import WalletShutdownBackground from "./WalletShutdownBackground.js";
 import withLnd from "./withLnd.js";
 import withTheme from "./withTheme.js";
+import ScreenSend from "./ScreenSend";
 
 let backgroundShutdown = <View />;
 if (Platform.OS === "ios") {
@@ -618,47 +619,67 @@ class ScreenWallet extends Component {
     }
   };
 
+  _renderSend = () => {
+    const closeModal = () => this.setState({ showingSend: false });
+    return (
+      <ComponentActionSheet
+        visible={!!this.state.showingSend}
+        onRequestClose={closeModal}
+        animationType="slide"
+        buttonText="Done"
+        title="Send"
+      >
+        <ScreenSend />
+      </ComponentActionSheet>
+    );
+  };
+
   _renderSendReceive = () => {
     return (
-      <Animated.View
-        style={[
-          styles.sendReceiveContainer,
-          {
-            opacity: this.state.showAnim,
-            transform: [
-              {
-                translateY: this.state.showAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [100, 0]
-                })
-              }
-            ]
-          }
-        ]}
-      >
-        <TouchableWithoutFeedback>
-          <View
+      <View>
+        {this._renderSend()}
+        <Animated.View
+          style={[
+            styles.sendReceiveContainer,
+            {
+              opacity: this.state.showAnim,
+              transform: [
+                {
+                  translateY: this.state.showAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [100, 0]
+                  })
+                }
+              ]
+            }
+          ]}
+        >
+          <TouchableOpacity
+            onPress={() => this.setState({ showingSend: true })}
             style={[
               theme.sendButton,
               styles.actionButtonContainer,
               styles.sendButton
             ]}
           >
-            <Text style={styles.actionText}>Send</Text>
-          </View>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback>
-          <View
+            <View>
+              <Text style={styles.actionText}>Send</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => this.setState({ showingReceive: true })}
             style={[
               theme.receiveButton,
               styles.actionButtonContainer,
               styles.receiveButton
             ]}
           >
-            <Text style={styles.actionText}>Receive</Text>
-          </View>
-        </TouchableWithoutFeedback>
-      </Animated.View>
+            <View>
+              <Text style={styles.actionText}>Receive</Text>
+            </View>
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
     );
   };
 
@@ -774,14 +795,14 @@ const styles = StyleSheet.create({
     flexDirection: "row"
   },
   actionButtonContainer: {
-    padding: 20,
+    padding: 10,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     marginVertical: 10
   },
   actionText: {
-    fontSize: 16,
+    fontSize: 22,
     fontWeight: "700",
     color: "white"
   },
