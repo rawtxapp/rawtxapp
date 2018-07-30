@@ -97,7 +97,6 @@ class ScreenReceive extends Component {
                     this.state.memo,
                     this.state.amt_sat
                   );
-                  LayoutAnimation.easeInEaseOut();
                   if (res.payment_request) {
                     this.setState({
                       payment_request: res.payment_request
