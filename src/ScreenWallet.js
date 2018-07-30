@@ -403,36 +403,6 @@ class SavingsAccount extends Component {
     );
   };
 
-  _renderSend = () => {
-    const closeModal = () => this.setState({ showingSend: false });
-    return (
-      <ComponentActionSheet
-        visible={!!this.state.showingSend}
-        onRequestClose={closeModal}
-        animationType="slide"
-        buttonText="Done"
-        title="Send"
-      >
-        <ScreenSendBlockchain onCancel={closeModal} />
-      </ComponentActionSheet>
-    );
-  };
-
-  _renderReceive = () => {
-    const closeModal = () => this.setState({ showingReceive: false });
-    return (
-      <ComponentActionSheet
-        visible={!!this.state.showingReceive}
-        onRequestClose={closeModal}
-        animationType="slide"
-        buttonText="Done"
-        title="Receive"
-      >
-        <ScreenReceiveBlockchain onCancel={closeModal} />
-      </ComponentActionSheet>
-    );
-  };
-
   _renderTransfer = () => {
     const closeModal = () => this.setState({ showingTransfer: false });
     return (
@@ -479,30 +449,6 @@ class SavingsAccount extends Component {
             style={theme.smallActionButtonText}
             onPress={() => {
               this.setState({
-                showingSend: true
-              });
-            }}
-          >
-            Send
-          </Button>
-          <Button
-            containerStyle={theme.smallActionButton}
-            style={theme.smallActionButtonText}
-            onPress={() => {
-              this.setState({
-                showingReceive: true
-              });
-            }}
-          >
-            Receive
-          </Button>
-        </View>
-        <View style={{ flexDirection: "row" }}>
-          <Button
-            containerStyle={theme.smallActionButton}
-            style={theme.smallActionButtonText}
-            onPress={() => {
-              this.setState({
                 showingTransfer: true
               });
             }}
@@ -511,8 +457,6 @@ class SavingsAccount extends Component {
           </Button>
         </View>
 
-        {this._renderReceive()}
-        {this._renderSend()}
         {this._renderTransfer()}
       </Animated.View>
     );
