@@ -22,7 +22,7 @@ import {
 } from "./Utils";
 import withTheme from "./withTheme";
 
-class ScreenPayments extends Component {
+class ScreenTransactions extends Component {
   constructor(props) {
     super(props);
     // transactions is formatted [{title:'<DATE>', data:[<PAYMENTS_INVOICES>]}]
@@ -185,7 +185,7 @@ class ScreenPayments extends Component {
   }
 }
 
-export default withTheme(withLnd(ScreenPayments));
+export default withTheme(withLnd(ScreenTransactions));
 
 const styles = StyleSheet.create({
   nodeItem: {

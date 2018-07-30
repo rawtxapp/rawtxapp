@@ -24,7 +24,7 @@ import ScreenChannels from "./ScreenChannels.js";
 import ScreenCreateChannel from "./ScreenCreateChannel.js";
 import ScreenInvoices from "./ScreenInvoices";
 import ScreenPayInvoice from "./ScreenPayInvoice.js";
-import ScreenPayments from "./ScreenPayments.js";
+import ScreenTransactions from "./ScreenTransactions.js";
 import ScreenReceiveBlockchain from "./ScreenReceiveBlockchain.js";
 import ScreenReceiveInvoice from "./ScreenReceiveInvoice.js";
 import ScreenSendBlockchain from "./ScreenSendBlockchain.js";
@@ -237,7 +237,7 @@ class CheckingAccount extends Component {
         buttonText="Done"
         title="Payments"
       >
-        <ScreenPayments onCancel={closeModal} />
+        <ScreenTransactions onCancel={closeModal} />
       </ComponentActionSheet>
     );
   };
