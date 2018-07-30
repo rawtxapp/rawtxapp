@@ -234,6 +234,24 @@ export const sortBySettleDateDescending = payments => {
   });
 };
 
+const settleCreateComparator = (i1, i2) => {
+  const s1 = i1.settle_date || i1.creation_date;
+  const s2 = i2.settle_date || i2.creation_date;
+  return parseInt(s2) - parseInt(s1);
+};
+
+const txSectionComparator = (i1, i2) => {
+  return settleCreateComparator(i1.data[0], i2.data[0]);
+};
+
+export const sortTransactions = txs => {
+  if (!txs) return;
+  txs.sort(txSectionComparator);
+  for (let i = 0; i < txs.length; i++) {
+    txs[i].data.sort(settleCreateComparator);
+  }
+};
+
 export const sleep = ms => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
