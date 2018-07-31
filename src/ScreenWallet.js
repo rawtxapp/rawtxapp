@@ -288,7 +288,7 @@ class CheckingAccount extends Component {
           {this._renderBalances()}
           {this._renderChannelCount()}
         </View>
-        <View style={{ flexDirection: "row" }}>
+        <View style={styles.bottomActionContainer}>
           <Button
             containerStyle={[
               theme.cardBottomActionButton,
@@ -405,7 +405,6 @@ class SavingsAccount extends Component {
       <Animated.View
         style={[
           theme.container,
-          styles.container,
           {
             opacity: this.props.showAnim,
             transform: [
@@ -427,8 +426,8 @@ class SavingsAccount extends Component {
           <Text style={theme.accountHeader}>Blockchain account</Text>
         </View>
 
-        <View style={styles.container}>{this._renderBalances()}</View>
-        <View style={{ flexDirection: "row" }}>
+        {this._renderBalances()}
+        <View style={styles.bottomActionContainer}>
           <Button
             containerStyle={theme.cardBottomActionButton}
             style={theme.smallActionButtonText}
@@ -629,9 +628,7 @@ class ScreenWallet extends Component {
           <View style={styles.container}>
             <CheckingAccountWithLnd showAnim={this.state.showAnim} />
           </View>
-          <View style={styles.container}>
-            <SavingsAccountWithLnd showAnim={this.state.showAnim} />
-          </View>
+          <SavingsAccountWithLnd showAnim={this.state.showAnim} />
           {footer}
           {this._renderSendReceive()}
         </View>
@@ -714,6 +711,10 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     marginRight: 5
+  },
+  bottomActionContainer: {
+    flexDirection: "row",
+    marginTop: 10
   },
   leftBottomAction: {
     marginRight: 0,
