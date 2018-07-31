@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   Animated,
   Platform,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -291,10 +292,13 @@ class CheckingAccount extends Component {
           }
         ]}
       >
-        <Text style={theme.accountHeader}>
-          Checking account{" "}
-          <Text style={theme.smallerHeader}>(funds on channels)</Text>
-        </Text>
+        <View style={styles.headerTitleContainer}>
+          <Image
+            source={require("../assets/lightning.png")}
+            style={styles.headerIcon}
+          />
+          <Text style={theme.accountHeader}>Lightning account</Text>
+        </View>
         {this._renderBalances()}
         {this._renderChannelCount()}
         <View style={{ flexDirection: "row" }}>
@@ -437,10 +441,13 @@ class SavingsAccount extends Component {
           }
         ]}
       >
-        <Text style={theme.accountHeader}>
-          Savings account{" "}
-          <Text style={theme.smallerHeader}>(funds on blockchain)</Text>
-        </Text>
+        <View style={styles.headerTitleContainer}>
+          <Image
+            source={require("../assets/blockchain.png")}
+            style={styles.headerIcon}
+          />
+          <Text style={theme.accountHeader}>Blockchain account</Text>
+        </View>
 
         {this._renderBalances()}
         <View style={{ flexDirection: "row" }}>
@@ -720,6 +727,15 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
     marginLeft: 10
+  },
+  headerTitleContainer: {
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  headerIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 5
   }
 });
 
