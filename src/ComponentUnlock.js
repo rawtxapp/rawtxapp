@@ -26,7 +26,8 @@ type Props = {
   lndApi: LndApi,
   getRunningWallet: void => Object,
   walletKeychain: Object,
-  navigation: Object
+  navigation: Object,
+  navigate: string => void
 };
 type State = {
   working: boolean,

@@ -301,7 +301,7 @@ class CheckingAccount extends Component {
               });
             }}
           >
-            Payments
+            Transactions
           </Button>
           <Button
             containerStyle={[
