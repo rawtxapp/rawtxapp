@@ -335,7 +335,7 @@ class ScreenIntro extends Component<Props, State> {
 
   render() {
     return (
-      <View style={styles.linearGradient}>
+      <View style={[styles.linearGradient, theme.appBackground]}>
         <View style={styles.container}>
           {this._renderLogo()}
           <View style={styles.sheetContainer}>

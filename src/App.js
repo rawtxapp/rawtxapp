@@ -13,7 +13,7 @@ import {
   UIManager,
   View
 } from "react-native";
-import { createStackNavigator } from "react-navigation";
+import { createStackNavigator, createSwitchNavigator } from "react-navigation";
 import { LndProvider } from "./ContextLnd.js";
 import ThemeConsumer, { ThemeProvider } from "./ContextTheme";
 import ScreenGenSeed from "./ScreenGenSeed.js";
@@ -51,7 +51,7 @@ const transitionConfig = () => {
   };
 };
 
-const RootSwitch = createStackNavigator(
+const RootSwitch = createSwitchNavigator(
   {
     Intro: { screen: ScreenIntro },
     WalletCreate: { screen: ScreenIntroCreateUnlockWallet },
