@@ -243,21 +243,6 @@ class CheckingAccount extends Component {
     );
   };
 
-  _renderShowInvoices = () => {
-    const closeModal = () => this.setState({ showingInvoices: false });
-    return (
-      <ComponentActionSheet
-        visible={!!this.state.showingInvoices}
-        onRequestClose={closeModal}
-        animationType="slide"
-        buttonText="Done"
-        title="Invoices"
-      >
-        <ScreenInvoices onCancel={closeModal} />
-      </ComponentActionSheet>
-    );
-  };
-
   _renderChannels = () => {
     const closeModal = () => this.setState({ showingChannels: false });
     return (
@@ -299,11 +284,16 @@ class CheckingAccount extends Component {
           />
           <Text style={theme.accountHeader}>Lightning account</Text>
         </View>
-        {this._renderBalances()}
-        {this._renderChannelCount()}
+        <View style={styles.container}>
+          {this._renderBalances()}
+          {this._renderChannelCount()}
+        </View>
         <View style={{ flexDirection: "row" }}>
           <Button
-            containerStyle={theme.smallActionButton}
+            containerStyle={[
+              theme.cardBottomActionButton,
+              styles.leftBottomAction
+            ]}
             style={theme.smallActionButtonText}
             onPress={() => {
               this.setState({
@@ -314,20 +304,10 @@ class CheckingAccount extends Component {
             Payments
           </Button>
           <Button
-            containerStyle={theme.smallActionButton}
-            style={theme.smallActionButtonText}
-            onPress={() => {
-              this.setState({
-                showingInvoices: true
-              });
-            }}
-          >
-            Invoices
-          </Button>
-        </View>
-        <View style={{ flexDirection: "row" }}>
-          <Button
-            containerStyle={theme.smallActionButton}
+            containerStyle={[
+              theme.cardBottomActionButton,
+              styles.rightBottomAction
+            ]}
             style={theme.smallActionButtonText}
             onPress={() => {
               this.setState({
@@ -338,9 +318,7 @@ class CheckingAccount extends Component {
             Channels
           </Button>
         </View>
-        {this._renderFaucet()}
         {this._renderShowPayments()}
-        {this._renderShowInvoices()}
         {this._renderChannels()}
       </Animated.View>
     );
@@ -449,10 +427,10 @@ class SavingsAccount extends Component {
           <Text style={theme.accountHeader}>Blockchain account</Text>
         </View>
 
-        {this._renderBalances()}
+        <View style={styles.container}>{this._renderBalances()}</View>
         <View style={{ flexDirection: "row" }}>
           <Button
-            containerStyle={theme.smallActionButton}
+            containerStyle={theme.cardBottomActionButton}
             style={theme.smallActionButtonText}
             onPress={() => {
               this.setState({
@@ -736,6 +714,13 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     marginRight: 5
+  },
+  leftBottomAction: {
+    marginRight: 0,
+    borderRightWidth: 1
+  },
+  rightBottomAction: {
+    marginLeft: 0
   }
 });
 

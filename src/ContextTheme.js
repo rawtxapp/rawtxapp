@@ -153,6 +153,7 @@ theme.add({
   container: {
     borderRadius: 10,
     backgroundColor: "white",
+    overflow: "hidden",
     padding: 10,
     margin: 10,
     elevation: 1,
@@ -281,7 +282,8 @@ theme.add({
     flex: 1
   },
   smallActionButtonText: {
-    color: "white"
+    color: "#37474F",
+    fontWeight: "normal"
   },
   activeActionButton: {
     ...buttonBase,
@@ -383,5 +385,12 @@ theme.add({
   },
   receiveButton: {
     backgroundColor: "#8BC34A"
+  },
+  cardBottomActionButton: {
+    backgroundColor: "#CFD8DC",
+    flex: 1,
+    margin: -10,
+    padding: 10,
+    borderColor: "#37474F"
   }
 });
