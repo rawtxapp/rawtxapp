@@ -34,6 +34,7 @@ import withLnd from "./withLnd.js";
 import withTheme from "./withTheme.js";
 import ScreenSend from "./ScreenSend";
 import ScreenReceive from "./ScreenReceive";
+import ComponentLappsInCard from "./ComponentLappsInCard";
 
 let backgroundShutdown = <View />;
 if (Platform.OS === "ios") {
@@ -288,6 +289,7 @@ class CheckingAccount extends Component {
           {this._renderBalances()}
           {this._renderChannelCount()}
         </View>
+        <ComponentLappsInCard navigate={this.props.navigate} />
         <View style={styles.bottomActionContainer}>
           <Button
             containerStyle={[
@@ -468,12 +470,7 @@ class ScreenWallet extends Component {
         this.setState({ getinfo });
       }
     );
-    Animated.spring(this.state.showAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-      friction: 10,
-      tension: 20
-    }).start();
+    this.animateShowAnim(1);
   }
 
   componentWillUnmount() {
@@ -490,6 +487,15 @@ class ScreenWallet extends Component {
         this.setTimeout(this.setRunningWallet, 1000);
       }
     }
+  };
+
+  animateShowAnim = (toValue, callback) => {
+    Animated.spring(this.state.showAnim, {
+      toValue,
+      useNativeDriver: true,
+      friction: 10,
+      tension: 20
+    }).start(callback);
   };
 
   _renderSend = () => {
@@ -572,6 +578,12 @@ class ScreenWallet extends Component {
     );
   };
 
+  _navigate = (screen, params) => {
+    this.animateShowAnim(0, () =>
+      this.props.navigation.navigate(screen, params)
+    );
+  };
+
   render() {
     let content;
 
@@ -626,7 +638,10 @@ class ScreenWallet extends Component {
       content = (
         <View style={styles.container}>
           <View style={styles.container}>
-            <CheckingAccountWithLnd showAnim={this.state.showAnim} />
+            <CheckingAccountWithLnd
+              showAnim={this.state.showAnim}
+              navigate={this._navigate}
+            />
           </View>
           <SavingsAccountWithLnd showAnim={this.state.showAnim} />
           {footer}
