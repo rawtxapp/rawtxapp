@@ -21,6 +21,7 @@ import ScreenIntro from "./ScreenIntro.js";
 import ScreenIntroCreateUnlockWallet from "./ScreenIntroCreateUnlockWallet.js";
 import ScreenLightningLink from "./ScreenLightningLink.js";
 import ScreenWallet from "./ScreenWallet.js";
+import ScreenLapp from "./micro/ScreenLapp";
 
 if (Platform.OS === "android") {
   UIManager.setLayoutAnimationEnabledExperimental &&
@@ -56,7 +57,8 @@ const RootSwitch = createSwitchNavigator(
     Intro: { screen: ScreenIntro },
     WalletCreate: { screen: ScreenIntroCreateUnlockWallet },
     GenSeed: { screen: ScreenGenSeed },
-    Wallet: { screen: ScreenWallet }
+    Wallet: { screen: ScreenWallet },
+    Lapp: { screen: ScreenLapp }
   },
   { headerMode: "none", transitionConfig }
 );
