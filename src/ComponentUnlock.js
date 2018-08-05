@@ -61,7 +61,7 @@ class ComponentUnlock extends Component<Props, State> {
     if (
       this.state.unlocking &&
       this.state.unlocking.usesKeychain &&
-      (!prevState.unlocking || !prevState.usesKeychain)
+      !prevState.unlocking
     ) {
       this.unlockWithKeychain();
     }
