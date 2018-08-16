@@ -30,7 +30,7 @@ import WalletKeychain from "./WalletKeychain.js";
 import { sleep } from "./Utils";
 
 const WALLET_CONF_FILE = "wallet.conf";
-const DEFAULT_NEUTRINO_CONNECT = "faucet.lightning.community,rbtcdt.rawtx.com";
+const DEFAULT_NEUTRINO_CONNECT = "btcd-t1.rawtx.com";
 
 const walletConfFilename = async function() {
   const appDir = await getAppDir();

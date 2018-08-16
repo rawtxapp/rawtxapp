@@ -48,7 +48,7 @@ class ComponentCreate extends Component<Props, State> {
       coin: "bitcoin",
       network: "testnet",
       mode: "neutrino",
-      neutrinoConnect: "rbtcd-t-g.rawtx.com",
+      neutrinoConnect: "btcd-t1.rawtx.com",
       creating: false,
       showSeed: false,
       error: ""
