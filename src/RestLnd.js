@@ -177,15 +177,27 @@ class LndApi {
     return await this.genericGetJson("peers");
   };
 
-  addPeers = async (pubkey: string, host: string, perm: boolean = true) => {
+  addPeers = async (pubkey: string, host: string, perm: boolean = false) => {
     this.log("adding peer: ", pubkey, host, perm);
-    return await this.genericPostJson("peers", {
-      addr: {
-        pubkey,
-        host
-      },
-      perm
-    });
+    try {
+      await this.genericPostJson("peers", {
+        addr: {
+          pubkey,
+          host
+        },
+        perm
+      });
+    } catch (e) {}
+
+    for (let i = 0; i < 3; i++) {
+      try {
+        const { node } = await this.getNodeInfo(pubkey);
+        if (node.pub_key) return {};
+      } catch (e) {
+        await timeout(3 * 1000);
+      }
+    }
+    return { error: "couldn't connect to node" };
   };
 
   addPeersAddr = async (addr: string) => {
