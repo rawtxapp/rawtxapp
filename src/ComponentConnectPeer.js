@@ -15,6 +15,7 @@ import Button from "react-native-button";
 import withTheme from "./withTheme";
 import { styles as theme } from "react-native-theme";
 import withLnd from "./withLnd";
+import { convertErrorToStr } from "./Utils";
 
 class ScreenPayInvoice extends Component {
   constructor(props) {
@@ -81,6 +82,8 @@ class ScreenPayInvoice extends Component {
                       }
                     );
                     return;
+                  } else if (res.error) {
+                    this.setState({ error: convertErrorToStr(res.error) });
                   }
                 }
               } catch (error) {
