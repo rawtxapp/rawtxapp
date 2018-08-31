@@ -162,11 +162,22 @@ const getWalletFile = async function(file: string) {
   } catch (e) {}
 };
 
-const getWalletMacaroon = async function(file) {
+const getWalletMacaroon = async function(file): Promise<string> {
   try {
-    const walletD = await walletDir(await getRunningWallet());
-    return await getMacaroonHex(walletD + file);
-  } catch (e) {}
+    const currentWallet = await getRunningWallet();
+    if (!currentWallet) return "";
+    const walletD = await walletDir(currentWallet);
+    const macPath =
+      walletD +
+      "data/chain/" +
+      currentWallet.coin +
+      "/" +
+      currentWallet.network +
+      "/";
+    return await getMacaroonHex(macPath + file);
+  } catch (e) {
+    return "";
+  }
 };
 
 const writeLndConf = async function(wallet) {
@@ -370,16 +381,7 @@ class LndProvider extends Component<Props, State> {
   // this method also makes sure LndApi has the right admin.macaroon.
   _getRunningWallet = async () => {
     const w = await getRunningWallet();
-    if (w) {
-      try {
-        let walletDirectory = await walletDir(w);
-        if (!walletDirectory.endsWith("/")) {
-          walletDirectory += "/";
-        }
-        const mac = await getMacaroonHex(walletDirectory + "admin.macaroon");
-        LndApi.setAdminMacaroon(mac);
-      } catch (e) {}
-    }
+    LndApi.setAdminMacaroon(await getWalletMacaroon("admin.macaroon"));
     return w;
   };
 
