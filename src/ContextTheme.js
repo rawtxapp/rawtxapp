@@ -134,7 +134,7 @@ const defaultTheme = StyleSheet.create({
 const buttonBaseBase = {
   backgroundColor: "#29B6F6",
   borderRadius: 10,
-  padding: 10,
+  padding: 8,
   margin: 5,
   overflow: "hidden"
 };
@@ -143,7 +143,7 @@ const buttonBase = {
   ...buttonBaseBase,
   color: "white",
   borderWidth: 2,
-  borderColor: themeColor
+  borderColor: "#29B6F6"
 };
 
 theme.add({
