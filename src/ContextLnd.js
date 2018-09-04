@@ -28,6 +28,7 @@ import WalletListener from "./WalletListener";
 import { findNodesInGraph, insertSpaceEvery3Digit } from "./Utils.js";
 import WalletKeychain from "./WalletKeychain.js";
 import { sleep } from "./Utils";
+import Api from "./Api.js";
 
 const WALLET_CONF_FILE = "wallet.conf";
 const DEFAULT_NEUTRINO_CONNECT = "btcd-t1.rawtx.com";
@@ -267,7 +268,8 @@ type State = {
   displayUnit: "satoshi",
   qrCodeEvents: Object,
   keychain?: WalletKeychain,
-  walletListener?: WalletListener
+  walletListener?: WalletListener,
+  rawtxApi?: Object
 };
 class LndProvider extends Component<Props, State> {
   channelListener_: Object;
@@ -290,6 +292,25 @@ class LndProvider extends Component<Props, State> {
     this.setState({ walletListener, keychain });
     this.reactivateInactiveChannels(walletListener, LndApi);
   }
+
+  initRawtxApiIfNotExists = async (wallet: Wallet) => {
+    if (
+      this.state.rawtxApi &&
+      this.state.rawtxApi.coin == wallet.coin &&
+      this.state.rawtxApi.network == wallet.network
+    ) {
+      return this.state.rawtxApi;
+    }
+    const rawtxApi = new Api(wallet.coin, wallet.network);
+    return new Promise((resolve, _) => {
+      this.setState(
+        {
+          rawtxApi
+        },
+        () => resolve(rawtxApi)
+      );
+    });
+  };
 
   componentWillUnmount() {
     this.channelListener_.remove();
@@ -385,6 +406,12 @@ class LndProvider extends Component<Props, State> {
     return w;
   };
 
+  _getRawtxApi = async () => {
+    const w = await getRunningWallet();
+    if (!w) return;
+    return await this.initRawtxApiIfNotExists(w);
+  };
+
   scanQrCode = () => {
     if (Platform.OS == "ios") {
       // On iOS, qr scanner works as a modal, showing 2 modals is
@@ -457,6 +484,7 @@ class LndProvider extends Component<Props, State> {
           getWalletMacaroon,
           walletKeychain: this.state.keychain,
           updateWalletConf: updateWalletConfState,
+          getRawtxApi: this._getRawtxApi,
 
           setActionSheetMethods: this.setActionSheetMethods,
           clearActionSheetMethods: this.clearActionSheetMethods,
