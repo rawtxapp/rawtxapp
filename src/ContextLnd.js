@@ -25,7 +25,7 @@ import {
 } from "./NativeRtxModule.js";
 import LndApi from "./RestLnd.js";
 import WalletListener from "./WalletListener";
-import { findNodesInGraph } from "./Utils.js";
+import { findNodesInGraph, insertSpaceEvery3Digit } from "./Utils.js";
 import WalletKeychain from "./WalletKeychain.js";
 import { sleep } from "./Utils";
 
@@ -336,7 +336,7 @@ class LndProvider extends Component<Props, State> {
   displaySatoshi = (satoshi: number) => {
     if (!satoshi) return;
     if (this.state.displayUnit == "satoshi") {
-      return satoshi + " sat";
+      return insertSpaceEvery3Digit(satoshi) + " sat";
     }
     //TODO: otherwise convert
   };
