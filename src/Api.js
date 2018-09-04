@@ -1,8 +1,8 @@
 // Api is rawtx api helpers.
 export default class Api {
   constructor(coin, network) {
-    this.coin = coin == "bitcoin" ? "btc" : "ltc";
-    this.network = network == "testnet" ? "t" : "m";
+    this.coin = coin;
+    this.network = network;
   }
 
   url = path => {
