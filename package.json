@@ -15,6 +15,7 @@
     "react-native": "^0.55.2",
     "react-native-button": "^2.3.0",
     "react-native-check-box": "^2.1.0",
+    "react-native-fs": "^2.11.15",
     "react-native-keyboard-spacer": "^0.4.1",
     "react-native-keychain": "github:rawtxapp/react-native-keychain",
     "react-native-qrcode": "^0.2.6",
