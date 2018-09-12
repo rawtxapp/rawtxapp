@@ -17,7 +17,7 @@ import { convertErrorToStr } from "./Utils.js";
 import withLnd from "./withLnd.js";
 import { deleteOldNeutrino } from "./NativeRtxModule.js";
 import { DEFAULT_NEUTRINO_CONNECT } from "./ContextLnd";
-
+import Sae from "./Sae.js";
 import type { LndApi, LNDState } from "./RestLnd";
 
 type Props = {
@@ -241,13 +241,12 @@ class ComponentUnlock extends Component<Props, State> {
       this.props.walletKeychain.isKeychainEnabled();
     return (
       <View>
-        <TextInput
-          style={styles.nameInput}
-          underlineColorAndroid="transparent"
-          placeholder="Password"
-          secureTextEntry={true}
+        <Sae
+          label="Password"
+          style={styles.saeInput}
           value={this.state.password}
           onChangeText={text => this.setState({ password: text })}
+          secureTextEntry={true}
         />
         {showKeychainOpt && (
           <CheckBox
@@ -367,6 +366,9 @@ const styles = StyleSheet.create({
     height: 50,
     backgroundColor: "#ECEFF1",
     borderRadius: 10,
+    marginBottom: 10
+  },
+  saeInput: {
     marginBottom: 10
   }
 });

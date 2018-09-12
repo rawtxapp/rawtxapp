@@ -21,7 +21,7 @@ import RadioForm, {
   RadioButtonInput,
   RadioButtonLabel
 } from "react-native-simple-radio-button";
-
+import Sae from "./Sae.js";
 import type { LndApi, LNDState } from "./RestLnd";
 
 type Props = {
@@ -70,12 +70,9 @@ class ComponentCreate extends Component<Props, State> {
     return (
       <ScrollView style={styles.container}>
         <View>
-          <Text style={styles.subtitle}>Wallet name</Text>
-          <TextInput
-            style={styles.nameInput}
-            underlineColorAndroid="transparent"
-            placeholder="Name for wallet"
-            defaultValue="default"
+          <Sae
+            label="Wallet name"
+            style={styles.saeInput}
             value={this.state.name}
             onChangeText={text => this.setState({ name: text })}
           />
@@ -122,23 +119,6 @@ class ComponentCreate extends Component<Props, State> {
             }}
           />
         </View>
-        {this.state.mode == "neutrino" && (
-          <View>
-            <Text style={styles.subtitle}>Neutrino peers to add</Text>
-            <TextInput
-              style={styles.nameInput}
-              underlineColorAndroid="transparent"
-              placeholder="Neutrino server"
-              defaultValue="faucet.lightning.community"
-              value={this.state.neutrinoConnect}
-              onChangeText={text => this.setState({ neutrinoConnect: text })}
-            />
-            <Text style={theme.warningText}>
-              Adding extra known peers will help you sync faster. You can add
-              more peers separated by a comma(,).
-            </Text>
-          </View>
-        )}
         <Button
           style={styles.buttonText}
           onPress={addWallet}
@@ -172,6 +152,9 @@ const styles = StyleSheet.create({
     height: 50,
     backgroundColor: "#ECEFF1",
     borderRadius: 10,
+    marginBottom: 10
+  },
+  saeInput: {
     marginBottom: 10
   },
   container: {
