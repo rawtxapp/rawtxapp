@@ -2,6 +2,8 @@
 import { DeviceEventEmitter, NativeModules } from "react-native";
 import LndApi from "./RestLnd.js";
 import { sleep } from "./Utils";
+import RNFS from "react-native-fs";
+import type { Wallet } from "./Types.js";
 
 const Rtx = NativeModules.RtxModule;
 
@@ -83,6 +85,20 @@ const getMacaroonHex = async function(macaroonFile: string) {
   return await Rtx.getMacaroonHex(macaroonFile);
 };
 
+// TODO: remove after migration of neutrino
+const deleteOldNeutrino = async function(walletDir: string) {
+  const d = walletDir + "/data/chain/bitcoin/testnet/";
+  let contents = await RNFS.readdir(d);
+  contents = contents.filter(c => c != "wallet.db");
+  for (let c of contents) {
+    try {
+      await RNFS.unlink(d + c);
+    } catch (err) {
+      console.error("couldn't delete old neutrino", err);
+    }
+  }
+};
+
 export {
   startLnd,
   stopLnd,
@@ -97,5 +113,6 @@ export {
   encodeBase64,
   scanQrCode,
   getMacaroonHex,
-  getLastNLines
+  getLastNLines,
+  deleteOldNeutrino
 };

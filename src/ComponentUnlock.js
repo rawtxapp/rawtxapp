@@ -15,6 +15,8 @@ import { styles as theme } from "react-native-theme";
 import { withNavigation } from "react-navigation";
 import { convertErrorToStr } from "./Utils.js";
 import withLnd from "./withLnd.js";
+import { deleteOldNeutrino } from "./NativeRtxModule.js";
+import { DEFAULT_NEUTRINO_CONNECT } from "./ContextLnd";
 
 import type { LndApi, LNDState } from "./RestLnd";
 
@@ -27,12 +29,14 @@ type Props = {
   getRunningWallet: void => Object,
   walletKeychain: Object,
   navigation: Object,
-  navigate: string => void
+  navigate: string => void,
+  walletDir: any => Promise<string>
 };
 type State = {
   working: boolean,
   error: ?string,
   unlocking: ?Object,
+  oldNeutrino?: Object,
   initialLndState: LNDState,
 
   password: string,
@@ -104,8 +108,46 @@ class ComponentUnlock extends Component<Props, State> {
     }
   };
 
+  startLnd = async w => {
+    try {
+      await this.props.startLndFromWallet(w);
+    } catch (err) {
+      this.setState({
+        error: convertErrorToStr(err),
+        working: false
+      });
+      return;
+    }
+
+    let lndState: LNDState = "unknown";
+    try {
+      for (let i = 0; i < 10 && lndState == "unknown"; i++) {
+        lndState = await this.props.lndApi.determineState();
+      }
+      if (lndState == "unknown") {
+        this.setState({
+          error: "couldn't determine lnd state"
+        });
+      } else if (lndState == "password") {
+        this.setState({ unlocking: w });
+      } else if (lndState == "seed") {
+        this.props.navigation.navigate("GenSeed");
+        return;
+      } else {
+        // TODO: handle unlocked
+      }
+    } catch (err) {
+      this.setState({
+        error: convertErrorToStr(err),
+        working: false
+      });
+    }
+    this.setState({ working: false });
+  };
+
   _renderWalletChoose = () => {
-    if (this.state.unlocking || this.state.working) return;
+    if (this.state.unlocking || this.state.working || this.state.oldNeutrino)
+      return;
     return (
       <View>
         <Text style={styles.text}>Select wallet to unlock:</Text>
@@ -119,40 +161,11 @@ class ComponentUnlock extends Component<Props, State> {
                   onPress={async () => {
                     LayoutAnimation.easeInEaseOut();
                     this.setState({ working: true }, async () => {
-                      try {
-                        await this.props.startLndFromWallet(w);
-                      } catch (err) {
-                        this.setState({
-                          error: convertErrorToStr(err),
-                          working: false
-                        });
+                      if (w.neutrinoConnect.contains("rbtcd-t-g")) {
+                        this.setState({ oldNeutrino: w, working: false });
                         return;
                       }
-
-                      let lndState: LNDState = "unknown";
-                      try {
-                        for (let i = 0; i < 10 && lndState == "unknown"; i++) {
-                          lndState = await this.props.lndApi.determineState();
-                        }
-                        if (lndState == "unknown") {
-                          this.setState({
-                            error: "couldn't determine lnd state"
-                          });
-                        } else if (lndState == "password") {
-                          this.setState({ unlocking: w });
-                        } else if (lndState == "seed") {
-                          this.props.navigation.navigate("GenSeed");
-                          return;
-                        } else {
-                          // TODO: handle unlocked
-                        }
-                      } catch (err) {
-                        this.setState({
-                          error: convertErrorToStr(err),
-                          working: false
-                        });
-                      }
-                      this.setState({ working: false });
+                      this.startLnd(w);
                     });
                   }}
                 >
@@ -161,6 +174,49 @@ class ComponentUnlock extends Component<Props, State> {
               </View>
             );
           })}
+      </View>
+    );
+  };
+
+  // TODO: remove when old neutrino migration is over.
+  _renderOldNeutrino = () => {
+    if (!this.state.oldNeutrino) return;
+    return (
+      <View>
+        <Text style={styles.text}>
+          This wallet is running an old version of neutrino.
+        </Text>
+        <Text style={styles.text}>
+          If you want this wallet can be upgraded to the latest version of
+          neutrino, but it will take longer for it to sync.
+        </Text>
+        <Text style={styles.text}>
+          Since this is a testnet wallet with no value, it's highly recommended
+          to create another wallet which will have the latest neutrino version
+          support.
+        </Text>
+        <Button
+          style={styles.button}
+          onPress={async () => {
+            const wallet = this.state.oldNeutrino;
+            if (!wallet) return;
+            const walletDir = await this.props.walletDir(wallet);
+            await deleteOldNeutrino(walletDir);
+            wallet.neutrinoConnect = DEFAULT_NEUTRINO_CONNECT;
+            await this.props.updateWalletConf(wallet);
+            this.setState({ oldNeutrino: undefined, working: true }, () =>
+              this.startLnd(wallet)
+            );
+          }}
+        >
+          Upgrade wallet neutrino
+        </Button>
+        <Button
+          style={styles.button}
+          onPress={() => this.setState({ oldNeutrino: undefined })}
+        >
+          I'll create another wallet
+        </Button>
       </View>
     );
   };
@@ -268,6 +324,7 @@ class ComponentUnlock extends Component<Props, State> {
       <ScrollView style={[styles.contentContainer]}>
         {this._renderWalletChoose()}
         {this._renderUnlocking()}
+        {this._renderOldNeutrino()}
         {this.state.working && <ActivityIndicator color="white" />}
         <View style={{ height: 20 }} />
       </ScrollView>

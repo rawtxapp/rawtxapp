@@ -31,7 +31,7 @@ import { sleep } from "./Utils";
 import Api from "./Api.js";
 
 const WALLET_CONF_FILE = "wallet.conf";
-const DEFAULT_NEUTRINO_CONNECT = "btcd-t1.rawtx.com";
+export const DEFAULT_NEUTRINO_CONNECT = "btcd-t1.rawtx.com";
 
 const walletConfFilename = async function() {
   const appDir = await getAppDir();
