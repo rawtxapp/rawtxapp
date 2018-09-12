@@ -339,7 +339,6 @@ class ScreenIntro extends Component<Props, State> {
         <View style={styles.container}>
           {this._renderLogo()}
           <View style={styles.sheetContainer}>
-            {this._renderRemote()}
             {this._renderCreate()}
             {this._renderUnlock()}
           </View>
