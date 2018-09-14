@@ -4,15 +4,14 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest",
-    "postinstall": "cp vendor/attachWebsocketServer.js node_modules/react-native/local-cli/server/util/"
+    "test": "jest"
   },
   "dependencies": {
     "babel-plugin-transform-remove-console": "^6.9.0",
     "flow-bin": "^0.73.0",
-    "react": "^16.3.1",
+    "react": "^16.5.0",
     "react-mixin": "^4.0.0",
-    "react-native": "^0.55.2",
+    "react-native": "^0.57.0",
     "react-native-button": "^2.3.0",
     "react-native-check-box": "^2.1.0",
     "react-native-fs": "^2.11.15",
