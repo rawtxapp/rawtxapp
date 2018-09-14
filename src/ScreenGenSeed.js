@@ -1,12 +1,5 @@
 import React, { Component } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  StatusBar,
-  TextInput,
-  View,
-  Text
-} from "react-native";
+import { ScrollView, StyleSheet, TextInput, View, Text } from "react-native";
 
 import Button from "react-native-button";
 import { LOGO_COLOR } from "./Colors.js";
@@ -355,10 +348,7 @@ class ScreenGenSeed extends Component {
       );
     }
     return (
-      <View style={[styles.container, theme.appBackground]}>
-        <StatusBar barStyle="dark-content" />
-        {content}
-      </View>
+      <View style={[styles.container, theme.appBackground]}>{content}</View>
     );
   }
 }

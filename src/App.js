@@ -92,16 +92,12 @@ export default class App extends Component<Props, State> {
     return (
       <View style={styles.container}>
         <ThemeProvider>
-          <ThemeConsumer>
-            {({ statusBar }) => (
-              <StatusBar
-                backgroundColor="rgba(255, 255, 255, 0)"
-                translucent={true}
-                animated={true}
-                barStyle="dark-content"
-              />
-            )}
-          </ThemeConsumer>
+          <StatusBar
+            backgroundColor="rgba(255, 255, 255, 0)"
+            translucent={true}
+            animated={true}
+            barStyle="dark-content"
+          />
 
           <LndProvider>
             {this.state.mode == "normal" ? (
