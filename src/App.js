@@ -75,19 +75,6 @@ export default class App extends Component<Props, State> {
     this.state = {};
   }
 
-  componentDidMount() {
-    Linking.getInitialURL()
-      .then(url => {
-        console.log("Opened with initial link ", url);
-        if (url && url.toLowerCase().startsWith("lightning:")) {
-          this.setState({ lightningLink: url });
-        } else {
-          this.setState({ mode: "normal" });
-        }
-      })
-      .catch(() => this.setState({ mode: "normal" }));
-  }
-
   render() {
     return (
       <View style={styles.container}>
@@ -100,13 +87,7 @@ export default class App extends Component<Props, State> {
           />
 
           <LndProvider>
-            {this.state.mode == "normal" ? (
-              <RootSwitch />
-            ) : !!this.state.lightningLink ? (
-              <ScreenLightningLink link={this.state.lightningLink} />
-            ) : (
-              <View />
-            )}
+            <RootSwitch />
           </LndProvider>
         </ThemeProvider>
       </View>
