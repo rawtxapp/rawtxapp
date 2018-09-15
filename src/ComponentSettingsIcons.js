@@ -1,15 +1,41 @@
 import React, { Component } from "react";
-import { Image, StyleSheet, View } from "react-native";
-import withTheme from "./withTheme";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import ComponentActionSheet from "./ComponentActionSheet";
+import ScreenSettings from "./ScreenSettings";
 
 class ComponentSettingsIcon extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { showingSettings: false };
+  }
+
+  _renderSettings = () => {
+    const closeModal = () => this.setState({ showingSettings: false });
+    return (
+      <ComponentActionSheet
+        visible={!!this.state.showingSettings}
+        onRequestClose={closeModal}
+        animationType="slide"
+        buttonText="Done"
+        title="Settings"
+      >
+        <ScreenSettings />
+      </ComponentActionSheet>
+    );
+  };
+
   render() {
     return (
       <View>
-        <Image
-          source={require("../assets/feather/settings.png")}
-          style={styles.settingsIcon}
-        />
+        <TouchableOpacity
+          onPress={() => this.setState({ showingSettings: true })}
+        >
+          <Image
+            source={require("../assets/feather/settings.png")}
+            style={styles.settingsIcon}
+          />
+        </TouchableOpacity>
+        {this._renderSettings()}
       </View>
     );
   }
