@@ -45,7 +45,7 @@ export default ComponentSettingsIcon;
 
 const styles = StyleSheet.create({
   settingsIcon: {
-    width: 32,
-    height: 32
+    width: 26,
+    height: 26
   }
 });
