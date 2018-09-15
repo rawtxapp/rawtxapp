@@ -4,7 +4,6 @@ import React, { Component } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import withTheme from "./withTheme";
 import { styles as theme } from "react-native-theme";
-import ComponentSettingsIcon from "./ComponentSettingsIcons";
 
 type Props = {
   logoOnBackgroundColor?: string,
@@ -26,16 +25,16 @@ class ComponentLogo extends Component<Props, State> {
             this.props.useSmallLogo && styles.smallLogo
           ]}
         />
-        {this._renderSettings()}
+        {this._renderRightIcon()}
       </View>
     );
   };
 
-  _renderSettings = () => {
-    if (!this.props.showSettings) return;
+  _renderRightIcon = () => {
+    if (!this.props.rightIcon) return;
     return (
-      <View style={styles.settingsIconContainer}>
-        <ComponentSettingsIcon />
+      <View style={styles.settingsRightIconContainer}>
+        {this.props.rightIcon}
       </View>
     );
   };
@@ -101,7 +100,7 @@ const styles = StyleSheet.create({
     width: 162,
     height: 60
   },
-  settingsIconContainer: {
+  settingsRightIconContainer: {
     position: "absolute",
     top: 0,
     right: -20,
