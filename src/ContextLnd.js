@@ -459,6 +459,7 @@ class LndProvider extends Component<Props, State> {
     };
     return (
       <LndContext.Provider
+        // TODO: lift this new object creation into state for better perf.
         value={{
           stopLnd,
           getInfo: LndApi.getInfo,
