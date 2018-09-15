@@ -4,6 +4,7 @@ import React, { Component } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import withTheme from "./withTheme";
 import { styles as theme } from "react-native-theme";
+import ComponentSettingsIcon from "./ComponentSettingsIcons";
 
 type Props = {
   logoOnBackgroundColor?: string,
@@ -34,10 +35,7 @@ class ComponentLogo extends Component<Props, State> {
     if (!this.props.showSettings) return;
     return (
       <View style={styles.settingsIconContainer}>
-        <Image
-          source={require("../assets/feather/settings.png")}
-          style={styles.settingsIcon}
-        />
+        <ComponentSettingsIcon />
       </View>
     );
   };
@@ -110,9 +108,5 @@ const styles = StyleSheet.create({
     bottom: 0,
     alignItems: "center",
     justifyContent: "center"
-  },
-  settingsIcon: {
-    width: 32,
-    height: 32
   }
 });
