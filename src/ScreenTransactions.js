@@ -25,8 +25,7 @@ import withTheme from "./withTheme";
 class ScreenTransactions extends Component {
   constructor(props) {
     super(props);
-    // transactions is formatted [{title:'<DATE>', data:[<PAYMENTS_INVOICES>]}]
-    this.state = { transactions: [] };
+    this.state = {};
   }
 
   componentDidMount() {
@@ -35,7 +34,8 @@ class ScreenTransactions extends Component {
   }
 
   setTransactions = () => {
-    const txs = this.state.transactions || {};
+    // transactions is formatted [{title:'<DATE>', data:[<PAYMENTS_INVOICES>]}]
+    const txs = this.state.transactions || [];
     payments = this.state.payments;
     invoices = this.state.invoices;
 
@@ -75,17 +75,25 @@ class ScreenTransactions extends Component {
   };
 
   getPayments = async () => {
-    try {
-      const { payments } = await this.props.lndApi.getPayments();
+    const setPayments = payments => {
       this.setState({ payments }, () => {
         this.setTransactions();
       });
+    };
+    try {
+      const { payments } = await this.props.lndApi.getPayments();
+      setPayments(payments);
     } catch (err) {
-      this.setState({ payments: [] });
+      setPayments([]);
     }
   };
 
   getInvoices = async () => {
+    const setInvoices = invoices => {
+      this.setState({ invoices }, () => {
+        this.setTransactions();
+      });
+    };
     try {
       const { invoices } = await this.props.lndApi.getInvoices();
       const settledInvoices = [];
@@ -95,11 +103,9 @@ class ScreenTransactions extends Component {
           settledInvoices.push(invoices[i]);
         }
       }
-      this.setState({ invoices: settledInvoices }, () => {
-        this.setTransactions();
-      });
+      setInvoices(settledInvoices);
     } catch (err) {
-      this.setState({ invoices: [] });
+      setInvoices([]);
     }
   };
 
