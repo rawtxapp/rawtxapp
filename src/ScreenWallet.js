@@ -246,6 +246,7 @@ class ScreenWallet extends Component {
             noSlogan={true}
             imageStyles={theme.logoOnLightBackground}
             useSmallLogo={true}
+            showSettings={true}
           />
         </Animated.View>
         <View style={styles.restContainer}>{content}</View>

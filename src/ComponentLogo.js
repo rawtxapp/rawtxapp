@@ -25,6 +25,19 @@ class ComponentLogo extends Component<Props, State> {
             this.props.useSmallLogo && styles.smallLogo
           ]}
         />
+        {this._renderSettings()}
+      </View>
+    );
+  };
+
+  _renderSettings = () => {
+    if (!this.props.showSettings) return;
+    return (
+      <View style={styles.settingsIconContainer}>
+        <Image
+          source={require("../assets/feather/settings.png")}
+          style={styles.settingsIcon}
+        />
       </View>
     );
   };
@@ -39,12 +52,10 @@ class ComponentLogo extends Component<Props, State> {
       >
         {this._renderLogo()}
         {!this.props.noSlogan && (
-          <View style={styles.container}>
-            <View>
-              <Text style={[this.props.theme.textOnBackground, styles.slogan]}>
-                lightning network wallet
-              </Text>
-            </View>
+          <View style={styles.sloganContainer}>
+            <Text style={[this.props.theme.textOnBackground, styles.slogan]}>
+              lightning network wallet
+            </Text>
           </View>
         )}
       </View>
@@ -61,6 +72,9 @@ export default withTheme(ComponentLogo);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 20
+  },
+  sloganContainer: {
     paddingTop: 20
   },
   slogan: {
@@ -88,5 +102,17 @@ const styles = StyleSheet.create({
   smallLogo: {
     width: 162,
     height: 60
+  },
+  settingsIconContainer: {
+    position: "absolute",
+    top: 0,
+    right: -20,
+    bottom: 0,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  settingsIcon: {
+    width: 32,
+    height: 32
   }
 });
