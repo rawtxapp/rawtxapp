@@ -215,7 +215,9 @@ class ScreenWallet extends Component {
               navigate={this._navigate}
             />
           </View>
-          <ComponentBlockchainAccount showAnim={this.state.showAnim} />
+          <View style={styles.container}>
+            <ComponentBlockchainAccount showAnim={this.state.showAnim} />
+          </View>
           {this._renderSendReceive()}
         </View>
       );

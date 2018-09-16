@@ -84,6 +84,7 @@ class BlockchainAccount extends Component {
       <Animated.View
         style={[
           theme.container,
+          styles.container,
           {
             opacity: this.props.showAnim,
             transform: [
@@ -105,7 +106,8 @@ class BlockchainAccount extends Component {
           <Text style={theme.accountHeader}>Blockchain account</Text>
         </View>
 
-        {this._renderBalances()}
+        <View style={styles.container}>{this._renderBalances()}</View>
+
         <View style={styles.bottomActionContainer}>
           <Button
             containerStyle={theme.cardBottomActionButton}
@@ -129,6 +131,9 @@ class BlockchainAccount extends Component {
 export default withLnd(BlockchainAccount);
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1
+  },
   headerTitleContainer: {
     flexDirection: "row",
     alignItems: "center"
