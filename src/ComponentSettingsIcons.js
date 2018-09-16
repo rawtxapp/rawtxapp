@@ -7,6 +7,7 @@ class ComponentSettingsIcon extends Component {
   constructor(props) {
     super(props);
     this.state = { showingSettings: false };
+    this.modalRef = React.createRef();
   }
 
   _renderSettings = () => {
@@ -18,8 +19,10 @@ class ComponentSettingsIcon extends Component {
         animationType="slide"
         buttonText="Done"
         title="Settings"
+        ref={this.modalRef}
       >
-        <ScreenSettings />
+        {this.props.screenFn &&
+          this.props.screenFn(() => this.modalRef.current.close())}
       </ComponentActionSheet>
     );
   };
