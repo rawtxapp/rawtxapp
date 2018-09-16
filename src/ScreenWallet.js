@@ -9,15 +9,17 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
-import Button from "react-native-button";
 import { styles as theme } from "react-native-theme";
 import TimerMixin from "react-timer-mixin";
 import ComponentActionSheet from "./ComponentActionSheet";
 import ComponentBlockchainAccount from "./ComponentBlockchainAccount";
 import ComponentLightningAccount from "./ComponentLightningAccount";
 import ComponentLogo from "./ComponentLogo.js";
+import ComponentSettingsIcon from "./ComponentSettingsIcons";
 import ScreenReceive from "./ScreenReceive";
 import ScreenSend from "./ScreenSend";
+import ScreenSettings from "./ScreenSettings";
+import { timeout } from "./Utils";
 import WalletShutdownBackground from "./WalletShutdownBackground.js";
 import withLnd from "./withLnd.js";
 import withTheme from "./withTheme.js";
@@ -160,36 +162,30 @@ class ScreenWallet extends Component {
     );
   };
 
+  _stopWallet = async closeModal => {
+    this.setState({ working: true }, async () => {
+      if (typeof closeModal === "function") {
+        closeModal();
+        await timeout(50);
+      }
+      await this.props.stopLndFromWallet(this.state.wallet);
+      if (Platform.OS == "ios") {
+        // because lnd process isn't isolated on ios, after "closing"
+        // the wallet, there is still lnd process related things
+        // lingering in the background. For now, when the wallet
+        // is closed, just display a wallet closed screen and the user
+        // can click home button which will close the app and shut it
+        // down completely and they can reopen another wallet by reopening
+        // the app, less than ideal, should be fixed.
+        this.setState({ iosWalletClosed: true });
+        return;
+      }
+      this.props.navigation.navigate("Intro");
+    });
+  };
+
   render() {
     let content;
-
-    let footer = (
-      <View>
-        <Button
-          style={[styles.closeWalletButton]}
-          containerStyle={theme.container}
-          onPress={async () => {
-            this.setState({ working: true }, async () => {
-              await this.props.stopLndFromWallet(this.state.wallet);
-              if (Platform.OS == "ios") {
-                // because lnd process isn't isolated on ios, after "closing"
-                // the wallet, there is still lnd process related things
-                // lingering in the background. For now, when the wallet
-                // is closed, just display a wallet closed screen and the user
-                // can click home button which will close the app and shut it
-                // down completely and they can reopen another wallet by reopening
-                // the app, less than ideal, should be fixed.
-                this.setState({ iosWalletClosed: true });
-                return;
-              }
-              this.props.navigation.navigate("Intro");
-            });
-          }}
-        >
-          Close wallet
-        </Button>
-      </View>
-    );
 
     if (this.state.iosWalletClosed) {
       content = (
@@ -220,7 +216,6 @@ class ScreenWallet extends Component {
             />
           </View>
           <ComponentBlockchainAccount showAnim={this.state.showAnim} />
-          {footer}
           {this._renderSendReceive()}
         </View>
       );
@@ -246,7 +241,15 @@ class ScreenWallet extends Component {
             noSlogan={true}
             imageStyles={theme.logoOnLightBackground}
             useSmallLogo={true}
-            showSettings={true}
+            rightIcon={
+              <ComponentSettingsIcon
+                screenFn={closeModal => (
+                  <ScreenSettings
+                    stopWallet={this._stopWallet.bind(this, closeModal)}
+                  />
+                )}
+              />
+            }
           />
         </Animated.View>
         <View style={styles.restContainer}>{content}</View>
