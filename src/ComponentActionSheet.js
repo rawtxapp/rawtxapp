@@ -16,11 +16,11 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
-import withTheme from "./withTheme";
+import withTheme, { withThemeRef } from "./withTheme";
 import Button from "react-native-button";
 import { styles as theme } from "react-native-theme";
 import KeyboardSpacer from "react-native-keyboard-spacer";
-import withLnd from "./withLnd";
+import withLnd, { withLndRef } from "./withLnd";
 
 var window = Dimensions.get("window");
 
@@ -38,12 +38,13 @@ class ActionModal extends Component {
     }
   }
 
+  close = () => {
+    this.props.onRequestClose();
+    this.props.dimBackground(false);
+    this.props.clearActionSheetMethods();
+  };
+
   render() {
-    const close = () => {
-      this.props.onRequestClose();
-      this.props.dimBackground(false);
-      this.props.clearActionSheetMethods();
-    };
     const visible = this.props.visible && !this.state.hidden;
     return (
       <View>
@@ -51,11 +52,11 @@ class ActionModal extends Component {
           animationType="slide"
           transparent={true}
           visible={visible}
-          onRequestClose={close}
+          onRequestClose={this.close}
         >
           <View style={styles.modalContainer}>
             <TouchableOpacity
-              onPress={close}
+              onPress={this.close}
               style={styles.backdropContainer}
             />
             <View style={styles.modalSpacer}>
@@ -67,7 +68,7 @@ class ActionModal extends Component {
                   </Text>
                 </View>
                 <View style={styles.xContainer}>
-                  <TouchableOpacity onPress={close}>
+                  <TouchableOpacity onPress={this.close}>
                     <Image
                       source={require("../assets/close.png")}
                       style={styles.closeButton}
@@ -81,7 +82,7 @@ class ActionModal extends Component {
               </View>
             </View>
             <View style={[styles.actionContainer, this.props.theme.modal]}>
-              <TouchableOpacity onPress={close}>
+              <TouchableOpacity onPress={this.close}>
                 <View style={[styles.actionButton]}>
                   <Text style={styles.actionText}>
                     {this.props.buttonText || "Done"}
@@ -96,7 +97,7 @@ class ActionModal extends Component {
   }
 }
 
-export default withLnd(withTheme(ActionModal));
+export default withLndRef(withThemeRef(ActionModal));
 
 const styles = StyleSheet.create({
   container: {
