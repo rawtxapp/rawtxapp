@@ -9,4 +9,12 @@ export default function withLnd(Component) {
   };
 }
 
+export function withLndRef(Component) {
+  return React.forwardRef((props, ref) => (
+    <LndConsumer>
+      {lnd => <Component ref={ref} {...props} {...lnd} />}
+    </LndConsumer>
+  ));
+}
+
 export { withLnd };

@@ -11,4 +11,12 @@ export default function withTheme(Component) {
   };
 }
 
+export function withThemeRef(Component) {
+  return React.forwardRef((props, ref) => (
+    <ThemeConsumer>
+      {theme => <Component ref={ref} {...props} {...theme} />}
+    </ThemeConsumer>
+  ));
+}
+
 export { withTheme };
