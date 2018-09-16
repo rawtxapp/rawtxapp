@@ -161,7 +161,7 @@ class ComponentUnlock extends Component<Props, State> {
                   onPress={async () => {
                     LayoutAnimation.easeInEaseOut();
                     this.setState({ working: true }, async () => {
-                      if (w.neutrinoConnect.contains("rbtcd-t-g")) {
+                      if (w.neutrinoConnect.indexOf("rbtcd-t-g") != -1) {
                         this.setState({ oldNeutrino: w, working: false });
                         return;
                       }
