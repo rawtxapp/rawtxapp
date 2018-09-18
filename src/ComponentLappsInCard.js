@@ -17,6 +17,7 @@ class ComponentLappsInCard extends Component {
     try {
       const wallet = await this.props.getRunningWallet();
       const lapps = await Micro.getLapps(wallet.coin, wallet.network);
+      if (!lapps || lapps.length == 0) return;
       this.setState({ lapps });
     } catch (err) {}
   };
