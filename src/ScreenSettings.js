@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
 import Button from "react-native-button";
+import ComponentSyncing from "./ComponentSyncing";
 
 class ScreenSettings extends Component {
   constructor(props) {
@@ -21,9 +22,19 @@ class ScreenSettings extends Component {
     );
   };
 
+  _renderSyncing = () => {
+    return (
+      <View style={styles.rowContainer}>
+        <ComponentSyncing />
+      </View>
+    );
+  };
+
   render() {
     return (
       <View style={styles.container}>
+        {this._renderSyncing()}
+
         <Text style={styles.subsectionHeader}>LOG OUT</Text>
         {this._renderCloseWallet()}
       </View>
