@@ -33,10 +33,15 @@ class ComponentSettingsIcon extends Component {
         <TouchableOpacity
           onPress={() => this.setState({ showingSettings: true })}
         >
-          <Image
-            source={require("../assets/feather/settings.png")}
-            style={styles.settingsIcon}
-          />
+          <View>
+            <Image
+              source={require("../assets/feather/settings.png")}
+              style={styles.settingsIcon}
+            />
+            {this.props.showYellowIndicator && (
+              <View style={styles.indicator} />
+            )}
+          </View>
         </TouchableOpacity>
         {this._renderSettings()}
       </View>
@@ -50,5 +55,14 @@ const styles = StyleSheet.create({
   settingsIcon: {
     width: 26,
     height: 26
+  },
+  indicator: {
+    backgroundColor: "orange",
+    position: "absolute",
+    top: -3,
+    right: -3,
+    width: 10,
+    height: 10,
+    borderRadius: 5
   }
 });

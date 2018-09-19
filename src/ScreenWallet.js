@@ -245,6 +245,9 @@ class ScreenWallet extends Component {
             useSmallLogo={true}
             rightIcon={
               <ComponentSettingsIcon
+                showYellowIndicator={
+                  this.state.getinfo && !this.state.getinfo["synced_to_chain"]
+                }
                 screenFn={closeModal => (
                   <ScreenSettings
                     stopWallet={this._stopWallet.bind(this, closeModal)}
