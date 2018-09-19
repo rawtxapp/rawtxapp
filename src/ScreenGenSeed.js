@@ -305,6 +305,22 @@ class ScreenGenSeed extends Component {
             used to recover your funds in case something goes wrong.
           </Text>
           <View>
+            {this.state.runningWallet.network == "testnet" && (
+              <View>
+                <Button
+                  style={[styles.buttonText, styles.confirm]}
+                  containerStyle={styles.buttonContainer}
+                  onPress={() => {
+                    this.setState({
+                      settingPassword: true,
+                      seed: this.state.cipher.join(" ")
+                    });
+                  }}
+                >
+                  Skip seed verification (testnet only)
+                </Button>
+              </View>
+            )}
             <View>
               <Button
                 style={[styles.buttonText, styles.confirm]}
@@ -314,17 +330,6 @@ class ScreenGenSeed extends Component {
                 }}
               >
                 Ok, I wrote it down
-              </Button>
-            </View>
-            <View>
-              <Button
-                style={[styles.buttonText, styles.confirm]}
-                containerStyle={styles.buttonContainer}
-                onPress={async () => {
-                  await this.initSeed();
-                }}
-              >
-                Regenerate seed
               </Button>
             </View>
             <View>
