@@ -403,6 +403,7 @@ class LndProvider extends Component<Props, State> {
   _getRunningWallet = async () => {
     const w = await getRunningWallet();
     LndApi.setAdminMacaroon(await getWalletMacaroon("admin.macaroon"));
+    this._getRawtxApi();
     return w;
   };
 
@@ -485,7 +486,7 @@ class LndProvider extends Component<Props, State> {
           getWalletMacaroon,
           walletKeychain: this.state.keychain,
           updateWalletConf: updateWalletConfState,
-          getRawtxApi: this._getRawtxApi,
+          rawtxApi: this.state.rawtxApi,
 
           setActionSheetMethods: this.setActionSheetMethods,
           clearActionSheetMethods: this.clearActionSheetMethods,
