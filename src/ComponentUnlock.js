@@ -146,7 +146,13 @@ class ComponentUnlock extends Component<Props, State> {
   };
 
   _renderWalletChoose = () => {
-    if (this.state.unlocking || this.state.working || this.state.oldNeutrino)
+    if (
+      this.state.unlocking ||
+      this.state.working ||
+      this.state.oldNeutrino ||
+      !this.props.wallets ||
+      this.props.wallets.length == 0
+    )
       return;
     return (
       <View>
@@ -176,6 +182,14 @@ class ComponentUnlock extends Component<Props, State> {
           })}
       </View>
     );
+  };
+
+  _renderNoWallet = () => {
+    if (!this.props.wallets || this.props.wallets.length > 0) {
+      return;
+    }
+
+    return <Text style={styles.text}>No wallet found!</Text>;
   };
 
   // TODO: remove when old neutrino migration is over.
@@ -321,6 +335,7 @@ class ComponentUnlock extends Component<Props, State> {
   render() {
     return (
       <ScrollView style={[styles.contentContainer]}>
+        {this._renderNoWallet()}
         {this._renderWalletChoose()}
         {this._renderUnlocking()}
         {this._renderOldNeutrino()}
