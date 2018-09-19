@@ -23,6 +23,7 @@ import { timeout } from "./Utils";
 import WalletShutdownBackground from "./WalletShutdownBackground.js";
 import withLnd from "./withLnd.js";
 import withTheme from "./withTheme.js";
+import ComponentWelcome from "./ComponentWelcome";
 
 let backgroundShutdown = <View />;
 if (Platform.OS === "ios") {
@@ -226,6 +227,7 @@ class ScreenWallet extends Component {
     return (
       <View style={[styles.container, theme.appBackground]}>
         {backgroundShutdown}
+        <ComponentWelcome />
         <Animated.View
           style={{
             flex: 0,
