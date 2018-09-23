@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import withLnd from "./withLnd";
-import Micro from "./micro/Micro";
+// TODO: integrate micro
+// import Micro from "./micro/Micro";
 
 class ComponentLappsInCard extends Component {
   constructor(props) {
@@ -16,7 +17,7 @@ class ComponentLappsInCard extends Component {
   getLapps = async () => {
     try {
       const wallet = await this.props.getRunningWallet();
-      const lapps = await Micro.getLapps(wallet.coin, wallet.network);
+      // const lapps = await Micro.getLapps(wallet.coin, wallet.network);
       if (!lapps || lapps.length == 0) return;
       this.setState({ lapps });
     } catch (err) {}
