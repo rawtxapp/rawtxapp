@@ -105,8 +105,8 @@ android {
         applicationId "com.rtxwallet"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 11
-        versionName "0.1.2"
+        versionCode 19
+        versionName "0.2"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
