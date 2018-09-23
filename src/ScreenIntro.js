@@ -112,7 +112,8 @@ class ScreenIntro extends Component<Props, State> {
     a == u
       ? anims.unshift(this.fullAnimCard(a))
       : anims.push(this.removeAnimCard(u));
-    Animated.stagger(100, anims).start();
+    const animStagger = Animated.stagger(100, anims);
+    this.setState({ showContent: true }, () => animStagger.start());
   };
 
   hideAllCards = () => {
@@ -124,6 +125,7 @@ class ScreenIntro extends Component<Props, State> {
   };
 
   _renderCard = (onPress, icon, action, ix, color, anim, content) => {
+    const sheetContainerHeight = height * 0.8;
     return (
       <Animated.View
         style={[
@@ -134,7 +136,11 @@ class ScreenIntro extends Component<Props, State> {
               {
                 translateY: anim.interpolate({
                   inputRange: [0, 1, 2],
-                  outputRange: [height, 150 * ix - 100, 0]
+                  outputRange: [
+                    sheetContainerHeight,
+                    sheetContainerHeight - 500 + 150 * (ix - 1),
+                    0
+                  ]
                 })
               }
             ],
@@ -142,10 +148,10 @@ class ScreenIntro extends Component<Props, State> {
           }
         ]}
       >
-        <TouchableWithoutFeedback onPress={onPress}>
+        <TouchableWithoutFeedback onPress={onPress} accessible={false}>
           <View style={[StyleSheet.absoluteFill]} />
         </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={onPress}>
+        <TouchableWithoutFeedback onPress={onPress} accessible={false}>
           <Animated.View
             style={[
               styles.touchable,
@@ -196,7 +202,10 @@ class ScreenIntro extends Component<Props, State> {
               >
                 <Text style={styles.sheetCardAction}>{action}</Text>
               </Animated.View>
-              <TouchableWithoutFeedback onPress={this.hideAllCards}>
+              <TouchableWithoutFeedback
+                onPress={this.hideAllCards}
+                accessible={false}
+              >
                 <Animated.View
                   style={[
                     styles.actionIcon,
@@ -249,7 +258,7 @@ class ScreenIntro extends Component<Props, State> {
             ]
           }}
         >
-          {content}
+          {this.state.showContent && content}
         </Animated.View>
       </Animated.View>
     );
