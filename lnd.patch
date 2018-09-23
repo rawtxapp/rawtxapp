@@ -1,25 +1,26 @@
 diff --git a/.gitignore b/.gitignore
-index 02c6e465..26fd98c6 100644
+index 39d610dc..104b2c67 100644
 --- a/.gitignore
 +++ b/.gitignore
-@@ -51,3 +51,4 @@ profile.tmp
+@@ -53,3 +53,4 @@ profile.tmp
  .DS_Store
  
  main*
 +rtx_export*
 diff --git a/lnd.go b/lnd.go
-index edae743a..024ce78f 100644
+index e323e95d..72852834 100644
 --- a/lnd.go
 +++ b/lnd.go
-@@ -637,6 +637,7 @@ func lndMain() error {
+@@ -446,6 +446,8 @@ func lndMain() error {
+ 	// Wait for shutdown signal from either a graceful server stop or from
  	// the interrupt handler.
- 	<-shutdownChannel
- 	ltndLog.Info("Shutdown complete")
+ 	<-signal.ShutdownChannel()
++	ltndLog.Info("Shutdown complete")
 +	shutdownSuccessChannel <- true
  	return nil
  }
  
-@@ -721,10 +722,9 @@ func genCertPair(certFile, keyFile string) error {
+@@ -530,10 +532,9 @@ func genCertPair(certFile, keyFile string) error {
  	}
  
  	// Collect the host's names into a slice.
@@ -33,22 +34,22 @@ index edae743a..024ce78f 100644
  	dnsNames := []string{host}
  	if host != "localhost" {
  		dnsNames = append(dnsNames, "localhost")
-@@ -1028,5 +1028,9 @@ func waitForWalletPassword(grpcEndpoints, restEndpoints []string,
+@@ -863,5 +864,9 @@ func waitForWalletPassword(grpcEndpoints, restEndpoints []net.Addr,
  
- 	case <-shutdownChannel:
+ 	case <-signal.ShutdownChannel():
  		return nil, fmt.Errorf("shutting down")
 +
-+	case <-shutdownRequestChannel:
-+		shutdownSuccessChannel <- true
-+		return nil, fmt.Errorf("shutting down")
++		// case <-signal.shutdownRequestChannel:
++		// 	shutdownSuccessChannel <- true
++		// 	return nil, fmt.Errorf("shutting down")
  	}
  }
 diff --git a/rtx_config.go b/rtx_config.go
 new file mode 100644
-index 00000000..1d649c73
+index 00000000..6d9ed569
 --- /dev/null
 +++ b/rtx_config.go
-@@ -0,0 +1,124 @@
+@@ -0,0 +1,125 @@
 +package main
 +
 +/*
@@ -63,11 +64,12 @@ index 00000000..1d649c73
 +	"path/filepath"
 +
 +	"github.com/lightningnetwork/lnd/channeldb"
++	"github.com/lightningnetwork/lnd/signal"
 +)
 +
 +var (
 +	channelDB              *channeldb.DB
-+	shutdownSuccessChannel          = make(chan bool)
++	shutdownSuccessChannel          = make(chan bool, 1)
 +	fout                   *os.File = nil
 +	ferr                   *os.File = nil
 +)
@@ -94,7 +96,8 @@ index 00000000..1d649c73
 +
 +//export StopLnd
 +func StopLnd() bool {
-+	shutdownRequestChannel <- struct{}{}
++	// shutdownRequestChannel <- struct{}{}
++	signal.RequestShutdown()
 +	success := <-shutdownSuccessChannel
 +	shutdownStdout()
 +	return success
@@ -158,11 +161,10 @@ index 00000000..1d649c73
 +	defaultLndDir = lndHomeDir
 +	defaultConfigFile = filepath.Join(defaultLndDir, defaultConfigFilename)
 +	defaultDataDir = filepath.Join(defaultLndDir, defaultDataDirname)
++	defaultLogDir = filepath.Join(defaultLndDir, defaultLogDirname)
++
 +	defaultTLSCertPath = filepath.Join(defaultLndDir, defaultTLSCertFilename)
 +	defaultTLSKeyPath = filepath.Join(defaultLndDir, defaultTLSKeyFilename)
-+	defaultAdminMacPath = filepath.Join(defaultLndDir, defaultAdminMacFilename)
-+	defaultReadMacPath = filepath.Join(defaultLndDir, defaultReadMacFilename)
-+	defaultLogDir = filepath.Join(defaultLndDir, defaultLogDirname)
 +
 +	defaultBtcdDir = filepath.Join(lndHomeDir, "btcd", "default")
 +	defaultBtcdRPCCertFile = filepath.Join(defaultBtcdDir, "rpc.cert")
@@ -216,3 +218,25 @@ index 00000000..bea942a4
 +func GetLndVersion() *C.char {
 +	return C.CString(version())
 +}
+diff --git a/server.go b/server.go
+index 35ef3689..5b64d3a4 100644
+--- a/server.go
++++ b/server.go
+@@ -43,7 +43,7 @@ import (
+ const (
+ 	// defaultMinPeers is the minimum number of peers nodes should always be
+ 	// connected to.
+-	defaultMinPeers = 3
++	defaultMinPeers = 20
+ 
+ 	// defaultBackoff is the starting point for exponential backoff for
+ 	// reconnecting to persistent peers.
+@@ -1278,7 +1278,7 @@ func (s *server) peerBootstrapper(numTargetPeers uint32,
+ 	//
+ 	// We'll use a 15 second backoff, and double the time every time an
+ 	// epoch fails up to a ceiling.
+-	const backOffCeiling = time.Minute * 5
++	const backOffCeiling = time.Minute * 1
+ 	backOff := time.Second * 15
+ 
+ 	// We'll create a new ticker to wake us up every 15 seconds so we can
