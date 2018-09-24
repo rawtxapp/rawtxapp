@@ -19,7 +19,7 @@ You need to install:
 
 ### 2. Cross compiling lnd
 
-1. Go to lnd folder
+1. Follow the lnd installation doc, when finished go to lnd folder.
 1. Apply the rawtx patch (`lnd.patch` in this repo, this exports *hooks* which allows us to start/stop lnd)
     ```
     git apply lnd.patch

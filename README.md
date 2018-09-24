@@ -8,7 +8,7 @@ Here's what it looks like:
 <br>
 <p align='center'>
   <a href='https://rawtx.com'>
-    <img src='https://raw.githubusercontent.com/rawtxapp/rawtxapp/master/docs/screenshot.png' height='400' alt='rawtx screenshot' />
+    <img src='https://raw.githubusercontent.com/rawtxapp/rawtxapp/master/docs/screenshot-1.png' height='400' alt='rawtx screenshot' />
   </a>
 </p>
 
