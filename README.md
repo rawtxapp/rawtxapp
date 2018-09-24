@@ -21,7 +21,7 @@ To compile from scratch, you can follow [building](docs/building.md).
 
 # Support
 If you run into issues, feel free to create an issue on Github, reach out
-on twitter [@rawtxapp](twitter.com/rawtxapp) or send an email at support@rawtx.com.
+on twitter [@rawtxapp](https://twitter.com/rawtxapp) or send an email at support@rawtx.com.
 You can also find us on [lnd slack](http://lightningcommunity.slack.com).
 
 # Contributing
