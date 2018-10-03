@@ -22,6 +22,7 @@ import RadioForm, {
   RadioButtonLabel
 } from "react-native-simple-radio-button";
 import Sae from "./Sae.js";
+import { DEFAULT_NEUTRINO_CONNECT } from "./ContextLnd.js";
 import type { LndApi, LNDState } from "./RestLnd";
 
 type Props = {
@@ -48,7 +49,7 @@ class ComponentCreate extends Component<Props, State> {
       coin: "bitcoin",
       network: "testnet",
       mode: "neutrino",
-      neutrinoConnect: "btcd-t1.rawtx.com",
+      neutrinoConnect: DEFAULT_NEUTRINO_CONNECT,
       creating: false,
       showSeed: false,
       error: ""
@@ -111,9 +112,9 @@ class ComponentCreate extends Component<Props, State> {
             formHorizontal={true}
             onPress={val => {
               if (val == "mainnet") {
-                this.setState({ neutrinoConnect: "btcd-m-g.rawtx.com" });
+                this.setState({ neutrinoConnect: "btcd-m1.rawtx.com" });
               } else {
-                this.setState({ neutrinoConnect: "rbtcd-t-g.rawtx.com" });
+                this.setState({ neutrinoConnect: DEFAULT_NEUTRINO_CONNECT });
               }
               this.setState({ network: val });
             }}
