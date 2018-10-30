@@ -66,7 +66,7 @@ export default class WalletListener {
         const method = watcher.method;
         try {
           if (this.runningMethod[method]) {
-            console.log("not calling running method: " + method);
+            // console.log("not calling running method: " + method);
             return;
           }
           this.runningMethod[method] = true;
@@ -85,7 +85,7 @@ export default class WalletListener {
             // because the server will always response with the same format back.
             // If we reach here, it means the responses didn't change, so shortcircuit
             // the update.
-            console.log("Skipping WalletListener emit!");
+            // console.log("Skipping WalletListener emit!");
             return;
           }
           this.updateLastResponse(method, res);
