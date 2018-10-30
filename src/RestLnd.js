@@ -56,7 +56,7 @@ class LndApi {
 
   log = (...args: any[]) => {
     if (__DEV__) {
-      console.log(this.TAG, ...args);
+      // console.log(this.TAG, ...args);
     }
   };
 
@@ -191,6 +191,12 @@ class LndApi {
 
     for (let i = 0; i < 3; i++) {
       try {
+        // Sometimes getNodeInfo doesn't include the peer, so check peer list to
+        // overcome that.
+        const peerIncludes = (await this.peers())["peers"]
+          .map(a => a.pub_key)
+          .includes(pubkey);
+        if (peerIncludes) return {};
         const { node } = await this.getNodeInfo(pubkey);
         if (node.pub_key) return {};
       } catch (e) {
