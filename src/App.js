@@ -18,7 +18,6 @@ import { LndProvider } from "./ContextLnd.js";
 import ThemeConsumer, { ThemeProvider } from "./ContextTheme";
 import ScreenGenSeed from "./ScreenGenSeed.js";
 import ScreenIntro from "./ScreenIntro.js";
-import ScreenIntroCreateUnlockWallet from "./ScreenIntroCreateUnlockWallet.js";
 import ScreenLightningLink from "./ScreenLightningLink.js";
 import ScreenWallet from "./ScreenWallet.js";
 // TODO: integrate micro
@@ -56,7 +55,6 @@ const transitionConfig = () => {
 const RootSwitch = createSwitchNavigator(
   {
     Intro: { screen: ScreenIntro },
-    WalletCreate: { screen: ScreenIntroCreateUnlockWallet },
     GenSeed: { screen: ScreenGenSeed },
     Wallet: { screen: ScreenWallet }
     // Lapp: { screen: ScreenLapp }
