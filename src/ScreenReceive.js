@@ -191,32 +191,19 @@ class ScreenReceive extends Component {
     );
   };
 
-  _renderPubkey = () => {
+  _renderInfo = () => {
     if (!this.state.payment_request) return;
-    const lastInfo = this.props.walletListener.getLastResponse("GetInfo")
-      .identity_pubkey;
-    if (!lastInfo) {
-      return (
-        <View>
-          <Text style={theme.errorText}>Couldn't get your pubkey!</Text>
-        </View>
-      );
-    }
     return (
-      <View>
-        <View style={styles.row}>
-          <View style={styles.rowName}>
-            <Text style={styles.rowNameText}>Pubkey</Text>
-          </View>
-          <View style={styles.rowValue}>
-            <Text selectable style={theme.textInput}>
-              {lastInfo}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.qrCodeContainer}>
-          <QRCode value={lastInfo} size={qrWidth} />
-        </View>
+      <View style={styles.rowName}>
+        <Text style={styles.noteText}>
+          Note: all your channels are private, the invoice includes routing
+          hints which the other peer will use to pay you.
+        </Text>
+        <Text style={styles.noteText}>
+          You don't need to share your pubkey or IP address because routing
+          hints are enough and you don't want anyone to open a channel to you
+          since a mobile wallet isn't ideal for routing payments.
+        </Text>
       </View>
     );
   };
@@ -254,7 +241,7 @@ class ScreenReceive extends Component {
 
         <ScrollView>
           {this._renderPaymentRequest()}
-          {this._renderPubkey()}
+          {this._renderInfo()}
         </ScrollView>
       </View>
     );
@@ -293,5 +280,8 @@ const styles = StyleSheet.create({
   },
   orText: {
     fontSize: 20
+  },
+  noteText: {
+    fontSize: 12
   }
 });

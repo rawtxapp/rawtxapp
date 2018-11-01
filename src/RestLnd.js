@@ -221,6 +221,7 @@ class LndApi {
         "@"
       )[0];
     }
+    channelRequest.private = true;
     return await this.genericPostJson("channels", channelRequest);
   };
 
@@ -283,7 +284,8 @@ class LndApi {
     this.log("adding simple invoice: ", memo, ", ", amount_sat);
     return await this.genericPostJson("invoices", {
       memo,
-      value: parseInt(amount_sat)
+      value: parseInt(amount_sat),
+      private: true
     });
   };
 
