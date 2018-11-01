@@ -28,9 +28,9 @@ class ComponentChannelItem extends Component {
   render() {
     const { channel } = this.props;
     const localPct = Math.round(
-      parseInt(channel.local_balance) /
+      (parseInt(channel.local_balance) /
         (parseInt(channel.local_balance) +
-          (parseInt(channel.remote_balance) || 0)) *
+          (parseInt(channel.remote_balance) || 0))) *
         100
     );
     const remotePct = 100 - localPct;
@@ -90,7 +90,8 @@ class ComponentChannelItem extends Component {
                   : theme.errorTextColorOnly
               }
             >
-              {channel.active ? "" : "in"}active
+              {channel.active ? "" : "in"}
+              active
             </Text>
           </View>
           <Button
