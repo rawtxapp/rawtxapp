@@ -203,12 +203,9 @@ class LightningAccount extends Component {
           {this._renderChannelCount()}
         </View>
         <ComponentLappsInCard navigate={this.props.navigate} />
-        <View style={styles.bottomActionContainer}>
+        <View style={theme.bottomActionContainer}>
           <Button
-            containerStyle={[
-              theme.cardBottomActionButton,
-              styles.leftBottomAction
-            ]}
+            containerStyle={[theme.cardBottomActionButton]}
             style={theme.smallActionButtonText}
             onPress={() => {
               this.setState({
@@ -216,13 +213,10 @@ class LightningAccount extends Component {
               });
             }}
           >
-            Transactions
+            transactions
           </Button>
           <Button
-            containerStyle={[
-              theme.cardBottomActionButton,
-              styles.rightBottomAction
-            ]}
+            containerStyle={[theme.cardBottomActionButton]}
             style={theme.smallActionButtonText}
             onPress={() => {
               this.setState({
@@ -230,7 +224,7 @@ class LightningAccount extends Component {
               });
             }}
           >
-            Channels
+            channels
           </Button>
         </View>
         {this._renderShowPayments()}
@@ -254,16 +248,5 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     marginRight: 5
-  },
-  bottomActionContainer: {
-    flexDirection: "row",
-    marginTop: 10
-  },
-  leftBottomAction: {
-    marginRight: 0,
-    borderRightWidth: 1
-  },
-  rightBottomAction: {
-    marginLeft: 0
   }
 });

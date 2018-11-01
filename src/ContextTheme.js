@@ -387,11 +387,16 @@ theme.add({
     backgroundColor: "#8BC34A"
   },
   cardBottomActionButton: {
-    backgroundColor: "#CFD8DC",
-    flex: 1,
-    margin: -10,
-    padding: 10,
-    borderColor: "#37474F"
+    borderColor: "black",
+    borderWidth: 1,
+    padding: 5,
+    borderRadius: 5,
+    margin: 5
+  },
+  bottomActionContainer: {
+    flexDirection: "row",
+    marginTop: 10,
+    justifyContent: "flex-end"
   },
   statusBarBackground: {
     backgroundColor: "#78909C"

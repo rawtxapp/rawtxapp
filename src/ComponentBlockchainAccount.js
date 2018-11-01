@@ -108,7 +108,7 @@ class BlockchainAccount extends Component {
 
         <View style={styles.container}>{this._renderBalances()}</View>
 
-        <View style={styles.bottomActionContainer}>
+        <View style={theme.bottomActionContainer}>
           <Button
             containerStyle={theme.cardBottomActionButton}
             style={theme.smallActionButtonText}
@@ -118,7 +118,7 @@ class BlockchainAccount extends Component {
               });
             }}
           >
-            New channel
+            new channel
           </Button>
         </View>
 
@@ -142,9 +142,5 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     marginRight: 5
-  },
-  bottomActionContainer: {
-    flexDirection: "row",
-    marginTop: 10
   }
 });
