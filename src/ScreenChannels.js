@@ -44,7 +44,9 @@ class ScreenChannels extends Component {
             <ComponentChannelItem channel={channel} />
           )}
           keyExtractor={this._keyExtractor}
-          ListEmptyComponent={<Text>There are no channels.</Text>}
+          ListEmptyComponent={
+            <Text style={styles.noChanContainer}>There are no channels.</Text>
+          }
           ItemSeparatorComponent={() => (
             <View style={this.props.theme.separator} />
           )}
@@ -61,5 +63,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderColor: "#BDBDBD"
+  },
+  noChanContainer: {
+    paddingHorizontal: 10
   }
 });
