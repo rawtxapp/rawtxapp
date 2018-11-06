@@ -82,6 +82,7 @@ class ScreenTransactions extends Component {
     };
     try {
       const { payments } = await this.props.lndApi.getPayments();
+      payments = payments || [];
       setPayments(payments);
     } catch (err) {
       setPayments([]);
@@ -103,6 +104,7 @@ class ScreenTransactions extends Component {
           settledInvoices.push(invoices[i]);
         }
       }
+      settledInvoices = settledInvoices || [];
       setInvoices(settledInvoices);
     } catch (err) {
       setInvoices([]);
@@ -149,21 +151,6 @@ class ScreenTransactions extends Component {
 
   _keyExtractor = (i, ix) => i.payment_hash || i.r_hash;
 
-  _renderFlatList = () => {
-    if (!this.state.payments) return <ActivityIndicator />;
-    return (
-      <FlatList
-        data={this.state.payments}
-        renderItem={this._renderPayment}
-        keyExtractor={this._keyExtractor}
-        ListEmptyComponent={<Text>There are no payments.</Text>}
-        ItemSeparatorComponent={() => (
-          <View style={this.props.theme.separator} />
-        )}
-      />
-    );
-  };
-
   _renderSectionList = () => {
     if (!this.state.transactions) return <ActivityIndicator />;
     return (
@@ -174,7 +161,9 @@ class ScreenTransactions extends Component {
           <Text style={styles.sectionHeader}>{title}</Text>
         )}
         keyExtractor={this._keyExtractor}
-        ListEmptyComponent={<Text>There are no transactions.</Text>}
+        ListEmptyComponent={
+          <Text style={styles.noTxContainer}>There are no transactions.</Text>
+        }
         SectionSeparatorComponent={({ trailingItem }) =>
           trailingItem ? null : <View style={styles.separator} />
         }
@@ -212,5 +201,8 @@ const styles = StyleSheet.create({
   },
   separator: {
     marginTop: 30
+  },
+  noTxContainer: {
+    paddingHorizontal: 10
   }
 });
