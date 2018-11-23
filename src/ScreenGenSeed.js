@@ -406,7 +406,7 @@ const styles = StyleSheet.create({
   },
   errorMessage: {
     fontSize: 12,
-    color: "white"
+    color: "#37474F"
   },
   disabledButton: {
     color: "gray"
