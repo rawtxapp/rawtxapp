@@ -235,8 +235,8 @@ export const sortBySettleDateDescending = payments => {
 };
 
 const settleCreateComparator = (i1, i2) => {
-  const s1 = i1.settle_date || i1.creation_date;
-  const s2 = i2.settle_date || i2.creation_date;
+  const s1 = i1.settle_date || i1.creation_date || i1.time_stamp;
+  const s2 = i2.settle_date || i2.creation_date || i2.time_stamp;
   return parseInt(s2) - parseInt(s1);
 };
 

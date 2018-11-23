@@ -312,6 +312,11 @@ class LndApi {
     });
   };
 
+  getBlockchainTransactions = async () => {
+    this.log("getting blockchain txs");
+    return await this.genericGetJson("transactions");
+  };
+
   // Convenience method to determine the state of LND.
   determineState = async (): Promise<LNDState> => {
     this.log("determining lnd state");

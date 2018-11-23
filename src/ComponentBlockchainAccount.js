@@ -5,6 +5,7 @@ import { styles as theme } from "react-native-theme";
 import ComponentActionSheet from "./ComponentActionSheet";
 import ScreenCreateChannel from "./ScreenCreateChannel.js";
 import withLnd from "./withLnd.js";
+import ScreenBlockchainTransactions from "./ScreenBlockchainTransactions";
 
 class BlockchainAccount extends Component {
   constructor(props) {
@@ -14,7 +15,8 @@ class BlockchainAccount extends Component {
       generatedAddress: "",
       showingGeneratedAddress: false,
       showingSelectPeers: false,
-      showingTransferToChecking: false
+      showingTransferToChecking: false,
+      showingTransactions: false
     };
   }
   componentDidMount() {
@@ -79,6 +81,21 @@ class BlockchainAccount extends Component {
     );
   };
 
+  _renderTransactions = () => {
+    const closeModal = () => this.setState({ showingTransactions: false });
+    return (
+      <ComponentActionSheet
+        visible={!!this.state.showingTransactions}
+        onRequestClose={closeModal}
+        animationType="slide"
+        buttonText="Done"
+        title="Transactions"
+      >
+        <ScreenBlockchainTransactions onCancel={closeModal} />
+      </ComponentActionSheet>
+    );
+  };
+
   render() {
     return (
       <Animated.View
@@ -114,6 +131,17 @@ class BlockchainAccount extends Component {
             style={theme.smallActionButtonText}
             onPress={() => {
               this.setState({
+                showingTransactions: true
+              });
+            }}
+          >
+            transactions
+          </Button>
+          <Button
+            containerStyle={theme.cardBottomActionButton}
+            style={theme.smallActionButtonText}
+            onPress={() => {
+              this.setState({
                 showingTransfer: true
               });
             }}
@@ -123,6 +151,7 @@ class BlockchainAccount extends Component {
         </View>
 
         {this._renderTransfer()}
+        {this._renderTransactions()}
       </Animated.View>
     );
   }
