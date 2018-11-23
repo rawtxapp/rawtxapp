@@ -8,26 +8,26 @@
   },
   "dependencies": {
     "flow-bin": "^0.73.0",
-    "react": "^16.5.0",
+    "react": "^16.6.3",
     "react-mixin": "^4.0.0",
-    "react-native": "^0.57.0",
+    "react-native": "^0.57.5",
     "react-native-button": "^2.3.0",
-    "react-native-check-box": "^2.1.0",
-    "react-native-fs": "^2.11.15",
+    "react-native-check-box": "^2.1.6",
+    "react-native-fs": "^2.12.1",
     "react-native-keyboard-spacer": "^0.4.1",
-    "react-native-keychain": "github:rawtxapp/react-native-keychain",
-    "react-native-qrcode": "^0.2.6",
-    "react-native-simple-radio-button": "^2.7.1",
+    "react-native-keychain": "^3.0.0",
+    "react-native-qrcode": "^0.2.7",
+    "react-native-simple-radio-button": "^2.7.3",
     "react-native-theme": "^0.1.8",
-    "react-navigation": "^2.9.1",
-    "react-timer-mixin": "^0.13.3"
+    "react-navigation": "^2.18.2",
+    "react-timer-mixin": "^0.13.4"
   },
   "devDependencies": {
     "babel-jest": "22.4.1",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "babel-preset-react-native": "4.0.0",
     "jest": "22.4.2",
-    "react-test-renderer": "16.2.0",
-    "babel-plugin-transform-remove-console": "^6.9.0"
+    "react-test-renderer": "16.2.0"
   },
   "jest": {
     "preset": "react-native"
