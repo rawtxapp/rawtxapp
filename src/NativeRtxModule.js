@@ -1,6 +1,5 @@
 /* @flow */
 import { DeviceEventEmitter, NativeModules } from "react-native";
-import LndApi from "./RestLnd.js";
 import { sleep } from "./Utils";
 import RNFS from "react-native-fs";
 import type { Wallet } from "./Types.js";
