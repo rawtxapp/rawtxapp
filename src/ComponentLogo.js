@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     padding: 50,
-    paddingVertical: 20,
+    paddingVertical: StatusBar.currentHeight || 20,
     flex: 0
   },
   smallLogoContainer: {
