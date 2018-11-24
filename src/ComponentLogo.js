@@ -1,7 +1,7 @@
 /* @flow */
 
 import React, { Component } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, StatusBar, Text, View } from "react-native";
 import withTheme from "./withTheme";
 import { styles as theme } from "react-native-theme";
 
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     flex: 0
   },
   smallLogoContainer: {
-    paddingTop: 30,
+    paddingTop: StatusBar.currentHeight || 30,
     paddingBottom: 20
   },
   imageContainer: {
