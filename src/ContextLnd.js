@@ -279,17 +279,44 @@ class LndProvider extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      walletConf: {},
       displayUnit: "satoshi",
+      walletConf: {},
+      stopLnd,
+      getInfo: LndApi.getInfo,
+      genSeed: LndApi.genSeed,
+      lndApi: LndApi,
+      addWallet: this.addWalletUpdateState,
+      wallets: [],
+      getDisplayUnit: this.getDisplayUnit,
+      displayUnitToSatoshi: this.displayUnitToSatoshi,
+      startLndFromWallet,
+      isLndProcessRunning,
+      getRunningWallet: this._getRunningWallet,
+      walletDir,
+      encodeBase64,
+      stopLndFromWallet,
+      displaySatoshi: this.displaySatoshi,
+      scanQrCode: this.scanQrCode(),
+      isInitialInvoiceHandled: this.isInitialInvoiceHandled,
+      setInitialInvoiceHandled: this.setInitialInvoiceHandled,
+      getLogs,
+      getWalletFile,
+      getWalletMacaroon,
+      updateWalletConf: this.updateWalletConfState,
+
+      setActionSheetMethods: this.setActionSheetMethods,
+      clearActionSheetMethods: this.clearActionSheetMethods,
       qrCodeEvents: new EventEmitter()
     };
   }
 
   componentDidMount() {
-    readWalletConfig().then(cfg => this.setState({ walletConf: cfg }));
+    readWalletConfig().then(cfg =>
+      this.setState({ walletConf: cfg, wallets: cfg.wallets })
+    );
     const keychain = new WalletKeychain();
     const walletListener = new WalletListener(LndApi);
-    this.setState({ walletListener, keychain });
+    this.setState({ walletListener, walletKeychain: keychain });
     this.reactivateInactiveChannels(walletListener, LndApi);
   }
 
@@ -445,54 +472,24 @@ class LndProvider extends Component<Props, State> {
     }
   };
 
-  render() {
-    const walletConf = this.state.walletConf;
-    const addWalletUpdateState = async newWallet => {
-      newWallet = await addWallet(newWallet);
-      const newConf = await readWalletConfig();
-      await writeLndConf(newWallet);
-      this.setState({ walletConf: newConf });
-      return newWallet;
-    };
-    const updateWalletConfState = async updatedWallet => {
-      await updateWalletConf(updatedWallet);
-      readWalletConfig().then(cfg => this.setState({ walletConf: cfg }));
-    };
-    return (
-      <LndContext.Provider
-        // TODO: lift this new object creation into state for better perf.
-        value={{
-          stopLnd,
-          getInfo: LndApi.getInfo,
-          genSeed: LndApi.genSeed,
-          lndApi: LndApi,
-          addWallet: addWalletUpdateState,
-          wallets: this.state.walletConf.wallets,
-          getDisplayUnit: this.getDisplayUnit,
-          displayUnitToSatoshi: this.displayUnitToSatoshi,
-          startLndFromWallet,
-          isLndProcessRunning,
-          getRunningWallet: this._getRunningWallet,
-          walletDir,
-          encodeBase64,
-          stopLndFromWallet,
-          displaySatoshi: this.displaySatoshi,
-          scanQrCode: this.scanQrCode(),
-          walletListener: this.state.walletListener,
-          isInitialInvoiceHandled: this.isInitialInvoiceHandled,
-          setInitialInvoiceHandled: this.setInitialInvoiceHandled,
-          getLogs,
-          getWalletFile,
-          getWalletMacaroon,
-          walletKeychain: this.state.keychain,
-          updateWalletConf: updateWalletConfState,
-          rawtxApi: this.state.rawtxApi,
+  addWalletUpdateState = async newWallet => {
+    newWallet = await addWallet(newWallet);
+    const newConf = await readWalletConfig();
+    await writeLndConf(newWallet);
+    this.setState({ walletConf: newConf, wallets: newConf.wallets });
+    return newWallet;
+  };
 
-          setActionSheetMethods: this.setActionSheetMethods,
-          clearActionSheetMethods: this.clearActionSheetMethods,
-          qrCodeEvents: this.state.qrCodeEvents
-        }}
-      >
+  updateWalletConfState = async updatedWallet => {
+    await updateWalletConf(updatedWallet);
+    readWalletConfig().then(cfg =>
+      this.setState({ walletConf: cfg, wallets: cfg.wallets })
+    );
+  };
+
+  render() {
+    return (
+      <LndContext.Provider value={this.state}>
         {this.props.children}
       </LndContext.Provider>
     );
