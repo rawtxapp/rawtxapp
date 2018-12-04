@@ -26,4 +26,12 @@ export default class Api {
       return 0;
     }
   };
+
+  prices = async () => {
+    try {
+      return await (await fetch(this.url("/" + this.coin + "/prices"))).json();
+    } catch (err) {
+      return {};
+    }
+  };
 }
