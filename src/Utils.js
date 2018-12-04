@@ -275,6 +275,9 @@ export const convertErrorToStr = (err: Object): string => {
 // This function helps making balances more readable, for example, it reformats
 // 99999 as 99 999, etc.
 export const insertSpaceEvery3Digit = str => {
+  if (typeof str === "number") {
+    str = str.toString();
+  }
   if (str && str.replace) {
     return str.replace(/(?!^)(?=(?:\d{3})+(?:\.|$))/gm, " ");
   }
