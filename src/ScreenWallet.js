@@ -181,7 +181,7 @@ class ScreenWallet extends Component {
         this.setState({ iosWalletClosed: true });
         return;
       }
-      this.props.navigation.navigate("Intro");
+      this.props.navigation.navigate("Intro", { showCardsImmediately: true });
     });
   };
 
