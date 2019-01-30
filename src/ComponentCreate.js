@@ -61,7 +61,7 @@ class ComponentCreate extends Component<Props, State> {
         try {
           const newWallet = await this.props.addWallet(this.state);
           await this.props.startLndFromWallet(newWallet);
-          this.props.navigation.navigate("GenSeed");
+          this.props.navigate("GenSeed");
         } catch (error) {
           this.setState({ error: error.toString(), creating: false });
         }

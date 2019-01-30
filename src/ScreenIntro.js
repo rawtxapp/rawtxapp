@@ -222,7 +222,7 @@ class ScreenIntro extends Component<Props, State> {
       "Create",
       0,
       theme.createCard,
-      <ComponentCreate />,
+      <ComponentCreate navigate={this._navigate} />,
       this.state.showCreateAnim
     );
   };
