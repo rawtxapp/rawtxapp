@@ -12,8 +12,7 @@ Here's what it looks like:
   </a>
 </p>
 
-You can get it from [Play Store on Android](https://play.google.com/store/apps/details?id=com.rtxwallet)
-or [App Store for iOS](https://itunes.apple.com/us/app/rawtx-lightning-wallet/id1397117908?ls=1&mt=8).
+You can get it from [Play Store on Android](https://play.google.com/store/apps/details?id=com.rtxwallet).
 
 To get a high level overview of how the wallet works, check out [overview](docs/high_level_overview.md).
 
