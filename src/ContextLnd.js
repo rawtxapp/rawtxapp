@@ -306,6 +306,7 @@ class LndProvider extends Component<Props, State> {
       getWalletFile,
       getWalletMacaroon,
       updateWalletConf: this.updateWalletConfState,
+      GENESIS_BLOCK_TIMESTAMP: 1231006505,
 
       setActionSheetMethods: this.setActionSheetMethods,
       clearActionSheetMethods: this.clearActionSheetMethods,

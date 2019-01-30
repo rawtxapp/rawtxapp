@@ -13,7 +13,6 @@ class ComponentSyncing extends Component {
         this.setState({ getinfo });
       }
     );
-    this.props.rawtxApi.blockCount().then(count => this.setState({ count }));
   }
 
   componentWillUnmount() {
@@ -34,10 +33,13 @@ class ComponentSyncing extends Component {
     }
 
     let pct = "";
-    if (this.state.getinfo["block_height"] && this.state.count) {
-      pct =
-        parseInt(this.state.getinfo["block_height"]) /
-        parseInt(this.state.count);
+    if (this.state.getinfo["best_header_timestamp"]) {
+      const currentProgress =
+        parseInt(this.state.getinfo["best_header_timestamp"]) -
+        this.props.GENESIS_BLOCK_TIMESTAMP;
+      const total =
+        new Date().getTime() / 1000 - this.props.GENESIS_BLOCK_TIMESTAMP;
+      pct = currentProgress / total;
       pct *= 100;
       pct = pct > 99 ? 99 : pct;
       pct = "(" + pct.toFixed() + "%)";
