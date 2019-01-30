@@ -32,6 +32,7 @@ import Api from "./Api.js";
 
 const WALLET_CONF_FILE = "wallet.conf";
 export const DEFAULT_NEUTRINO_CONNECT = "btcd-t1.rawtx.com";
+const satToBtc = Math.pow(10, -8);
 
 const walletConfFilename = async function() {
   const appDir = await getAppDir();
@@ -280,6 +281,7 @@ class LndProvider extends Component<Props, State> {
     super(props);
     this.state = {
       displayUnit: "satoshi",
+      fiatUnit: "USD",
       walletConf: {},
       stopLnd,
       getInfo: LndApi.getInfo,
@@ -289,6 +291,7 @@ class LndProvider extends Component<Props, State> {
       wallets: [],
       getDisplayUnit: this.getDisplayUnit,
       displayUnitToSatoshi: this.displayUnitToSatoshi,
+      displayFiat: this.displayFiat,
       startLndFromWallet,
       isLndProcessRunning,
       getRunningWallet: this._getRunningWallet,
@@ -329,6 +332,11 @@ class LndProvider extends Component<Props, State> {
       return this.state.rawtxApi;
     }
     const rawtxApi = new Api(wallet.coin, wallet.network);
+    const updatePrices = async () => {
+      const fiatPrices = await rawtxApi.prices();
+      this.setState({ fiatPrices });
+    };
+    updatePrices();
     return new Promise((resolve, _) => {
       this.setState(
         {
@@ -399,6 +407,20 @@ class LndProvider extends Component<Props, State> {
       return amount_in_display_unit;
     }
     //TODO: implement
+  };
+
+  displayFiat = (satoshi: number) => {
+    if (
+      !satoshi ||
+      !this.state.fiatPrices ||
+      !this.state.fiatPrices[this.state.fiatUnit]
+    ) {
+      return;
+    }
+    const fiatPrice = this.state.fiatPrices[this.state.fiatUnit];
+    const btc = satoshi * satToBtc;
+    const price = btc * fiatPrice * 10000;
+    return insertSpaceEvery3Digit(price) + " " + this.state.fiatUnit;
   };
 
   initialInvoiceHandled = false;
