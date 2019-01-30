@@ -5,6 +5,7 @@ import {
   Animated,
   Dimensions,
   Image,
+  LayoutAnimation,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
@@ -43,10 +44,10 @@ class ScreenIntro extends Component<Props, State> {
   constructor(props) {
     super(props);
     this.state = {
+      logoAnim: new Animated.Value(0),
       showUnlockAnim: new Animated.Value(0),
       showCreateAnim: new Animated.Value(0),
-      showRemoteAnim: new Animated.Value(0),
-      logoAnim: new Animated.Value(0)
+      unlockedIx: -1
     };
   }
 
@@ -82,9 +83,14 @@ class ScreenIntro extends Component<Props, State> {
 
   showIntro = () => {
     Animated.stagger(200, [
-      this.normalAnimCard(this.state.showUnlockAnim),
-      this.normalAnimCard(this.state.showCreateAnim),
-      this.normalAnimCard(this.state.showRemoteAnim)
+      Animated.timing(this.state.showUnlockAnim, {
+        toValue: 1,
+        useNativeDriver: true
+      }),
+      Animated.timing(this.state.showCreateAnim, {
+        toValue: 1,
+        useNativeDriver: true
+      })
     ]).start();
     Animated.spring(this.state.logoAnim, {
       toValue: 1,
@@ -92,59 +98,28 @@ class ScreenIntro extends Component<Props, State> {
     }).start();
   };
 
-  fullAnimCard = a => Animated.spring(a, { toValue: 2, useNativeDriver: true });
   removeAnimCard = a =>
     Animated.timing(a, { toValue: 0, useNativeDriver: true });
-  normalAnimCard = a =>
-    Animated.spring(a, { toValue: 1, useNativeDriver: true });
 
-  showOnlyCard = a => {
-    const r = this.state.showRemoteAnim,
-      c = this.state.showCreateAnim,
-      u = this.state.showUnlockAnim;
-    let anims = [];
-    a == r
-      ? anims.unshift(this.fullAnimCard(a))
-      : anims.push(this.removeAnimCard(r));
-    a == c
-      ? anims.unshift(this.fullAnimCard(a))
-      : anims.push(this.removeAnimCard(c));
-    a == u
-      ? anims.unshift(this.fullAnimCard(a))
-      : anims.push(this.removeAnimCard(u));
-    const animStagger = Animated.stagger(100, anims);
-    this.setState({ showContent: true }, () => animStagger.start());
-  };
-
-  hideAllCards = () => {
-    Animated.stagger(100, [
-      this.normalAnimCard(this.state.showRemoteAnim),
-      this.normalAnimCard(this.state.showCreateAnim),
-      this.normalAnimCard(this.state.showUnlockAnim)
-    ]).start();
-  };
-
-  _renderCard = (onPress, icon, action, ix, color, anim, content) => {
+  _renderCard = (onPress, icon, action, ix, color, content, anim) => {
     const sheetContainerHeight = height * 0.8;
     return (
       <Animated.View
         style={[
           styles.sheetCard,
           color,
+          this.state.unlockedIx == ix && { flex: 2 },
+          this.state.unlockedIx != ix &&
+            this.state.unlockedIx != -1 && { flex: 0.3 },
           {
             transform: [
               {
                 translateY: anim.interpolate({
-                  inputRange: [0, 1, 2],
-                  outputRange: [
-                    sheetContainerHeight,
-                    sheetContainerHeight - 500 + 150 * (ix - 1),
-                    0
-                  ]
+                  inputRange: [0, 1],
+                  outputRange: [1000, 0]
                 })
               }
-            ],
-            zIndex: ix
+            ]
           }
         ]}
       >
@@ -152,87 +127,37 @@ class ScreenIntro extends Component<Props, State> {
           <View style={[StyleSheet.absoluteFill]} />
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback onPress={onPress} accessible={false}>
-          <Animated.View
+          <View
             style={[
               styles.touchable,
-              {
-                transform: [
-                  {
-                    translateY: anim.interpolate({
-                      inputRange: [1, 2],
-                      outputRange: [50, 0]
-                    })
-                  }
-                ]
-              }
+              this.state.unlockedIx != ix && { width: "100%", height: "100%" }
             ]}
           >
             <View style={styles.actionContainer}>
-              <Animated.View
-                style={[
-                  styles.actionIcon,
-                  {
-                    transform: [
-                      {
-                        translateX: anim.interpolate({
-                          inputRange: [1, 2],
-                          outputRange: [30, 0]
-                        })
-                      }
-                    ]
-                  }
-                ]}
-              >
+              <View style={[styles.actionIcon]}>
                 <Image source={icon} style={styles.icon} />
-              </Animated.View>
-              <Animated.View
-                style={[
-                  styles.actionText,
-                  {
-                    transform: [
-                      {
-                        translateX: anim.interpolate({
-                          inputRange: [1, 2],
-                          outputRange: [30, 0]
-                        })
-                      }
-                    ]
-                  }
-                ]}
-              >
+              </View>
+              <View style={[styles.actionText]}>
                 <Text style={styles.sheetCardAction}>{action}</Text>
-              </Animated.View>
+              </View>
               <TouchableWithoutFeedback
-                onPress={this.hideAllCards}
+                onPress={() => {
+                  LayoutAnimation.easeInEaseOut();
+                  this.setState({ unlockedIx: -1 });
+                }}
                 accessible={false}
               >
-                <Animated.View
+                <View
                   style={[
                     styles.actionIcon,
-                    {
+                    { flex: 0.5, opacity: 0 },
+                    this.state.unlockedIx == ix && {
                       flex: 1,
-                      opacity: anim.interpolate({
-                        inputRange: [1, 2],
-                        outputRange: [0, 1]
-                      }),
-                      transform: [
-                        {
-                          scaleX: anim.interpolate({
-                            inputRange: [1, 2],
-                            outputRange: [0, 1]
-                          })
-                        },
-                        {
-                          scaleY: anim.interpolate({
-                            inputRange: [1, 2],
-                            outputRange: [0, 1]
-                          })
-                        }
-                      ]
+                      opacity: 1
                     }
                   ]}
                 >
-                  <Animated.Image
+                  <Image
                     source={require("../assets/feather/close-2.png")}
                     style={{
                       width: 20,
@@ -240,26 +165,18 @@ class ScreenIntro extends Component<Props, State> {
                       tintColor: "white"
                     }}
                   />
-                </Animated.View>
+                </View>
               </TouchableWithoutFeedback>
             </View>
-          </Animated.View>
+          </View>
         </TouchableWithoutFeedback>
-        <Animated.View
+        <View
           style={{
-            flex: 1,
-            transform: [
-              {
-                translateY: anim.interpolate({
-                  inputRange: [0, 1, 2],
-                  outputRange: [0, 200, 0] // 0 : 150, 0.5 : 75, 1 : 0
-                })
-              }
-            ]
+            flex: 1
           }}
         >
-          {this.state.showContent && content}
-        </Animated.View>
+          {this.state.unlockedIx == ix && content}
+        </View>
       </Animated.View>
     );
   };
@@ -268,7 +185,6 @@ class ScreenIntro extends Component<Props, State> {
   // navigate.
   _navigate = screen => {
     Animated.parallel([
-      this.removeAnimCard(this.state.showRemoteAnim),
       this.removeAnimCard(this.state.showCreateAnim),
       this.removeAnimCard(this.state.showUnlockAnim),
       this.removeAnimCard(this.state.logoAnim)
@@ -280,45 +196,34 @@ class ScreenIntro extends Component<Props, State> {
   _renderUnlock = () => {
     return this._renderCard(
       () => {
-        this.showOnlyCard(this.state.showUnlockAnim);
+        // this.showOnlyCard(this.state.showUnlockAnim);
+        LayoutAnimation.easeInEaseOut();
+        this.setState({ unlockedIx: 1 });
       },
       require("../assets/feather/unlock.png"),
       "Unlock",
-      3,
+      1,
       theme.unlockCard,
-      this.state.showUnlockAnim,
       <ComponentUnlock
         navigation={this.props.navigation}
         navigate={this._navigate}
-      />
+      />,
+      this.state.showUnlockAnim
     );
   };
 
   _renderCreate = () => {
     return this._renderCard(
       () => {
-        this.showOnlyCard(this.state.showCreateAnim);
+        LayoutAnimation.easeInEaseOut();
+        this.setState({ unlockedIx: 0 });
       },
       require("../assets/feather/add.png"),
       "Create",
-      2,
+      0,
       theme.createCard,
-      this.state.showCreateAnim,
-      <ComponentCreate />
-    );
-  };
-
-  _renderRemote = () => {
-    return this._renderCard(
-      () => {
-        this.showOnlyCard(this.state.showRemoteAnim);
-      },
-      require("../assets/feather/monitor-1.png"),
-      "Remote",
-      1,
-      theme.remoteCard,
-      this.state.showRemoteAnim,
-      <Text>Test3</Text>
+      <ComponentCreate />,
+      this.state.showCreateAnim
     );
   };
 
@@ -348,6 +253,9 @@ class ScreenIntro extends Component<Props, State> {
         <View style={styles.container}>
           {this._renderLogo()}
           <View style={styles.sheetContainer}>
+            <View
+              style={[{ flex: 0 }, this.state.unlockedIx == -1 && { flex: 2 }]}
+            />
             {this._renderCreate()}
             {this._renderUnlock()}
           </View>
@@ -368,9 +276,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   sheetContainer: {
-    flex: 4,
-    justifyContent: "flex-end",
-    paddingTop: 40
+    flex: 4
   },
   actionContainer: {
     flexDirection: "row"
@@ -382,13 +288,11 @@ const styles = StyleSheet.create({
     overflow: "hidden"
   },
   sheetCard: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    height: "100%",
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0
+    borderRadius: 20,
+    overflow: "hidden",
+    flex: 1,
+    margin: 20,
+    marginVertical: 10
   },
   sheetCardAction: {
     fontSize: 36,
@@ -400,8 +304,7 @@ const styles = StyleSheet.create({
   },
   touchable: {
     alignItems: "center",
-    justifyContent: "center",
-    width: "100%"
+    justifyContent: "center"
   },
   icon: {
     width: 30,
