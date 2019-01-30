@@ -336,7 +336,8 @@ class LndProvider extends Component<Props, State> {
       const fiatPrices = await rawtxApi.prices();
       this.setState({ fiatPrices });
     };
-    updatePrices();
+    // TODO: enable price updating.
+    // updatePrices();
     return new Promise((resolve, _) => {
       this.setState(
         {
