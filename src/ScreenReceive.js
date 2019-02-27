@@ -115,8 +115,8 @@ class ScreenReceive extends Component {
           {this.state.error
             ? "Creating invoice failed!"
             : this.state.working
-              ? "Creating"
-              : "Create lightning invoice"}
+            ? "Creating"
+            : "Create lightning invoice"}
         </Button>
         {!!this.state.error && (
           <View style={styles.errorContainer}>
@@ -237,9 +237,9 @@ class ScreenReceive extends Component {
       <View>
         {this._renderInput()}
         {this._renderGenerateOnchain()}
-        {this._renderOnchainAddress()}
 
         <ScrollView>
+          {this._renderOnchainAddress()}
           {this._renderPaymentRequest()}
           {this._renderInfo()}
         </ScrollView>
