@@ -21,7 +21,6 @@ import RadioForm, {
   RadioButtonInput,
   RadioButtonLabel
 } from "react-native-simple-radio-button";
-import Sae from "./Sae.js";
 import { DEFAULT_NEUTRINO_CONNECT } from "./ContextLnd.js";
 import type { LndApi, LNDState } from "./RestLnd";
 
@@ -71,9 +70,10 @@ class ComponentCreate extends Component<Props, State> {
     return (
       <ScrollView style={styles.container}>
         <View>
-          <Sae
+          <TextInput
+            style={[theme.textInput, styles.saeInput]}
             label="Wallet name"
-            style={styles.saeInput}
+            placeholder="Wallet name"
             value={this.state.name}
             onChangeText={text => this.setState({ name: text })}
           />
@@ -156,7 +156,9 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   saeInput: {
-    marginBottom: 10
+    marginBottom: 10,
+    backgroundColor: "#F4F4F4",
+    borderWidth: 0
   },
   container: {
     padding: 20,

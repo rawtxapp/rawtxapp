@@ -13,11 +13,10 @@ import Button from "react-native-button";
 import CheckBox from "react-native-check-box";
 import { styles as theme } from "react-native-theme";
 import { withNavigation } from "react-navigation";
-import { convertErrorToStr } from "./Utils.js";
+import { convertErrorToStr, timeout } from "./Utils.js";
 import withLnd from "./withLnd.js";
 import { deleteOldNeutrino } from "./NativeRtxModule.js";
 import { DEFAULT_NEUTRINO_CONNECT } from "./ContextLnd";
-import Sae from "./Sae.js";
 import type { LndApi, LNDState } from "./RestLnd";
 
 type Props = {
@@ -123,6 +122,7 @@ class ComponentUnlock extends Component<Props, State> {
     try {
       for (let i = 0; i < 10 && lndState == "unknown"; i++) {
         lndState = await this.props.lndApi.determineState();
+        await timeout(100);
       }
       if (lndState == "unknown") {
         this.setState({
@@ -255,9 +255,9 @@ class ComponentUnlock extends Component<Props, State> {
       this.props.walletKeychain.isKeychainEnabled();
     return (
       <View>
-        <Sae
+        <TextInput
           label="Password"
-          style={styles.saeInput}
+          style={[theme.textInput, styles.saeInput]}
           value={this.state.password}
           onChangeText={text => this.setState({ password: text })}
           secureTextEntry={true}
@@ -384,6 +384,8 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   saeInput: {
-    marginBottom: 10
+    marginBottom: 10,
+    backgroundColor: "#F4F4F4",
+    borderWidth: 0
   }
 });
