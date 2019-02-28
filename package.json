@@ -15,7 +15,7 @@
     "react-native-check-box": "^2.1.6",
     "react-native-fs": "^2.12.1",
     "react-native-keyboard-spacer": "^0.4.1",
-    "react-native-keychain": "^3.0.0",
+    "react-native-keychain": "^3.1.1",
     "react-native-qrcode": "^0.2.7",
     "react-native-simple-radio-button": "^2.7.3",
     "react-native-theme": "^0.1.8",
