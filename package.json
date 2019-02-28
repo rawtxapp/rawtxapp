@@ -10,7 +10,7 @@
     "flow-bin": "^0.73.0",
     "react": "^16.6.3",
     "react-mixin": "^4.0.0",
-    "react-native": "^0.57.5",
+    "react-native": "^0.58.5",
     "react-native-button": "^2.3.0",
     "react-native-check-box": "^2.1.6",
     "react-native-fs": "^2.12.1",
