@@ -8,9 +8,9 @@
   },
   "dependencies": {
     "flow-bin": "^0.73.0",
-    "react": "^16.6.3",
+    "react": "^16.8.3",
     "react-mixin": "^4.0.0",
-    "react-native": "^0.58.5",
+    "react-native": "^0.59.0",
     "react-native-button": "^2.3.0",
     "react-native-check-box": "^2.1.6",
     "react-native-fs": "^2.12.1",
@@ -23,11 +23,13 @@
     "react-timer-mixin": "^0.13.4"
   },
   "devDependencies": {
-    "babel-jest": "22.4.1",
     "babel-plugin-transform-remove-console": "^6.9.4",
-    "babel-preset-react-native": "4.0.0",
-    "jest": "22.4.2",
-    "react-test-renderer": "16.2.0"
+    "@babel/core": "^7.3.4",
+    "@babel/runtime": "^7.3.4",
+    "babel-jest": "^24.4.0",
+    "jest": "^24.4.0",
+    "metro-react-native-babel-preset": "^0.53.0",
+    "react-test-renderer": "16.8.3"
   },
   "jest": {
     "preset": "react-native"
