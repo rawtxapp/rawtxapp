@@ -49,11 +49,6 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
 
-    // Code taken from java/com/facebook/react/views/webview/ReactWebViewManager.java
-    // For some reason, it doesn't run in the base class.
-    if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      WebView.setWebContentsDebuggingEnabled(true);
-    }
 
     Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
       @Override
