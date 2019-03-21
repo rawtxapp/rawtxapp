@@ -31,7 +31,7 @@ import { sleep } from "./Utils";
 import Api from "./Api.js";
 
 const WALLET_CONF_FILE = "wallet.conf";
-export const DEFAULT_NEUTRINO_CONNECT = "btcd-t1.rawtx.com";
+export const DEFAULT_NEUTRINO_CONNECT = "btcd0.lightning.engineering";
 const satToBtc = Math.pow(10, -8);
 
 const walletConfFilename = async function() {
@@ -206,6 +206,9 @@ maxpendingchannels=10
 maxlogfiles=3
 maxlogfilesize=10
 ${profile}
+
+[Routing]
+routing.assumechanvalid=1
 
 [Bitcoin]
 bitcoin.active=1
