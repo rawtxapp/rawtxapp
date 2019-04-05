@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import {
-  AsyncStorage,
   Linking,
   Platform,
   StyleSheet,
@@ -8,6 +7,7 @@ import {
   ToastAndroid,
   View
 } from "react-native";
+import AsyncStorage from '@react-native-community/async-storage';
 import Button from "react-native-button";
 import withTheme from "./withTheme";
 import { styles as theme } from "react-native-theme";

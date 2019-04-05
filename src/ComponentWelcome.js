@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { AsyncStorage, Platform, StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
+import AsyncStorage from '@react-native-community/async-storage';
 import { styles as theme } from "react-native-theme";
 import Button from "react-native-button";
 import ComponentActionSheet from "./ComponentActionSheet";
