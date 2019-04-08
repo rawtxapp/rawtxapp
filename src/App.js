@@ -20,8 +20,7 @@ import ScreenGenSeed from "./ScreenGenSeed.js";
 import ScreenIntro from "./ScreenIntro.js";
 import ScreenLightningLink from "./ScreenLightningLink.js";
 import ScreenWallet from "./ScreenWallet.js";
-// TODO: integrate micro
-// import ScreenLapp from "./micro/ScreenLapp";
+import ScreenLapp from "./micro/ScreenLapp";
 
 if (Platform.OS === "android") {
   UIManager.setLayoutAnimationEnabledExperimental &&
@@ -56,8 +55,8 @@ const RootSwitch = createSwitchNavigator(
   {
     Intro: { screen: ScreenIntro },
     GenSeed: { screen: ScreenGenSeed },
-    Wallet: { screen: ScreenWallet }
-    // Lapp: { screen: ScreenLapp }
+    Wallet: { screen: ScreenWallet },
+    Lapp: { screen: ScreenLapp }
   },
   { headerMode: "none", transitionConfig }
 );

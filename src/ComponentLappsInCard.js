@@ -1,8 +1,7 @@
 import React, { Component } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, ScrollView, View } from "react-native";
 import withLnd from "./withLnd";
-// TODO: integrate micro
-// import Micro from "./micro/Micro";
+import Micro from "./micro/Micro";
 
 class ComponentLappsInCard extends Component {
   constructor(props) {
@@ -17,7 +16,7 @@ class ComponentLappsInCard extends Component {
   getLapps = async () => {
     try {
       const wallet = await this.props.getRunningWallet();
-      // const lapps = await Micro.getLapps(wallet.coin, wallet.network);
+      const lapps = await Micro.getLapps(wallet.coin, wallet.network);
       if (!lapps || lapps.length == 0) return;
       this.setState({ lapps });
     } catch (err) {}
@@ -42,10 +41,10 @@ class ComponentLappsInCard extends Component {
   _renderLapps = () => {
     if (!this.state.lapps) return;
     return (
-      <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container} horizontal={true}>
         <Text style={styles.lappsText}>apps</Text>
         {this.state.lapps.map(this._renderLapp)}
-      </View>
+      </ScrollView>
     );
   };
 
@@ -59,11 +58,7 @@ export default withLnd(ComponentLappsInCard);
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    padding: 5,
     alignItems: "center",
-    borderTopWidth: 1,
-    borderColor: "#E0E0E0",
-    marginHorizontal: -10
   },
   lappContainer: {
     alignItems: "center",
