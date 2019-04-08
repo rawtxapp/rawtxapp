@@ -315,16 +315,14 @@ class Micro {
   };
 
   static async getLapps(coin: "bitcoin", network: "testnet" | "mainnet") {
-    // TODO: fetch from remote
-    return [{
-        id: "rawtx-chat-localhost",
-        icon: "https://chat.rawtx.com/apple-touch-icon.png",
-        name: "rawtx chat",
-        description: "a realtime chat application with lightning.",
-        pubkey:
-          "02e53fcf06df8242cb36d1cb802146895307aeeb20b31622672601a9efa6eaacc8",
-        url: "https://chat.rawtx.com"
-      }]
+    const url = "https://lapps.rawtx.com/" + coin + "_" + network + ".json";
+    try {
+      const remote = await fetch(url);
+      const parsed = await remote.json();
+      return parsed;
+    } catch (err) {
+      return [];
+    }
   }
 
   // An attacker could use messages to exploit the wallet, in theory,
