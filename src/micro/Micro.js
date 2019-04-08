@@ -1,5 +1,5 @@
 /* @flow */
-import { AsyncStorage } from "react-native";
+import AsyncStorage from "@react-native-community/async-storage";
 import typeof EventEmitter from "EventEmitter";
 
 // For initial release, only allow up to 10k sat
