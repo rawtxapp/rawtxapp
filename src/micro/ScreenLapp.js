@@ -75,7 +75,13 @@ class ScreenLapp extends Component {
     const lapp = this.props.navigation.getParam("lapp");
     return (
       <MicroProvider lapp={lapp}>
-        <View style={[styles.container, theme.appBackground]}>
+        <View
+          style={[
+            styles.container,
+            theme.appBackground,
+            lapp.themeColor && { backgroundColor: lapp.themeColor }
+          ]}
+        >
           <Animated.View
             style={[
               styles.statusContainer,
