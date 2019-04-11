@@ -59,6 +59,7 @@ class Micro {
   // returns true if payment succeded
   payInvoiceFn: string => Promise<boolean>;
   pending: number;
+  static cachedLapps: Lapp[];
 
   // keeping currentAllowance in memory helps us avoid race conditions since
   // JS is single-threaded.
@@ -315,32 +316,49 @@ class Micro {
   };
 
   static async getLapps(coin: "bitcoin", network: "testnet" | "mainnet") {
-    const url = "https://lapps.rawtx.com/" + coin + "_" + network + ".json";
-    try {
-      const remote = await fetch(url);
-      let parsed = await remote.json();
-      parsed = parsed || [];
-      if (__DEV__) {
-        // In dev, insert localhost dev app at the beginning as a convenience.
-        let host = "10.0.2.2"; // for emulator, change to localhost on device
-        parsed.unshift({
-          id: "localhost",
-          // ICON isn't required.
-          icon: "http://" + host + ":3000/icon.png",
-          name: "DEV:localhost",
-          description: "localhost development",
-          // CHANGE PUBKEY TO BE YOURS!
-          pubkey:
-            "03c4698fd8a00bff6244ad4fe8d5a95cb103f113cb760b00b9cd2ba7c3ab3c63aa",
-          // CHANGE ADDRESS TO BE YOURS!
-          address: "159.89.221.66:9735",
-          url: "http://" + host + ":3000",
-          microEnabled: true
-        });
+    const fetchFromRawtx = async () => {
+      const url = "https://lapps.rawtx.com/" + coin + "_" + network + ".json";
+      try {
+        const remote = await fetch(url);
+        let parsed = await remote.json();
+        parsed = parsed || [];
+        if (__DEV__) {
+          // In dev, insert localhost dev app at the beginning as a convenience.
+          let host = "10.0.2.2"; // for emulator, change to localhost on device
+          parsed.unshift({
+            id: "localhost",
+            // ICON isn't required.
+            icon: "http://" + host + ":3000/icon.png",
+            name: "DEV:localhost",
+            description: "localhost development",
+            // CHANGE PUBKEY TO BE YOURS!
+            pubkey:
+              "03c4698fd8a00bff6244ad4fe8d5a95cb103f113cb760b00b9cd2ba7c3ab3c63aa",
+            // CHANGE ADDRESS TO BE YOURS!
+            address: "159.89.221.66:9735",
+            url: "http://" + host + ":3000",
+            microEnabled: true
+          });
+        }
+        return parsed;
+      } catch (err) {
+        return [];
       }
-      return parsed;
-    } catch (err) {
-      return [];
+    };
+
+    const fetching = fetchFromRawtx();
+
+    if (this.cachedLapps) {
+      fetching.then(fetched => {
+        // Update the cache.
+        this.cachedLapps = fetched;
+      });
+      return this.cachedLapps;
+    } else {
+      // Block until we receive the fetch results.
+      const fetched = await fetching;
+      this.cachedLapps = fetched;
+      return fetched;
     }
   }
 
