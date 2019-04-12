@@ -1,16 +1,17 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View, WebView } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import ComponentActionSheet from "../ComponentActionSheet";
 import ScreenSend from "../ScreenSend";
 import Micro from "./Micro";
 import withMicro from "./withMicro";
+import { WebView } from "react-native-webview";
 
 // This JS is loaded after the page, the goal is to capture lightning:
 // links and convert them to a lightning: message to be handled by Micro.
 // Taken from:
 // https://stackoverflow.com/questions/2136461/use-javascript-to-intercept-all-document-link-clicks
 const INTERCEPT_JS =
-  "function interceptClickEvent(e) { var href; var target = e.target || e.srcElement; if (target.tagName === 'A') { href = target.getAttribute('href'); if (href.startsWith('lightning:')) { e.preventDefault(); window.postMessage(href) } } } if (document.addEventListener) { document.addEventListener('click', interceptClickEvent); } else if (document.attachEvent) { document.attachEvent('onclick', interceptClickEvent); }";
+  "function interceptClickEvent(e) { var href; var target = e.target || e.srcElement; if (target.tagName === 'A') { href = target.getAttribute('href'); if (href.startsWith('lightning:')) { e.preventDefault(); window.ReactNativeWebView.postMessage(href) } } } if (document.addEventListener) { document.addEventListener('click', interceptClickEvent); } else if (document.attachEvent) { document.attachEvent('onclick', interceptClickEvent); }";
 
 class ComponentWebview extends Component {
   constructor(props) {
