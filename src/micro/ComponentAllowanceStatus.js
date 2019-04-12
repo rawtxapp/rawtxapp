@@ -155,7 +155,7 @@ class ComponentAllowanceStatus extends Component {
     );
   };
 
-  render() {
+  _withMicro = () => {
     return (
       <View style={styles.pendingContainer}>
         {this._renderPending()}
@@ -184,6 +184,19 @@ class ComponentAllowanceStatus extends Component {
         </Animated.View>
       </View>
     );
+  };
+
+  _withoutMicro = () => {
+    return (
+      <View style={styles.pendingContainer}>
+        <Text>no micro support</Text>
+      </View>
+    );
+  };
+
+  render() {
+    if (this.props.lapp.microEnabled) return this._withMicro();
+    else return this._withoutMicro();
   }
 }
 

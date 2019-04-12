@@ -11,7 +11,7 @@ class ComponentAllowance extends Component {
     this.state = {};
   }
 
-  render() {
+  _withMicro() {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -48,6 +48,19 @@ class ComponentAllowance extends Component {
         </View>
       </View>
     );
+  }
+
+  _withoutMicro() {
+    return (
+      <View style={styles.container}>
+        <Text>Lapp doesn't support project micro.</Text>
+      </View>
+    );
+  }
+
+  render() {
+    if (this.props.lapp.microEnabled) return this._withMicro();
+    else return this._withoutMicro();
   }
 }
 
