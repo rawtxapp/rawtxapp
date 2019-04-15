@@ -75,6 +75,7 @@ class ScreenLapp extends Component {
     const lapp = this.props.navigation.getParam("lapp");
     return (
       <MicroProvider lapp={lapp}>
+        {lapp.statusBarStyle && <StatusBar barStyle={lapp.statusBarStyle} />}
         <View
           style={[
             styles.container,
