@@ -147,7 +147,16 @@ class ComponentAllowanceStatus extends Component {
                 }
               ]}
             >
-              <Text style={styles.pendingText}>{amt}</Text>
+              <Text
+                style={[
+                  styles.pendingText,
+                  this.props.lapp.statusBarContentColor && {
+                    color: this.props.lapp.statusBarContentColor
+                  }
+                ]}
+              >
+                {amt}
+              </Text>
             </Animated.View>
           );
         })}
@@ -178,7 +187,14 @@ class ComponentAllowanceStatus extends Component {
             ]
           }}
         >
-          <Text style={styles.currentAllowance}>
+          <Text
+            style={[
+              styles.currentAllowance,
+              this.props.lapp.statusBarContentColor && {
+                color: this.props.lapp.statusBarContentColor
+              }
+            ]}
+          >
             {this.props.currentAllowance}
           </Text>
         </Animated.View>
@@ -188,8 +204,16 @@ class ComponentAllowanceStatus extends Component {
 
   _withoutMicro = () => {
     return (
-      <View style={styles.pendingContainer}>
-        <Text>no micro support</Text>
+      <View style={[styles.pendingContainer]}>
+        <Text
+          style={[
+            this.props.lapp.statusBarContentColor && {
+              color: this.props.lapp.statusBarContentColor
+            }
+          ]}
+        >
+          no micro support
+        </Text>
       </View>
     );
   };

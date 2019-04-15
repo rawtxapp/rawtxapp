@@ -99,7 +99,15 @@ class ScreenLapp extends Component {
             ]}
           >
             <Image source={{ uri: lapp.icon }} style={styles.icon} />
-            <Text>{lapp.name}</Text>
+            <Text
+              style={[
+                lapp.statusBarContentColor && {
+                  color: lapp.statusBarContentColor
+                }
+              ]}
+            >
+              {lapp.name}
+            </Text>
             <View style={styles.statusMicroContainer}>
               <TouchableOpacity
                 onPress={() => this.setState({ showingAllowance: true })}
@@ -110,7 +118,12 @@ class ScreenLapp extends Component {
               <TouchableOpacity onPress={this.goToWallet}>
                 <Image
                   source={require("../../assets/close.png")}
-                  style={styles.icon}
+                  style={[
+                    styles.icon,
+                    lapp.statusBarContentColor && {
+                      tintColor: lapp.statusBarContentColor
+                    }
+                  ]}
                 />
               </TouchableOpacity>
             </View>
