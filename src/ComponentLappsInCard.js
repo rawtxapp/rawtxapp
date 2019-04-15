@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, ScrollView, View } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  View
+} from "react-native";
 import withLnd from "./withLnd";
 import Micro from "./micro/Micro";
 
@@ -58,15 +65,18 @@ export default withLnd(ComponentLappsInCard);
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "center"
   },
   lappContainer: {
     alignItems: "center",
     marginHorizontal: 5
   },
   lappIcon: {
-    width: 32,
-    height: 32
+    width: undefined,
+    height: 32,
+    aspectRatio: 1,
+    borderRadius: 10000,
+    overflow: "hidden"
   },
   lappsText: {
     fontSize: 18,
