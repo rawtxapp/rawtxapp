@@ -168,8 +168,11 @@ const styles = StyleSheet.create({
     flexDirection: "row"
   },
   icon: {
-    width: 28,
+    width: undefined,
     height: 28,
-    marginRight: 4
+    aspectRatio: 1,
+    marginRight: 4,
+    borderRadius: 10000,
+    overflow: "hidden"
   }
 });
