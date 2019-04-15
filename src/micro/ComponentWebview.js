@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import ComponentActionSheet from "../ComponentActionSheet";
 import ScreenSend from "../ScreenSend";
 import Micro from "./Micro";
 import withMicro from "./withMicro";
 import { WebView } from "react-native-webview";
+import { timeout } from "../Utils";
 
 // This JS is loaded after the page, the goal is to capture lightning:
 // links and convert them to a lightning: message to be handled by Micro.
@@ -16,7 +17,7 @@ const INTERCEPT_JS =
 class ComponentWebview extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { loading: true };
   }
 
   setWebviewRef = ref => {
@@ -36,7 +37,7 @@ class ComponentWebview extends Component {
     }
   };
 
-  onLoad = () => {
+  onLoad = async () => {
     if (this.webviewRef) {
       if (this.props.micro) {
         this.props.micro.setShowPayInvoiceScreen(invoice => {
@@ -57,6 +58,9 @@ class ComponentWebview extends Component {
     } catch (err) {
       console.error(err);
     }
+
+    await timeout(300); // avoid white flickering by waiting for rendering
+    this.setState({ loading: false });
   };
 
   renderError = () => {
@@ -95,6 +99,18 @@ class ComponentWebview extends Component {
           onLoad={this.onLoad.bind(this)}
           renderError={this.renderError}
         />
+        {this.state.loading && this.props.lapp.themeColor && (
+          <View
+            style={{
+              ...StyleSheet.absoluteFillObject,
+              backgroundColor: this.props.lapp.themeColor,
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+          >
+            <ActivityIndicator />
+          </View>
+        )}
         {this._renderSend()}
       </View>
     );
