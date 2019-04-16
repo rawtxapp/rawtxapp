@@ -322,7 +322,7 @@ class Micro {
         const remote = await fetch(url);
         let parsed = await remote.json();
         parsed = parsed || [];
-        if (__DEV__) {
+        if (__DEV__ && false) {
           // In dev, insert localhost dev app at the beginning as a convenience.
           let host = "10.0.2.2"; // for emulator, change to localhost on device
           parsed.unshift({
