@@ -192,7 +192,7 @@ const writeLndConf = async function(wallet) {
   let peers = "";
   for (let i = 0; i < neutrinoConnect.length; i++) {
     let peer = neutrinoConnect[i];
-    peers += (peers.length == 0 ? "" : "\n") + "neutrino.addpeer=" + peer;
+    peers += (peers.length == 0 ? "" : "\n") + "neutrino.connect=" + peer;
   }
   let profile = "";
   let debuglevel = "error";
