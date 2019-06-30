@@ -12,8 +12,6 @@ Here's what it looks like:
   </a>
 </p>
 
-You can get it from [Play Store on Android](https://play.google.com/store/apps/details?id=com.rtxwallet).
-
 To get a high level overview of how the wallet works, check out [overview](docs/high_level_overview.md).
 
 To compile from scratch, you can follow [building](docs/building.md).
